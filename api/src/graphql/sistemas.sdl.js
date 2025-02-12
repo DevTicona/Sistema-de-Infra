@@ -36,10 +36,10 @@ export const schema = gql`
     tipo: String!
     estado: String!
     respaldo: JSON
-    fecha_creacion: DateTime!
     usuario_creacion: Int!
-    fecha_modificacion: DateTime
     usuario_modificacion: Int
+
+    version: String
   }
 
   input UpdateSistemaInput {
@@ -56,6 +56,8 @@ export const schema = gql`
     usuario_creacion: Int
     fecha_modificacion: DateTime
     usuario_modificacion: Int
+
+    version: String
   }
 
   type Mutation {

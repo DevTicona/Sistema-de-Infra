@@ -12,13 +12,20 @@ export const entidad = ({ id }) => {
 
 export const createEntidad = ({ input }) => {
   return db.entidades.create({
-    data: input,
+    data: {
+      ...input,
+      fecha_creacion: new Date(),
+      fecha_modificacion: new Date(),
+    },
   })
 }
 
 export const updateEntidad = ({ id, input }) => {
   return db.entidades.update({
-    data: input,
+    data: {
+      ...input,
+      fecha_modificacion: new Date(),
+    },
     where: { id },
   })
 }

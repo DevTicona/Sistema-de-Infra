@@ -26,9 +26,8 @@ export const schema = gql`
     usuario_modificacion: Int
 
     descripcion: String
-    modulo_asociado: String
     permisos: [String!]!
-    restricciones_horarias: [String!]!
+    modulo_asociado: String
     acceso_remoto: Boolean
   }
 
@@ -43,9 +42,8 @@ export const schema = gql`
     usuario_modificacion: Int
 
     descripcion: String
-    modulo_asociado: String
     permisos: [String!]!
-    restricciones_horarias: [String!]!
+    modulo_asociado: String
     acceso_remoto: Boolean
   }
 

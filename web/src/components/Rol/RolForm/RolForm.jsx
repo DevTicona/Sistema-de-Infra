@@ -10,53 +10,37 @@ import {
   CheckboxField,
   Submit,
 } from '@redwoodjs/forms'
-// Component for structured JSON input for Profile
+
 const RespaldoField = ({ defaultValue }) => {
-  // Intenta parsear el valor de respaldo si está presente
-  const [respaldoData, setRespaldoData] = useState(() => {
-    if (defaultValue) {
-      try {
-        return JSON.parse(defaultValue)
-      } catch (error) {
-        console.error('Error parsing JSON:', error)
-      }
-    }
-    return {
-      permisos: [],
+  const [respaldoData, setRespaldoData] = useState(
+    defaultValue || {
       descripcion: '',
+      permisos: [],
       modulo_asociado: '',
-      configuracion_especial: {
-        restricciones_horarias: '',
-        acceso_remoto: false,
-      },
+      acceso_remoto: false,
     }
-  })
+  )
 
   const handleChange = (event) => {
-    const { name, value, type, checked } = event.target
+    const { name, type, value, checked } = event.target
+    setRespaldoData((prevData) => ({
+      ...prevData,
+      [name]: type === 'checkbox' ? checked : value,
+    }))
+  }
 
-    if (type === 'checkbox') {
-      setRespaldoData((prev) => ({
-        ...prev,
-        permisos: checked
-          ? [...prev.permisos, value]
-          : prev.permisos.filter((permiso) => permiso !== value),
-      }))
-    } else if (name.startsWith('configuracion_especial')) {
-      const fieldName = name.split('.').pop()
-      setRespaldoData((prev) => ({
-        ...prev,
-        configuracion_especial: {
-          ...prev.configuracion_especial,
-          [fieldName]: value,
-        },
-      }))
-    } else {
-      setRespaldoData((prev) => ({
-        ...prev,
-        [name]: value,
-      }))
-    }
+  const handleCheckboxChange = (event) => {
+    const { value, checked } = event.target
+    setRespaldoData((prevData) => {
+      const permisos = checked
+        ? [...prevData.permisos, value] // Añadir el permiso si está marcado
+        : prevData.permisos.filter((permiso) => permiso !== value) // Eliminar el permiso si está desmarcado
+
+      return {
+        ...prevData,
+        permisos, // Actualizar los permisos con el nuevo estado
+      }
+    })
   }
 
   return (
@@ -64,54 +48,46 @@ const RespaldoField = ({ defaultValue }) => {
       <Label className="rw-label">Descripción</Label>
       <TextField
         name="descripcion"
-        value={respaldoData.descripcion || ''}
-        onChange={handleChange}
-        className="rw-input"
-      />
-
-      <Label className="rw-label">Módulo Asociado</Label>
-      <TextField
-        name="modulo_asociado"
-        value={respaldoData.modulo_asociado || ''}
+        value={respaldoData.descripcion}
         onChange={handleChange}
         className="rw-input"
       />
 
       <Label className="rw-label">Permisos</Label>
-      <div>
-        {['crear', 'editar', 'eliminar'].map((permiso) => (
-          <label key={permiso} className="block">
+      <div className="flex gap-4">
+        {['lectura', 'escritura', 'ejecucion'].map((permiso) => (
+          <label key={permiso} className="flex items-center gap-1">
             <CheckboxField
-              name="permisos"
+              name={`permisos`} // Campo único para los permisos
               value={permiso}
               checked={respaldoData.permisos.includes(permiso)}
-              onChange={handleChange}
+              onChange={handleCheckboxChange}
             />
-            {permiso}
+            {permiso.charAt(0).toUpperCase() + permiso.slice(1)}
           </label>
         ))}
       </div>
 
-      <Label className="rw-label">Restricciones Horarias</Label>
+      <Label className="rw-label">Módulo Asociado</Label>
       <TextField
-        name="configuracion_especial.restricciones_horarias"
-        value={respaldoData.configuracion_especial.restricciones_horarias || ''}
+        name="modulo_asociado"
+        value={respaldoData.modulo_asociado}
         onChange={handleChange}
         className="rw-input"
       />
 
-      <Label className="rw-label">Acceso Remoto</Label>
-      <CheckboxField
-        name="configuracion_especial.acceso_remoto"
-        checked={respaldoData.configuracion_especial.acceso_remoto || false}
-        onChange={handleChange}
-      />
-
-      {/* Campo oculto para enviar el JSON como respaldo */}
+      <div className="flex items-center gap-2 mt-4">
+        <Label className="rw-label">Acceso Remoto</Label>
+        <CheckboxField
+          name="acceso_remoto"
+          checked={!!respaldoData.acceso_remoto} // Asegura que siempre sea un booleano
+          onChange={handleChange}
+        />
+      </div>
       <input
         type="hidden"
         name="respaldo"
-        value={JSON.stringify(respaldoData)}
+        value={JSON.stringify(respaldoData)} // Convertir los datos del respaldo a JSON
       />
     </div>
   )
@@ -119,7 +95,12 @@ const RespaldoField = ({ defaultValue }) => {
 
 const RolForm = (props) => {
   const onSubmit = (data) => {
-    props.onSave(data, props?.rol?.id)
+    // Incluir respaldo (el campo JSON de respaldo) en los datos enviados
+    const formData = {
+      ...data,
+      respaldo: data.respaldo ? JSON.parse(data.respaldo) : {}, // Parse JSON if it's a string// Parse JSON if it's a string
+    }
+    props.onSave(formData, props?.rol?.id)
   }
 
   return (
