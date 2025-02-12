@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model componentes {
+  id                   Int          @id(map: "componente_pk") @default(autoincrement())
+  id_sistema           Int
+  nombre               String       @db.VarChar(30)
+  descripcion          String
+  estado               String       @db.VarChar(15)
+  entorno              String       @db.VarChar(10)
+  categoria            String       @db.VarChar(15)
+  fecha_creacion       DateTime     @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int          @map("_usuario_creacion")
+  fecha_modificacion   DateTime?    @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?         @map("_usuario_modificacion")
+  sistemas             sistemas     @relation(fields: [id_sistema], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sistema_id")
+  despliegue           despliegue[]
+}
+
+model contenedor_logico {
+  id                   Int                   @id(map: "contenedor_logico_pk") @default(autoincrement())
+  id_padre             Int?
+  codigo               String                @db.VarChar(10)
+  sigla                String                @db.VarChar(15)
+  nombre               String                @db.VarChar(50)
+  descripcion          String
+  tipo                 String                @db.VarChar(15)
+  estado               String                @db.VarChar(15)
+  respaldo             Json?
+  fecha_creacion       DateTime              @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int                   @map("_usuario_creacion")
+  fecha_modificacion   DateTime?             @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?                  @map("_usuario_modificacion")
+  despliegue           despliegue[]
+  servidor_contenedor  servidor_contenedor[]
+  usuario_roles        usuario_roles[]
+}
+
+model despliegue {
+  id                   Int               @id(map: "despliegue_pk") @default(autoincrement())
+  id_componente        Int?
+  id_contenedor_logico Int
+  sigla                String            @db.VarChar(15)
+  nombre               String            @db.VarChar(50)
+  descripcion          String
+  tipo                 String            @db.VarChar(15)
+  estado               String            @db.VarChar(15)
+  respaldo             Json?
+  fecha_creacion       DateTime          @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int               @map("_usuario_creacion")
+  fecha_modificacion   DateTime?         @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?              @map("_usuario_modificacion")
+  componentes          componentes?      @relation(fields: [id_componente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_componente_id")
+  contenedor_logico    contenedor_logico @relation(fields: [id_contenedor_logico], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_contenedor_logico_2_id")
+}
+
+model entidades {
+  id                   Int        @id(map: "entidades_pk") @default(autoincrement())
+  codigo               String     @db.VarChar(10)
+  sigla                String     @db.VarChar(15)
+  nombre               String     @db.VarChar(50)
+  tipo                 String     @db.VarChar(15)
+  estado               String     @db.VarChar(15)
+  fecha_creacion       DateTime   @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int        @map("_usuario_creacion")
+  fecha_modificacion   DateTime?  @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?       @map("_usuario_modificacion")
+  sistemas             sistemas[]
+}
+
+model roles {
+  id                   Int             @id(map: "roles_pk") @default(autoincrement())
+  nombre               String          @db.VarChar(15)
+  tipo                 String          @db.VarChar(15)
+  estado               String          @db.VarChar(15)
+  respaldo             Json?
+  fecha_creacion       DateTime        @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int             @map("_usuario_creacion")
+  fecha_modificacion   DateTime?       @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?            @map("_usuario_modificacion")
+  usuario_roles        usuario_roles[]
+}
+
+model servidor_contenedor {
+  id                   Int                @id(map: "servidor_contenedor_pk") @default(autoincrement())
+  id_servidor          Int?
+  id_contenedor_logico Int?
+  sigla                String             @db.VarChar(15)
+  nombre               String             @db.VarChar(50)
+  descripcion          String
+  tipo                 String             @db.VarChar(15)
+  estado               String             @db.VarChar(15)
+  respaldo             Json?
+  fecha_creacion       DateTime           @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int                @map("_usuario_creacion")
+  fecha_modificacion   DateTime?          @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?               @map("_usuario_modificacion")
+  contenedor_logico    contenedor_logico? @relation(fields: [id_contenedor_logico], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_contenedor_logico_id")
+  servidores           servidores?        @relation(fields: [id_servidor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_servidor_id")
+}
+
+model servidores {
+  id                   Int                   @id(map: "servidor_pk") @default(autoincrement())
+  nro_cluster          Int
+  vmid                 Int
+  nombre               String                @db.VarChar(35)
+  nodo                 String                @db.VarChar(20)
+  ip                   String                @db.VarChar(15)
+  tipo                 String                @db.VarChar(15)
+  estado               String                @db.VarChar(15)
+  respaldo             Json?
+  fecha_creacion       DateTime              @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int                   @map("_usuario_creacion")
+  fecha_modificacion   DateTime?             @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?                  @map("_usuario_modificacion")
+  servidor_contenedor  servidor_contenedor[]
+}
+
+model sistemas {
+  id                   Int             @id(map: "sistema_pk") @default(autoincrement())
+  id_padre             Int?
+  id_entidad           Int
+  codigo               String          @db.VarChar(10)
+  sigla                String          @db.VarChar(15)
+  nombre               String          @db.VarChar(50)
+  descripcion          String
+  tipo                 String          @db.VarChar(15)
+  estado               String          @db.VarChar(15)
+  respaldo             Json?
+  fecha_creacion       DateTime        @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int             @map("_usuario_creacion")
+  fecha_modificacion   DateTime?       @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?            @map("_usuario_modificacion")
+  componentes          componentes[]
+  entidades            entidades       @relation(fields: [id_entidad], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_entidad_id")
+  sistemas             sistemas?       @relation("sistemasTosistemas", fields: [id_padre], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sistema_padre_id")
+  other_sistemas       sistemas[]      @relation("sistemasTosistemas")
+  usuario_roles        usuario_roles[]
+}
+
+model usuario_roles {
+  id                   Int               @id(map: "usuario_roles_pk") @default(autoincrement())
+  id_usuario           Int?
+  id_rol               Int
+  id_contenedor_logico Int
+  id_sistema           Int
+  descripcion          String
+  tipo                 String            @db.VarChar(15)
+  estado               String            @db.VarChar(15)
+  respaldo             Json?
+  fecha_creacion       DateTime          @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int               @map("_usuario_creacion")
+  fecha_modificacion   DateTime?         @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?              @map("_usuario_modificacion")
+  contenedor_logico    contenedor_logico @relation(fields: [id_contenedor_logico], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_contenedor_logico_3_id")
+  roles                roles             @relation(fields: [id_rol], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_rol_id")
+  sistemas             sistemas          @relation(fields: [id_sistema], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sistema_2_id")
+  usuarios             usuarios?         @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_id")
+}
+
+model usuarios {
+  id                   Int             @id(map: "usuario_pk") @default(autoincrement())
+  uuid_ciudadano       String?         @db.VarChar
+  nombre_usuario       String          @db.VarChar(20)
+  profile              Json
+  telefono             Json
+  correo_electronico   Json
+  estado               String          @db.VarChar(15)
+  fecha_creacion       DateTime        @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int             @map("_usuario_creacion")
+  fecha_modificacion   DateTime?       @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?            @map("_usuario_modificacion")
+  usuario_roles        usuario_roles[]
+}
