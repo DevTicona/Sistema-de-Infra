@@ -4,7 +4,7 @@ import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
 
 import { timeTag } from 'src/lib/formatters'
-
+import React from 'react';
 const DELETE_ENTIDAD_MUTATION = gql`
   mutation DeleteEntidadMutation($id: Int!) {
     deleteEntidad(id: $id) {

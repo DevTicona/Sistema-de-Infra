@@ -1,30 +1,23 @@
-import Entidad from 'src/components/Entidad/Entidad'
+// src/components/Entidad/Entidad.jsx
+import React from 'react';
+import './Entidad.module.css'; // Si usas CSS Modules
 
-export const QUERY = gql`
-  query FindEntidadById($id: Int!) {
-    entidad: entidad(id: $id) {
-      id
-      codigo
-      sigla
-      nombre
-      tipo
-      estado
-      fecha_creacion
-      usuario_creacion
-      fecha_modificacion
-      usuario_modificacion
-    }
-  }
-`
+const Entidad = ({ entidad }) => {
+  return (
+    <div className="entidad-container">
+      <h2 className="entidad-nombre">{entidad.nombre}</h2>
+      <div className="entidad-detalles">
+        <p><strong>Código:</strong> {entidad.codigo}</p>
+        <p><strong>Sigla:</strong> {entidad.sigla}</p>
+        <p><strong>Tipo:</strong> {entidad.tipo}</p>
+        <p><strong>Estado:</strong> {entidad.estado}</p>
+        <p><strong>Fecha de creación:</strong> {entidad.fecha_creacion}</p>
+        <p><strong>Usuario de creación:</strong> {entidad.usuario_creacion}</p>
+        <p><strong>Fecha de modificación:</strong> {entidad.fecha_modificacion}</p>
+        <p><strong>Usuario de modificación:</strong> {entidad.usuario_modificacion}</p>
+      </div>
+    </div>
+  );
+};
 
-export const Loading = () => <div>Loading...</div>
-
-export const Empty = () => <div>Entidad not found</div>
-
-export const Failure = ({ error }) => (
-  <div className="rw-cell-error">{error?.message}</div>
-)
-
-export const Success = ({ entidad }) => {
-  return <Entidad entidad={entidad} />
-}
+export default Entidad;

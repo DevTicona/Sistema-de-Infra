@@ -5,3 +5,4 @@ const EntidadsPage = () => {
 }
 
 export default EntidadsPage
+

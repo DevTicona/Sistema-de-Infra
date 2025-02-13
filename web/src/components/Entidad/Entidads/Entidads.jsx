@@ -1,10 +1,10 @@
-import { Link, routes } from '@redwoodjs/router'
-import { useMutation } from '@redwoodjs/web'
-
-import { toast } from '@redwoodjs/web/toast'
-
-import { QUERY } from 'src/components/Entidad/EntidadsCell'
-import { timeTag, truncate } from 'src/lib/formatters'
+import { Link, routes } from '@redwoodjs/router';
+import { useMutation } from '@redwoodjs/web';
+import { toast } from '@redwoodjs/web/toast';
+import { QUERY } from 'src/components/Entidad/EntidadsCell';
+import { timeTag, truncate } from 'src/lib/formatters';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, IconButton } from '@mui/material';
+import { Delete, Edit, Visibility } from '@mui/icons-material';
 
 const DELETE_ENTIDAD_MUTATION = gql`
   mutation DeleteEntidadMutation($id: Int!) {
@@ -12,92 +12,74 @@ const DELETE_ENTIDAD_MUTATION = gql`
       id
     }
   }
-`
+`;
 
 const EntidadsList = ({ entidads }) => {
   const [deleteEntidad] = useMutation(DELETE_ENTIDAD_MUTATION, {
     onCompleted: () => {
-      toast.success('Entidad deleted')
+      toast.success('Entidad eliminada correctamente');
     },
     onError: (error) => {
-      toast.error(error.message)
+      toast.error(error.message);
     },
-    // This refetches the query on the list page. Read more about other ways to
-    // update the cache over here:
-    // https://www.apollographql.com/docs/react/data/mutations/#making-all-other-cache-updates
     refetchQueries: [{ query: QUERY }],
     awaitRefetchQueries: true,
-  })
+  });
 
   const onDeleteClick = (id) => {
-    if (confirm('Are you sure you want to delete entidad ' + id + '?')) {
-      deleteEntidad({ variables: { id } })
+    if (confirm(`¿Estás seguro de que deseas eliminar la entidad ${id}?`)) {
+      deleteEntidad({ variables: { id } });
     }
-  }
+  };
 
   return (
-    <div className="rw-segment rw-table-wrapper-responsive">
-      <table className="rw-table">
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Codigo</th>
-            <th>Sigla</th>
-            <th>Nombre</th>
-            <th>Tipo</th>
-            <th>Estado</th>
-            <th>Fecha creacion</th>
-            <th>Usuario creacion</th>
-            <th>Fecha modificacion</th>
-            <th>Usuario modificacion</th>
-            <th>&nbsp;</th>
-          </tr>
-        </thead>
-        <tbody>
+    <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
+      <Table>
+        <TableHead>
+          <TableRow sx={{ backgroundColor: '#1976d2', color: 'white' }}>
+            <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>ID</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>Código</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>Sigla</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>Nombre</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>Tipo</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>Estado</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>Fecha Creación</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>Usuario Creación</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>Fecha Modificación</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', color: 'white' }}>Usuario Modificación</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', color: 'white' }} align="center">Acciones</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {entidads.map((entidad) => (
-            <tr key={entidad.id}>
-              <td>{truncate(entidad.id)}</td>
-              <td>{truncate(entidad.codigo)}</td>
-              <td>{truncate(entidad.sigla)}</td>
-              <td>{truncate(entidad.nombre)}</td>
-              <td>{truncate(entidad.tipo)}</td>
-              <td>{truncate(entidad.estado)}</td>
-              <td>{timeTag(entidad.fecha_creacion)}</td>
-              <td>{truncate(entidad.usuario_creacion)}</td>
-              <td>{timeTag(entidad.fecha_modificacion)}</td>
-              <td>{truncate(entidad.usuario_modificacion)}</td>
-              <td>
-                <nav className="rw-table-actions">
-                  <Link
-                    to={routes.entidad({ id: entidad.id })}
-                    title={'Show entidad ' + entidad.id + ' detail'}
-                    className="rw-button rw-button-small"
-                  >
-                    Show
-                  </Link>
-                  <Link
-                    to={routes.editEntidad({ id: entidad.id })}
-                    title={'Edit entidad ' + entidad.id}
-                    className="rw-button rw-button-small rw-button-blue"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    type="button"
-                    title={'Delete entidad ' + entidad.id}
-                    className="rw-button rw-button-small rw-button-red"
-                    onClick={() => onDeleteClick(entidad.id)}
-                  >
-                    Delete
-                  </button>
-                </nav>
-              </td>
-            </tr>
+            <TableRow key={entidad.id}>
+              <TableCell>{truncate(entidad.id)}</TableCell>
+              <TableCell>{truncate(entidad.codigo)}</TableCell>
+              <TableCell>{truncate(entidad.sigla)}</TableCell>
+              <TableCell>{truncate(entidad.nombre)}</TableCell>
+              <TableCell>{truncate(entidad.tipo)}</TableCell>
+              <TableCell>{truncate(entidad.estado)}</TableCell>
+              <TableCell>{timeTag(entidad.fecha_creacion)}</TableCell>
+              <TableCell>{truncate(entidad.usuario_creacion)}</TableCell>
+              <TableCell>{timeTag(entidad.fecha_modificacion)}</TableCell>
+              <TableCell>{truncate(entidad.usuario_modificacion)}</TableCell>
+              <TableCell align="center">
+                <IconButton component={Link} to={routes.entidad({ id: entidad.id })} color="primary">
+                  <Visibility />
+                </IconButton>
+                <IconButton component={Link} to={routes.editEntidad({ id: entidad.id })} color="secondary">
+                  <Edit />
+                </IconButton>
+                <IconButton onClick={() => onDeleteClick(entidad.id)} color="error">
+                  <Delete />
+                </IconButton>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
-    </div>
-  )
-}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+};
 
-export default EntidadsList
+export default EntidadsList;

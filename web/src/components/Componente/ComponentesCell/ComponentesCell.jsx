@@ -26,7 +26,7 @@ export const Empty = () => {
   return (
     <div className="rw-text-center">
       No componentes yet.{' '}
-      <Link to={routes.newComponente()} className="rw-link">
+      <Link to={routes.newCo()} className="rw-link">
         Create one?
       </Link>
     </div>
