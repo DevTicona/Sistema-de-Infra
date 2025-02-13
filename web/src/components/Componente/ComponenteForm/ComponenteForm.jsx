@@ -5,21 +5,24 @@ import {
   FieldError,
   Label,
   NumberField,
+  SelectField,
   TextField,
-  DatetimeLocalField,
   Submit,
 } from '@redwoodjs/forms'
-
 
 const formatDatetime = (value) => {
   if (value) {
     return value.replace(/:\d{2}\.\d{3}\w/, '')
   }
-}
-
+`
 const ComponenteForm = (props) => {
+  const { data: sistemasData } = useQuery(OBTENER_SISTEMAS)
   const onSubmit = (data) => {
-    props.onSave(data, props?.componente?.id)
+    const formData = {
+      ...data,
+      id_sistema: parseInt(data.id_sistema, 10),
+    }
+    props.onSave(formData, props?.componente?.id)
   }
 
   return (
@@ -40,13 +43,24 @@ const ComponenteForm = (props) => {
           Id sistema
         </Label>
 
-        <NumberField
+        <SelectField
           name="id_sistema"
-          defaultValue={props.componente?.id_sistema}
+          defaultValue={props.componente?.id_sistema || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
-        />
+        >
+          <option value="">Seleccione un sistema</option>
+          {sistemasData?.sistemas?.length > 0 ? (
+            sistemasData.sistemas.map((sistema) => (
+              <option key={sistema.id} value={sistema.id}>
+                {sistema.nombre}
+              </option>
+            ))
+          ) : (
+            <option disabled>No hay sistemas disponibles</option>
+          )}
+        </SelectField>
 
         <FieldError name="id_sistema" className="rw-field-error" />
 
@@ -157,23 +171,6 @@ const ComponenteForm = (props) => {
         />
 
         <FieldError name="usuario_creacion" className="rw-field-error" />
-
-        <Label
-          name="fecha_modificacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Fecha modificacion
-        </Label>
-
-        <DatetimeLocalField
-          name="fecha_modificacion"
-          defaultValue={formatDatetime(props.componente?.fecha_modificacion)}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="fecha_modificacion" className="rw-field-error" />
 
         <Label
           name="usuario_modificacion"

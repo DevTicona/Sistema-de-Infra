@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import {
   Form,
   FormError,
@@ -5,20 +7,60 @@ import {
   Label,
   NumberField,
   TextField,
-  TextAreaField,
-  DatetimeLocalField,
   Submit,
 } from '@redwoodjs/forms'
 
-const formatDatetime = (value) => {
-  if (value) {
-    return value.replace(/:\d{2}\.\d{3}\w/, '')
+import PLANTILLAS_RESPALDO from 'src/utils/plantillasRespaldo.js'
+
+const RespaldoField = ({ defaultValue, tipo }) => {
+  const [respaldoData, setRespaldoData] = useState(
+    defaultValue || PLANTILLAS_RESPALDO[tipo] || {}
+  )
+
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setRespaldoData((prevData) => {
+      const updatedData = { ...prevData, [name]: value }
+      console.log('Actualizando respaldoData:', updatedData)
+      return updatedData
+    })
   }
+
+  return (
+    <div>
+      {Object.keys(respaldoData).map((key) => (
+        <div key={key}>
+          <Label className="rw-label">{key}</Label>
+          <TextField
+            name={key}
+            value={respaldoData[key] || ''}
+            onChange={handleChange}
+            className="rw-input"
+          />
+        </div>
+      ))}
+      <input
+        type="hidden"
+        name="respaldo"
+        value={JSON.stringify(respaldoData)}
+      />
+      {console.log(
+        'Valor en input hidden respaldo:',
+        JSON.stringify(respaldoData)
+      )}
+    </div>
+  )
 }
 
 const ServidorForm = (props) => {
   const onSubmit = (data) => {
-    props.onSave(data, props?.servidor?.id)
+    const respaldoInput = document.querySelector('input[name="respaldo"]')
+    const formData = {
+      ...data,
+      respaldo: respaldoInput ? JSON.parse(respaldoInput.value) : {}, // Asegurar que sea un objeto
+    }
+    console.log('Formulario enviado con respaldo:', formData)
+    props.onSave(formData, props?.servidor?.id)
   }
 
   return (
@@ -38,7 +80,6 @@ const ServidorForm = (props) => {
         >
           Nro cluster
         </Label>
-
         <NumberField
           name="nro_cluster"
           defaultValue={props.servidor?.nro_cluster}
@@ -46,7 +87,6 @@ const ServidorForm = (props) => {
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="nro_cluster" className="rw-field-error" />
 
         <Label
@@ -56,7 +96,6 @@ const ServidorForm = (props) => {
         >
           Vmid
         </Label>
-
         <NumberField
           name="vmid"
           defaultValue={props.servidor?.vmid}
@@ -64,7 +103,6 @@ const ServidorForm = (props) => {
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="vmid" className="rw-field-error" />
 
         <Label
@@ -74,7 +112,6 @@ const ServidorForm = (props) => {
         >
           Nombre
         </Label>
-
         <TextField
           name="nombre"
           defaultValue={props.servidor?.nombre}
@@ -82,7 +119,6 @@ const ServidorForm = (props) => {
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="nombre" className="rw-field-error" />
 
         <Label
@@ -92,7 +128,6 @@ const ServidorForm = (props) => {
         >
           Nodo
         </Label>
-
         <TextField
           name="nodo"
           defaultValue={props.servidor?.nodo}
@@ -100,7 +135,6 @@ const ServidorForm = (props) => {
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="nodo" className="rw-field-error" />
 
         <Label
@@ -110,7 +144,6 @@ const ServidorForm = (props) => {
         >
           Ip
         </Label>
-
         <TextField
           name="ip"
           defaultValue={props.servidor?.ip}
@@ -118,7 +151,6 @@ const ServidorForm = (props) => {
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="ip" className="rw-field-error" />
 
         <Label
@@ -128,7 +160,6 @@ const ServidorForm = (props) => {
         >
           Tipo
         </Label>
-
         <TextField
           name="tipo"
           defaultValue={props.servidor?.tipo}
@@ -136,7 +167,6 @@ const ServidorForm = (props) => {
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="tipo" className="rw-field-error" />
 
         <Label
@@ -146,7 +176,6 @@ const ServidorForm = (props) => {
         >
           Estado
         </Label>
-
         <TextField
           name="estado"
           defaultValue={props.servidor?.estado}
@@ -154,26 +183,12 @@ const ServidorForm = (props) => {
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="estado" className="rw-field-error" />
 
-        <Label
-          name="respaldo"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Respaldo
-        </Label>
-
-        <TextAreaField
-          name="respaldo"
-          defaultValue={JSON.stringify(props.servidor?.respaldo)}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ valueAsJSON: true }}
+        <RespaldoField
+          defaultValue={props.servidor?.respaldo}
+          tipo="servidor"
         />
-
-        <FieldError name="respaldo" className="rw-field-error" />
 
         <Label
           name="usuario_creacion"
@@ -182,7 +197,6 @@ const ServidorForm = (props) => {
         >
           Usuario creacion
         </Label>
-
         <NumberField
           name="usuario_creacion"
           defaultValue={props.servidor?.usuario_creacion}
@@ -190,25 +204,7 @@ const ServidorForm = (props) => {
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="usuario_creacion" className="rw-field-error" />
-
-        <Label
-          name="fecha_modificacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Fecha modificacion
-        </Label>
-
-        <DatetimeLocalField
-          name="fecha_modificacion"
-          defaultValue={formatDatetime(props.servidor?.fecha_modificacion)}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="fecha_modificacion" className="rw-field-error" />
 
         <Label
           name="usuario_modificacion"
@@ -217,14 +213,12 @@ const ServidorForm = (props) => {
         >
           Usuario modificacion
         </Label>
-
         <NumberField
           name="usuario_modificacion"
           defaultValue={props.servidor?.usuario_modificacion}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
         />
-
         <FieldError name="usuario_modificacion" className="rw-field-error" />
 
         <div className="rw-button-group">

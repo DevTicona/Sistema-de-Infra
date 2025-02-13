@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import {
   Form,
   FormError,
@@ -5,20 +7,71 @@ import {
   Label,
   NumberField,
   TextField,
-  TextAreaField,
-  DatetimeLocalField,
+  SelectField,
   Submit,
 } from '@redwoodjs/forms'
+import { gql } from '@redwoodjs/graphql-client'
+import { useQuery } from '@redwoodjs/web'
 
-const formatDatetime = (value) => {
-  if (value) {
-    return value.replace(/:\d{2}\.\d{3}\w/, '')
+// Consulta GraphQL para obtener los sistemas
+const OBTENER_COMPONENTES = gql`
+  query ObtenerComponentes {
+    componentes {
+      id
+      nombre
+    }
   }
-}
+`
+// Consulta GraphQL para obtener los sistemas
+const OBTENER_CONTENEDOR_LOGICO = gql`
+  query ObtenerContenedores {
+    contenedorlogicos {
+      id
+      nombre
+    }
+  }
+`
 
+const RespaldoField = ({ defaultValue }) => {
+  const [respaldoData, setRespaldoData] = useState(
+    defaultValue || { version: '' }
+  )
+
+  const handleChange = (event) => {
+    setRespaldoData({
+      ...respaldoData,
+      [event.target.name]: event.target.value,
+    })
+  }
+
+  return (
+    <div>
+      <Label className="rw-label">Versión del sistema</Label>
+      <TextField
+        name="version"
+        value={respaldoData.version || ''}
+        onChange={handleChange}
+        className="rw-input"
+      />
+      <input
+        type="hidden"
+        name="respaldo"
+        value={JSON.stringify(respaldoData)} // Convertir los datos del respaldo a JSON
+      />
+    </div>
+  )
+}
 const DespliegueForm = (props) => {
+  const { data: componentesData } = useQuery(OBTENER_COMPONENTES)
+  const { data: cotenedoresData } = useQuery(OBTENER_CONTENEDOR_LOGICO)
   const onSubmit = (data) => {
-    props.onSave(data, props?.despliegue?.id)
+    const formData = {
+      ...data,
+      id_componente: parseInt(data.id_componente, 10),
+      id_contenedor_logico: parseInt(data.id_contenedor_logico, 10),
+      respaldo: data.respaldo ? JSON.parse(data.respaldo) : {},
+    }
+    props.onSave(formData, props?.despliegue?.id)
   }
 
   return (
@@ -39,12 +92,24 @@ const DespliegueForm = (props) => {
           Id componente
         </Label>
 
-        <NumberField
+        <SelectField
           name="id_componente"
-          defaultValue={props.despliegue?.id_componente}
+          defaultValue={props.despliegue?.id_componente || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
-        />
+          validation={{ required: true }}
+        >
+          <option value="">Seleccione un componente</option>
+          {componentesData?.componentes?.length > 0 ? (
+            componentesData.componentes.map((componente) => (
+              <option key={componente.id} value={componente.id}>
+                {componente.nombre}
+              </option>
+            ))
+          ) : (
+            <option disabled>No hay componentes disponibles</option>
+          )}
+        </SelectField>
 
         <FieldError name="id_componente" className="rw-field-error" />
 
@@ -53,16 +118,27 @@ const DespliegueForm = (props) => {
           className="rw-label"
           errorClassName="rw-label rw-label-error"
         >
-          Id contenedor logico
+          Contenedor logico
         </Label>
 
-        <NumberField
+        <SelectField
           name="id_contenedor_logico"
-          defaultValue={props.despliegue?.id_contenedor_logico}
+          defaultValue={props.despliegue?.id_contenedor_logico || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
-        />
+        >
+          <option value="">Seleccione un contenedor logico</option>
+          {cotenedoresData?.contenedorlogicos?.length > 0 ? (
+            cotenedoresData.contenedorlogicos.map((contenedorlogico) => (
+              <option key={contenedorlogico.id} value={contenedorlogico.id}>
+                {contenedorlogico.nombre}
+              </option>
+            ))
+          ) : (
+            <option disabled>No hay Contenedores logicos disponibles</option>
+          )}
+        </SelectField>
 
         <FieldError name="id_contenedor_logico" className="rw-field-error" />
 
@@ -156,24 +232,8 @@ const DespliegueForm = (props) => {
 
         <FieldError name="estado" className="rw-field-error" />
 
-        <Label
-          name="respaldo"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Respaldo
-        </Label>
-
-        <TextAreaField
-          name="respaldo"
-          defaultValue={JSON.stringify(props.despliegue?.respaldo)}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ valueAsJSON: true }}
-        />
-
-        <FieldError name="respaldo" className="rw-field-error" />
-
+        {/* Profile JSON Input */}
+        <RespaldoField defaultValue={props.despliegue?.respaldo} />
         <Label
           name="usuario_creacion"
           className="rw-label"
@@ -191,23 +251,6 @@ const DespliegueForm = (props) => {
         />
 
         <FieldError name="usuario_creacion" className="rw-field-error" />
-
-        <Label
-          name="fecha_modificacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Fecha modificacion
-        </Label>
-
-        <DatetimeLocalField
-          name="fecha_modificacion"
-          defaultValue={formatDatetime(props.despliegue?.fecha_modificacion)}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="fecha_modificacion" className="rw-field-error" />
 
         <Label
           name="usuario_modificacion"

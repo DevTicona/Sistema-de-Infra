@@ -12,18 +12,40 @@ export const componente = ({ id }) => {
 
 export const createComponente = ({ input }) => {
   return db.componentes.create({
-    data: input,
+    data: {
+      id_sistema: input.id_sistema,
+      nombre: input.nombre,
+      descripcion: input.descripcion,
+      estado: input.estado,
+      entorno: input.entorno,
+      categoria: input.categoria,
+      fecha_creacion: new Date(),
+      usuario_creacion: input.usuario_creacion,
+      fecha_modificacion: new Date(),
+      usuario_modificacion: input.usuario_modificacion,
+    },
   })
 }
 
 export const updateComponente = ({ id, input }) => {
   return db.componentes.update({
-    data: input,
+    data: {
+      id_sistema: input.id_sistema,
+      nombre: input.nombre,
+      descripcion: input.descripcion,
+      estado: input.estado,
+      entorno: input.entorno,
+      categoria: input.categoria,
+      usuario_creacion: input.usuario_creacion,
+      fecha_modificacion: new Date(),
+      usuario_modificacion: input.usuario_modificacion,
+    },
     where: { id },
   })
 }
 
-export const deleteComponente = ({ id }) => {
+export const deleteComponente = async ({ id }) => {
+  await db.despliegue.deleteMany({ where: { id_componente: id } })
   return db.componentes.delete({
     where: { id },
   })

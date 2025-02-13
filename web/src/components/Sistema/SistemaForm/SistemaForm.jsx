@@ -15,7 +15,7 @@ import { useQuery } from '@redwoodjs/web'
 
 // Consulta GraphQL para obtener los sistemas
 const OBTENER_SISTEMAS = gql`
-  query {
+  query ObtenerSistemas {
     sistemas {
       id
       nombre
@@ -24,7 +24,7 @@ const OBTENER_SISTEMAS = gql`
 `
 // Consulta GraphQL para obtener los sistemas
 const OBTENER_ENTIDADES = gql`
-  query {
+  query ObtenerEntidades {
     entidads {
       id
       nombre
@@ -75,7 +75,7 @@ const SistemaForm = (props) => {
     }
     props.onSave(formData, props?.sistema?.id)
   }
-  console.log(entidadesData?.entidads)
+
   return (
     <div className="rw-form-wrapper">
       <Form onSubmit={onSubmit} error={props.error}>
