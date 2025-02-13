@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import {
   Form,
   FormError,
@@ -5,20 +7,72 @@ import {
   Label,
   NumberField,
   TextField,
-  TextAreaField,
-  DatetimeLocalField,
+  SelectField,
   Submit,
 } from '@redwoodjs/forms'
+import { gql } from '@redwoodjs/graphql-client'
+import { useQuery } from '@redwoodjs/web'
 
-const formatDatetime = (value) => {
-  if (value) {
-    return value.replace(/:\d{2}\.\d{3}\w/, '')
+// Consulta GraphQL para obtener los sistemas
+const OBTENER_SERVIDORES = gql`
+  query ObtenerServidores {
+    servidors {
+      id
+      nombre
+    }
   }
+`
+// Consulta GraphQL para obtener los sistemas
+const OBTENER_CONTENEDORES = gql`
+  query ObtenerContenedores {
+    contenedorlogicos {
+      id
+      nombre
+    }
+  }
+`
+
+const RespaldoField = ({ defaultValue }) => {
+  const [respaldoData, setRespaldoData] = useState(
+    defaultValue || { version: '' }
+  )
+
+  const handleChange = (event) => {
+    setRespaldoData({
+      ...respaldoData,
+      [event.target.name]: event.target.value,
+    })
+  }
+
+  return (
+    <div>
+      <Label className="rw-label">Versión</Label>
+      <TextField
+        name="version"
+        value={respaldoData.version || ''}
+        onChange={handleChange}
+        className="rw-input"
+      />
+      <input
+        type="hidden"
+        name="respaldo"
+        value={JSON.stringify(respaldoData)} // Convertir los datos del respaldo a JSON
+      />
+    </div>
+  )
 }
 
 const ServidorcontenedorForm = (props) => {
+  const { data: servidoresData } = useQuery(OBTENER_SERVIDORES)
+  const { data: contenedoresData } = useQuery(OBTENER_CONTENEDORES)
   const onSubmit = (data) => {
-    props.onSave(data, props?.servidorcontenedor?.id)
+    const formData = {
+      ...data,
+      id_servidor: parseInt(data.id_servidor, 10),
+      id_contenedor_logico: parseInt(data.id_contenedor_logico, 10),
+      respaldo: data.respaldo ? JSON.parse(data.respaldo) : {},
+    }
+    props.onSave(formData, props?.servidorcontenedor?.id)
   }
 
   return (
@@ -36,15 +90,26 @@ const ServidorcontenedorForm = (props) => {
           className="rw-label"
           errorClassName="rw-label rw-label-error"
         >
-          Id servidor
+          Servidor
         </Label>
-
-        <NumberField
+        <SelectField
           name="id_servidor"
-          defaultValue={props.servidorcontenedor?.id_servidor}
+          defaultValue={props.servidorcontenedor?.id_servidor || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
-        />
+          validation={{ required: true }}
+        >
+          <option value="">Seleccione un servidor</option>
+          {servidoresData?.servidors?.length > 0 ? (
+            servidoresData.servidors.map((servidor) => (
+              <option key={servidor.id} value={servidor.id}>
+                {servidor.nombre}
+              </option>
+            ))
+          ) : (
+            <option disabled>No hay servidores disponibles</option>
+          )}
+        </SelectField>
 
         <FieldError name="id_servidor" className="rw-field-error" />
 
@@ -56,12 +121,24 @@ const ServidorcontenedorForm = (props) => {
           Id contenedor logico
         </Label>
 
-        <NumberField
+        <SelectField
           name="id_contenedor_logico"
-          defaultValue={props.servidorcontenedor?.id_contenedor_logico}
+          defaultValue={props.servidorcontenedor?.id_contenedor_logico || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
-        />
+          validation={{ required: true }}
+        >
+          <option value="">Seleccione un contenedor logico</option>
+          {contenedoresData?.contenedorlogicos?.length > 0 ? (
+            contenedoresData.contenedorlogicos.map((contenedorlogico) => (
+              <option key={contenedorlogico.id} value={contenedorlogico.id}>
+                {contenedorlogico.nombre}
+              </option>
+            ))
+          ) : (
+            <option disabled>No hay contenedores logicos disponibles</option>
+          )}
+        </SelectField>
 
         <FieldError name="id_contenedor_logico" className="rw-field-error" />
 
@@ -155,23 +232,8 @@ const ServidorcontenedorForm = (props) => {
 
         <FieldError name="estado" className="rw-field-error" />
 
-        <Label
-          name="respaldo"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Respaldo
-        </Label>
-
-        <TextAreaField
-          name="respaldo"
-          defaultValue={JSON.stringify(props.servidorcontenedor?.respaldo)}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ valueAsJSON: true }}
-        />
-
-        <FieldError name="respaldo" className="rw-field-error" />
+        {/* Profile JSON Input */}
+        <RespaldoField defaultValue={props.servidorcontenedor?.respaldo} />
 
         <Label
           name="usuario_creacion"
@@ -190,25 +252,6 @@ const ServidorcontenedorForm = (props) => {
         />
 
         <FieldError name="usuario_creacion" className="rw-field-error" />
-
-        <Label
-          name="fecha_modificacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Fecha modificacion
-        </Label>
-
-        <DatetimeLocalField
-          name="fecha_modificacion"
-          defaultValue={formatDatetime(
-            props.servidorcontenedor?.fecha_modificacion
-          )}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="fecha_modificacion" className="rw-field-error" />
 
         <Label
           name="usuario_modificacion"

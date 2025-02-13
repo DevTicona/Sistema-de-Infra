@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import {
   Form,
   FormError,
@@ -5,20 +7,93 @@ import {
   Label,
   NumberField,
   TextField,
-  TextAreaField,
-  DatetimeLocalField,
+  SelectField,
   Submit,
 } from '@redwoodjs/forms'
+import { gql } from '@redwoodjs/graphql-client'
+import { useQuery } from '@redwoodjs/web'
 
-const formatDatetime = (value) => {
-  if (value) {
-    return value.replace(/:\d{2}\.\d{3}\w/, '')
+// Consulta GraphQL para obtener los sistemas
+const OBTENER_USUARIOS = gql`
+  query ObtenerUsuarios {
+    usuarios {
+      id
+      nombre_usuario
+    }
   }
-}
+`
+// Consulta GraphQL para obtener los sistemas
+const OBTENER_ROLES = gql`
+  query ObtenerRoles {
+    rols {
+      id
+      nombre
+    }
+  }
+`
+// Consulta GraphQL para obtener los sistemas
+const OBTENER_SISTEMAS = gql`
+  query ObtenerSistemas {
+    sistemas {
+      id
+      nombre
+    }
+  }
+`
+// Consulta GraphQL para obtener los sistemas
+const OBTENER_CONTENEDORES = gql`
+  query ObtenerContenedores {
+    contenedorlogicos {
+      id
+      nombre
+    }
+  }
+`
 
+const RespaldoField = ({ defaultValue }) => {
+  const [respaldoData, setRespaldoData] = useState(
+    defaultValue || { version: '' }
+  )
+
+  const handleChange = (event) => {
+    setRespaldoData({
+      ...respaldoData,
+      [event.target.name]: event.target.value,
+    })
+  }
+
+  return (
+    <div>
+      <Label className="rw-label">Versión</Label>
+      <TextField
+        name="version"
+        value={respaldoData.version || ''}
+        onChange={handleChange}
+        className="rw-input"
+      />
+      <input
+        type="hidden"
+        name="respaldo"
+        value={JSON.stringify(respaldoData)} // Convertir los datos del respaldo a JSON
+      />
+    </div>
+  )
+}
 const UsuariorolForm = (props) => {
+  const { data: usuariosData } = useQuery(OBTENER_USUARIOS)
+  const { data: rolesData } = useQuery(OBTENER_ROLES)
+  const { data: sistemasData } = useQuery(OBTENER_SISTEMAS)
+  const { data: contenedoresData } = useQuery(OBTENER_CONTENEDORES)
   const onSubmit = (data) => {
-    props.onSave(data, props?.usuariorol?.id)
+    const formData = {
+      ...data,
+      id_usuario: parseInt(data.id_usuario, 10),
+      id_rol: parseInt(data.id_rol, 10),
+      id_sistema: parseInt(data.id_sistema, 10),
+      id_contenedor_logico: parseInt(data.id_contenedor_logico, 10),
+      respaldo: data.respaldo ? JSON.parse(data.respaldo) : {},
+    }
+    props.onSave(formData, props?.usuariorol?.id)
   }
 
   return (
@@ -36,15 +111,27 @@ const UsuariorolForm = (props) => {
           className="rw-label"
           errorClassName="rw-label rw-label-error"
         >
-          Id usuario
+          Usuario
         </Label>
 
-        <NumberField
+        <SelectField
           name="id_usuario"
-          defaultValue={props.usuariorol?.id_usuario}
+          defaultValue={props.usuariorol?.id_usuario || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
-        />
+          validation={{ required: true }}
+        >
+          <option value="">Seleccione un Usuario</option>
+          {usuariosData?.usuarios?.length > 0 ? (
+            usuariosData.usuarios.map((usuario) => (
+              <option key={usuario.id} value={usuario.id}>
+                {usuario.nombre_usuario}
+              </option>
+            ))
+          ) : (
+            <option disabled>No hay usuarios disponibles</option>
+          )}
+        </SelectField>
 
         <FieldError name="id_usuario" className="rw-field-error" />
 
@@ -56,13 +143,24 @@ const UsuariorolForm = (props) => {
           Id rol
         </Label>
 
-        <NumberField
+        <SelectField
           name="id_rol"
-          defaultValue={props.usuariorol?.id_rol}
+          defaultValue={props.usuariorol?.id_rol || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
-        />
+        >
+          <option value="">Seleccione un rol</option>
+          {rolesData?.rols?.length > 0 ? (
+            rolesData.rols.map((rol) => (
+              <option key={rol.id} value={rol.id}>
+                {rol.nombre}
+              </option>
+            ))
+          ) : (
+            <option disabled>No hay roles disponibles</option>
+          )}
+        </SelectField>
 
         <FieldError name="id_rol" className="rw-field-error" />
 
@@ -74,13 +172,24 @@ const UsuariorolForm = (props) => {
           Id contenedor logico
         </Label>
 
-        <NumberField
+        <SelectField
           name="id_contenedor_logico"
-          defaultValue={props.usuariorol?.id_contenedor_logico}
+          defaultValue={props.usuariorol?.id_contenedor_logico || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
-        />
+        >
+          <option value="">Seleccione un contenedor logico</option>
+          {contenedoresData?.contenedorlogicos?.length > 0 ? (
+            contenedoresData.contenedorlogicos.map((contenedorlogico) => (
+              <option key={contenedorlogico.id} value={contenedorlogico.id}>
+                {contenedorlogico.nombre}
+              </option>
+            ))
+          ) : (
+            <option disabled>No hay contenedores logicos disponibles</option>
+          )}
+        </SelectField>
 
         <FieldError name="id_contenedor_logico" className="rw-field-error" />
 
@@ -92,13 +201,24 @@ const UsuariorolForm = (props) => {
           Id sistema
         </Label>
 
-        <NumberField
+        <SelectField
           name="id_sistema"
-          defaultValue={props.usuariorol?.id_sistema}
+          defaultValue={props.usuariorol?.id_sistema || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
-        />
+        >
+          <option value="">Seleccione un sistema</option>
+          {sistemasData?.sistemas?.length > 0 ? (
+            sistemasData.sistemas.map((sistema) => (
+              <option key={sistema.id} value={sistema.id}>
+                {sistema.nombre}
+              </option>
+            ))
+          ) : (
+            <option disabled>No hay sistemas disponibles</option>
+          )}
+        </SelectField>
 
         <FieldError name="id_sistema" className="rw-field-error" />
 
@@ -156,23 +276,8 @@ const UsuariorolForm = (props) => {
 
         <FieldError name="estado" className="rw-field-error" />
 
-        <Label
-          name="respaldo"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Respaldo
-        </Label>
-
-        <TextAreaField
-          name="respaldo"
-          defaultValue={JSON.stringify(props.usuariorol?.respaldo)}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ valueAsJSON: true }}
-        />
-
-        <FieldError name="respaldo" className="rw-field-error" />
+        {/* respaldo JSON Input */}
+        <RespaldoField defaultValue={props.usuariorol?.respaldo} />
 
         <Label
           name="usuario_creacion"
@@ -191,23 +296,6 @@ const UsuariorolForm = (props) => {
         />
 
         <FieldError name="usuario_creacion" className="rw-field-error" />
-
-        <Label
-          name="fecha_modificacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Fecha modificacion
-        </Label>
-
-        <DatetimeLocalField
-          name="fecha_modificacion"
-          defaultValue={formatDatetime(props.usuariorol?.fecha_modificacion)}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="fecha_modificacion" className="rw-field-error" />
 
         <Label
           name="usuario_modificacion"

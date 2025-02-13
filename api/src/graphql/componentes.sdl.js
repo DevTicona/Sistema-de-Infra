@@ -27,9 +27,7 @@ export const schema = gql`
     estado: String!
     entorno: String!
     categoria: String!
-    fecha_creacion: DateTime!
     usuario_creacion: Int!
-    fecha_modificacion: DateTime
     usuario_modificacion: Int
   }
 

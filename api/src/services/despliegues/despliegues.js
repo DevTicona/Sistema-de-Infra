@@ -11,14 +11,45 @@ export const despliegue = ({ id }) => {
 }
 
 export const createDespliegue = ({ input }) => {
+  const respaldoData = {
+    version: input.version,
+  }
   return db.despliegue.create({
-    data: input,
+    data: {
+      id_componente: input.id_componente,
+      id_contenedor_logico: input.id_contenedor_logico,
+      sigla: input.sigla,
+      nombre: input.nombre,
+      descripcion: input.descripcion,
+      tipo: input.tipo,
+      estado: input.estado,
+      respaldo: respaldoData,
+      fecha_creacion: new Date(),
+      usuario_creacion: input.usuario_creacion,
+      fecha_modificacion: new Date(),
+      usuario_modificacion: input.usuario_modificacion,
+    },
   })
 }
 
 export const updateDespliegue = ({ id, input }) => {
+  const respaldoData = {
+    version: input.version,
+  }
   return db.despliegue.update({
-    data: input,
+    data: {
+      id_componente: input.id_componente,
+      id_contenedor_logico: input.id_contenedor_logico,
+      sigla: input.sigla,
+      nombre: input.nombre,
+      descripcion: input.descripcion,
+      tipo: input.tipo,
+      estado: input.estado,
+      respaldo: respaldoData,
+      usuario_creacion: input.usuario_creacion,
+      fecha_modificacion: new Date(),
+      usuario_modificacion: input.usuario_modificacion,
+    },
     where: { id },
   })
 }

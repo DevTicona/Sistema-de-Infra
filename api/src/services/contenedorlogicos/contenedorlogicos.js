@@ -11,14 +11,45 @@ export const contenedorlogico = ({ id }) => {
 }
 
 export const createContenedorlogico = ({ input }) => {
+  const respaldoData = {
+    version: input.version,
+  }
   return db.contenedor_logico.create({
-    data: input,
+    data: {
+      id_padre: input.id_padre,
+      codigo: input.codigo,
+      sigla: input.sigla,
+      nombre: input.nombre,
+      descripcion: input.descripcion,
+      tipo: input.tipo,
+      estado: input.estado,
+      respaldo: respaldoData,
+      fecha_creacion: new Date(),
+      usuario_creacion: input.usuario_creacion,
+      fecha_modificacion: new Date(),
+      usuario_modificacion: input.usuario_modificacion,
+    },
   })
 }
 
 export const updateContenedorlogico = ({ id, input }) => {
+  const respaldoData = {
+    version: input.version,
+  }
   return db.contenedor_logico.update({
-    data: input,
+    data: {
+      id_padre: input.id_padre,
+      codigo: input.codigo,
+      sigla: input.sigla,
+      nombre: input.nombre,
+      descripcion: input.descripcion,
+      tipo: input.tipo,
+      estado: input.estado,
+      respaldo: respaldoData,
+      usuario_creacion: input.usuario_creacion,
+      fecha_modificacion: new Date(),
+      usuario_modificacion: input.usuario_modificacion,
+    },
     where: { id },
   })
 }

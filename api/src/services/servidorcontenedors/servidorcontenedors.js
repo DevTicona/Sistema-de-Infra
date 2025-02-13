@@ -11,14 +11,45 @@ export const servidorcontenedor = ({ id }) => {
 }
 
 export const createServidorcontenedor = ({ input }) => {
+  const respaldoData = {
+    version: input.version,
+  }
   return db.servidor_contenedor.create({
-    data: input,
+    data: {
+      id_servidor: input.id_servidor,
+      id_contenedor_logico: input.id_contenedor_logico,
+      sigla: input.sigla,
+      nombre: input.nombre,
+      descripcion: input.descripcion,
+      tipo: input.tipo,
+      estado: input.estado,
+      respaldo: respaldoData,
+      fecha_creacion: new Date(),
+      usuario_creacion: input.usuario_creacion,
+      fecha_modificacion: new Date(),
+      usuario_modificacion: input.usuario_modificacion,
+    },
   })
 }
 
 export const updateServidorcontenedor = ({ id, input }) => {
+  const respaldoData = {
+    version: input.version,
+  }
   return db.servidor_contenedor.update({
-    data: input,
+    data: {
+      id_servidor: input.id_servidor,
+      id_contenedor_logico: input.id_contenedor_logico,
+      sigla: input.sigla,
+      nombre: input.nombre,
+      descripcion: input.descripcion,
+      tipo: input.tipo,
+      estado: input.estado,
+      respaldo: respaldoData,
+      usuario_creacion: input.usuario_creacion,
+      fecha_modificacion: new Date(),
+      usuario_modificacion: input.usuario_modificacion,
+    },
     where: { id },
   })
 }

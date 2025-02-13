@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import {
   Form,
   FormError,
@@ -5,20 +7,46 @@ import {
   Label,
   NumberField,
   TextField,
-  TextAreaField,
-  DatetimeLocalField,
   Submit,
 } from '@redwoodjs/forms'
 
-const formatDatetime = (value) => {
-  if (value) {
-    return value.replace(/:\d{2}\.\d{3}\w/, '')
+const RespaldoField = ({ defaultValue }) => {
+  const [respaldoData, setRespaldoData] = useState(
+    defaultValue || { version: '' }
+  )
+
+  const handleChange = (event) => {
+    setRespaldoData({
+      ...respaldoData,
+      [event.target.name]: event.target.value,
+    })
   }
+
+  return (
+    <div>
+      <Label className="rw-label">Versión del sistema</Label>
+      <TextField
+        name="version"
+        value={respaldoData.version || ''}
+        onChange={handleChange}
+        className="rw-input"
+      />
+      <input
+        type="hidden"
+        name="respaldo"
+        value={JSON.stringify(respaldoData)} // Convertir los datos del respaldo a JSON
+      />
+    </div>
+  )
 }
 
 const ContenedorlogicoForm = (props) => {
   const onSubmit = (data) => {
-    props.onSave(data, props?.contenedorlogico?.id)
+    const formData = {
+      ...data,
+      respaldo: data.respaldo ? JSON.parse(data.respaldo) : {},
+    }
+    props.onSave(formData, props?.contenedorlogico?.id)
   }
 
   return (
@@ -156,23 +184,8 @@ const ContenedorlogicoForm = (props) => {
 
         <FieldError name="estado" className="rw-field-error" />
 
-        <Label
-          name="respaldo"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Respaldo
-        </Label>
-
-        <TextAreaField
-          name="respaldo"
-          defaultValue={JSON.stringify(props.contenedorlogico?.respaldo)}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ valueAsJSON: true }}
-        />
-
-        <FieldError name="respaldo" className="rw-field-error" />
+        {/* Profile JSON Input */}
+        <RespaldoField defaultValue={props.contenedorlogico?.respaldo} />
 
         <Label
           name="usuario_creacion"
@@ -191,25 +204,6 @@ const ContenedorlogicoForm = (props) => {
         />
 
         <FieldError name="usuario_creacion" className="rw-field-error" />
-
-        <Label
-          name="fecha_modificacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Fecha modificacion
-        </Label>
-
-        <DatetimeLocalField
-          name="fecha_modificacion"
-          defaultValue={formatDatetime(
-            props.contenedorlogico?.fecha_modificacion
-          )}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="fecha_modificacion" className="rw-field-error" />
 
         <Label
           name="usuario_modificacion"
