@@ -10,11 +10,7 @@ import {
   Submit,
 } from '@redwoodjs/forms'
 
-const formatDatetime = (value) => {
-  if (value) {
-    return value.replace(/:\d{2}\.\d{3}\w/, '')
-  }
-`
+
 const ComponenteForm = (props) => {
   const { data: sistemasData } = useQuery(OBTENER_SISTEMAS)
   const onSubmit = (data) => {
