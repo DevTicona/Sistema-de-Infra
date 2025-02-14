@@ -1,9 +1,30 @@
-import { Link, routes } from '@redwoodjs/router'
-import { useMutation } from '@redwoodjs/web'
-import { toast } from '@redwoodjs/web/toast'
-
-import { QUERY } from 'src/components/Componente/ComponentesCell'
-import { timeTag, truncate } from 'src/lib/formatters'
+import React, { useState } from 'react';
+import { Link, routes } from '@redwoodjs/router';
+import { useMutation } from '@redwoodjs/web';
+import { toast } from '@redwoodjs/web/toast';
+import {
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableSortLabel,
+  TablePagination,
+  IconButton,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+} from '@mui/material';
+import { Visibility as VisibilityIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { QUERY } from 'src/components/Componente/ComponentesCell';
+import { timeTag, truncate } from 'src/lib/formatters';
 
 const DELETE_COMPONENTE_MUTATION = gql`
   mutation DeleteComponenteMutation($id: Int!) {
@@ -11,94 +32,125 @@ const DELETE_COMPONENTE_MUTATION = gql`
       id
     }
   }
-`
+`;
 
 const ComponentesList = ({ componentes }) => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [orderBy, setOrderBy] = useState('id');
+  const [order, setOrder] = useState('asc');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+
   const [deleteComponente] = useMutation(DELETE_COMPONENTE_MUTATION, {
     onCompleted: () => {
-      toast.success('Componente deleted')
+      toast.success('Componente deleted successfully');
+      setDeleteDialogOpen(false);
     },
     onError: (error) => {
-      toast.error(error.message)
+      toast.error(error.message);
     },
-    // This refetches the query on the list page. Read more about other ways to
-    // update the cache over here:
-    // https://www.apollographql.com/docs/react/data/mutations/#making-all-other-cache-updates
     refetchQueries: [{ query: QUERY }],
     awaitRefetchQueries: true,
-  })
+  });
 
-  const onDeleteClick = (id) => {
-    if (confirm('Are you sure you want to delete componente ' + id + '?')) {
-      deleteComponente({ variables: { id } })
-    }
-  }
+  const handleSort = (property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+  const sortedData = [...componentes].sort((a, b) => {
+    const aValue = a[orderBy];
+    const bValue = b[orderBy];
+    return order === 'asc' ? (aValue < bValue ? -1 : 1) : (bValue < aValue ? -1 : 1);
+  });
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleDeleteClick = (id) => {
+    setSelectedId(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    deleteComponente({ variables: { id: selectedId } });
+  };
 
   return (
-    <div className="rw-segment rw-table-wrapper-responsive">
-      <table className="rw-table">
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Id sistema</th>
-            <th>Nombre</th>
-            <th>Descripcion</th>
-            <th>Estado</th>
-            <th>Entorno</th>
-            <th>Categoria</th>
-            <th>Fecha creacion</th>
-            <th>Usuario creacion</th>
-            <th>Fecha modificacion</th>
-            <th>Usuario modificacion</th>
-            <th>&nbsp;</th>
-          </tr>
-        </thead>
-        <tbody>
-          {componentes.map((componente) => (
-            <tr key={componente.id}>
-              <td>{truncate(componente.id)}</td>
-              <td>{truncate(componente.id_sistema)}</td>
-              <td>{truncate(componente.nombre)}</td>
-              <td>{truncate(componente.descripcion)}</td>
-              <td>{truncate(componente.estado)}</td>
-              <td>{truncate(componente.entorno)}</td>
-              <td>{truncate(componente.categoria)}</td>
-              <td>{timeTag(componente.fecha_creacion)}</td>
-              <td>{truncate(componente.usuario_creacion)}</td>
-              <td>{timeTag(componente.fecha_modificacion)}</td>
-              <td>{truncate(componente.usuario_modificacion)}</td>
-              <td>
-                <nav className="rw-table-actions">
-                  <Link
-                    to={routes.componente({ id: componente.id })}
-                    title={'Show componente ' + componente.id + ' detail'}
-                    className="rw-button rw-button-small"
-                  >
-                    Show
-                  </Link>
-                  <Link
-                    to={routes.editComponente({ id: componente.id })}
-                    title={'Edit componente ' + componente.id}
-                    className="rw-button rw-button-small rw-button-blue"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    type="button"
-                    title={'Delete componente ' + componente.id}
-                    className="rw-button rw-button-small rw-button-red"
-                    onClick={() => onDeleteClick(componente.id)}
-                  >
-                    Delete
-                  </button>
-                </nav>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )
-}
+    <Box sx={{ width: '100%' }}>
+      <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: '12px', boxShadow: 3 }}>
+        <TableContainer>
+          <Table size="small" stickyHeader>
+            <TableHead>
+              <TableRow>
+                {[ 'Id', 'Id Sistema', 'Nombre', 'Descripción', 'Estado', 'Entorno', 'Categoría', 'Fecha Creación', 'Usuario Creación', 'Fecha Modificación', 'Usuario Modificación' ].map((header, index) => (
+                  <TableCell key={index} sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: 'white' }}>
+                    <TableSortLabel active={orderBy === header.toLowerCase()} direction={orderBy === header.toLowerCase() ? order : 'asc'} onClick={() => handleSort(header.toLowerCase())}>
+                      {header}
+                    </TableSortLabel>
+                  </TableCell>
+                ))}
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: 'white' }}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((componente) => (
+                <TableRow key={componente.id} hover>
+                  <TableCell>{truncate(componente.id)}</TableCell>
+                  <TableCell>{truncate(componente.id_sistema)}</TableCell>
+                  <TableCell>{truncate(componente.nombre)}</TableCell>
+                  <TableCell>{truncate(componente.descripcion)}</TableCell>
+                  <TableCell>{truncate(componente.estado)}</TableCell>
+                  <TableCell>{truncate(componente.entorno)}</TableCell>
+                  <TableCell>{truncate(componente.categoria)}</TableCell>
+                  <TableCell>{timeTag(componente.fecha_creacion)}</TableCell>
+                  <TableCell>{truncate(componente.usuario_creacion)}</TableCell>
+                  <TableCell>{timeTag(componente.fecha_modificacion)}</TableCell>
+                  <TableCell>{truncate(componente.usuario_modificacion)}</TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Tooltip title="View Details">
+                        <IconButton size="small" component={Link} to={routes.componente({ id: componente.id })}>
+                          <VisibilityIcon fontSize="small" color="primary" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Edit">
+                        <IconButton size="small" component={Link} to={routes.editComponente({ id: componente.id })}>
+                          <EditIcon fontSize="small" color="primary" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete">
+                        <IconButton size="small" onClick={() => handleDeleteClick(componente.id)}>
+                          <DeleteIcon fontSize="small" color="error" />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination rowsPerPageOptions={[5, 10, 25]} component="div" count={componentes.length} rowsPerPage={rowsPerPage} page={page} onPageChange={handleChangePage} onRowsPerPageChange={handleChangeRowsPerPage} />
+      </Paper>
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent><Typography>Are you sure you want to delete componente {selectedId}?</Typography></DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleDeleteConfirm} variant="contained" color="error">Delete</Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+};
 
-export default ComponentesList
+export default ComponentesList;
