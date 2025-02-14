@@ -3,18 +3,17 @@ import { Link, routes } from '@redwoodjs/router'
 import {
   AppBar, Toolbar, Typography, Button, Drawer, List,
   ListItem, ListItemText, Divider, IconButton, Container,
-  Modal, Box, Fab, useScrollTrigger, Zoom, Grid, Avatar
+  Box, Fab, useScrollTrigger, Zoom, Grid, Avatar
 } from '@mui/material'
 import {
-  Menu, Close, Email, Phone, ArrowUpward,
+  Menu, Close, ArrowUpward,
   Business, Code, Storage, People, Dashboard,
-  Cloud, Layers, Security, ContactMail
+  Cloud, Layers, Security, School
 } from '@mui/icons-material'
 import { styled } from '@mui/material/styles'
 
 const HomeLayout = ({ children }) => {
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [modalOpen, setModalOpen] = useState(false)
   const trigger = useScrollTrigger({ threshold: 100 })
 
   const menuItems = [
@@ -28,79 +27,75 @@ const HomeLayout = ({ children }) => {
     { name: 'Roles', route: routes.rols(), icon: <Security /> },
   ]
 
-  const GradientAppBar = styled(AppBar)({
-    background: 'linear-gradient(45deg, #1a237e 30%, #0d47a1 90%)',
-    boxShadow: '0 3px 5px 2px rgba(0, 0, 0, .2)',
-  })
+
+  const ProfessionalAppBar = styled(AppBar)(({ theme }) => ({
+    background: theme.palette.primary.main,
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+    transition: 'all 0.3s ease',
+  }))
 
   const StyledFab = styled(Fab)({
     position: 'fixed',
     zIndex: 1,
-    background: 'linear-gradient(45deg, #1a237e 30%, #0d47a1 90%)',
+    backgroundColor: '#1A337E',
     color: 'white',
     '&:hover': {
-      transform: 'scale(1.1)',
-      transition: 'transform 0.3s',
+      transform: 'translateY(-5px)',
+      boxShadow: '0 8px 15px rgba(26, 51, 126, 0.3)',
     }
   })
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }}>
-      <GradientAppBar position="sticky">
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <ProfessionalAppBar position="sticky">
+        <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <IconButton color="inherit" edge="start" onClick={() => setDrawerOpen(true)}>
-              <Menu />
+              <Menu sx={{ fontSize: 32 }} />
             </IconButton>
-            <Typography variant="h6" component="div" sx={{ ml: 2 }}>
-              <Box component="span" sx={{
-                fontFamily: 'Monospace',
-                fontWeight: 'bold',
-                letterSpacing: 4,
-                background: 'linear-gradient(45deg, #fff 30%, #90caf9 90%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent'
-              }}>
-                INFRA MANAGER
-              </Box>
-            </Typography>
+            <img
+              src="/img/logoagetic.png"
+              alt="Logo AGETIC"
+              style={{ height: '80px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}
+            />
           </Box>
 
-          <Button
-            variant="outlined"
-            color="inherit"
-            startIcon={<ContactMail />}
-            onClick={() => setModalOpen(true)}
-            sx={{
-              borderRadius: 50,
-              '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
-            }}
-          >
-            Contacto
-          </Button>
+          <Typography variant="h4" sx={{
+            fontWeight: 'bold',
+            background: 'linear-gradient(45deg, #fff 30%, #90caf9 90%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            display: { xs: 'none', md: 'block' }
+          }}>
+            Unidad de Infraestructura Tecnológica
+          </Typography>
         </Toolbar>
-      </GradientAppBar>
+      </ProfessionalAppBar>
 
       <Drawer
         anchor="left"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        PaperProps={{ sx: { width: 280 } }}
+        PaperProps={{ sx: { width: 300 } }}
       >
-        <Box sx={{ p: 2, background: '#f5f5f5', height: '100%' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-            <Avatar sx={{
-              width: 56,
-              height: 56,
-              bgcolor: '#1a237e',
-              fontSize: 24
-            }}>
-              IM
-            </Avatar>
+        <Box sx={{ p: 2, background: '#F8FAFF', height: '100%' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <img
+                src="/img/icono.jpg"
+                alt="Icono AGETIC"
+                style={{ height: '200px' }}
+              />
+              <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#1A337E' }}>
+                UIT
+              </Typography>
+            </Box>
             <IconButton onClick={() => setDrawerOpen(false)}>
-              <Close />
+              <Close sx={{ color: '#1A337E' }} />
             </IconButton>
           </Box>
+
+          <Divider sx={{ borderColor: 'rgba(26, 51, 126, 0.1)', mb: 2 }} />
 
           <List>
             {menuItems.map((item) => (
@@ -112,14 +107,22 @@ const HomeLayout = ({ children }) => {
                 sx={{
                   borderRadius: 2,
                   mb: 1,
-                  '&:hover': { backgroundColor: '#e8eaf6' }
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    backgroundColor: '#E8F0FE',
+                    transform: 'translateX(5px)'
+                  }
                 }}
               >
                 <ListItemText
                   primary={
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      {item.icon}
-                      <Typography sx={{ ml: 2, fontWeight: 500 }}>
+                      {React.cloneElement(item.icon, { sx: { color: '#1A337E' } })}
+                      <Typography sx={{
+                        ml: 2,
+                        fontWeight: 600,
+                        color: '#1A337E'
+                      }}>
                         {item.name}
                       </Typography>
                     </Box>
@@ -131,60 +134,14 @@ const HomeLayout = ({ children }) => {
         </Box>
       </Drawer>
 
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-        <Box sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: { xs: '90%', sm: 500 },
-          bgcolor: 'background.paper',
-          borderRadius: 4,
-          boxShadow: 24,
-          p: 4,
-          textAlign: 'center'
-        }}>
-          <ContactMail sx={{ fontSize: 50, color: '#1a237e', mb: 2 }} />
-          <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
-            ¿Necesitas ayuda?
-          </Typography>
-          <Box sx={{ my: 3 }}>
-            <Button
-              variant="outlined"
-              startIcon={<Email />}
-              sx={{ mx: 1, borderRadius: 50 }}
-            >
-              contact@infra.com
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<Phone />}
-              sx={{ mx: 1, borderRadius: 50 }}
-            >
-              +1 555 123 456
-            </Button>
-          </Box>
-          <Button
-            variant="contained"
-            onClick={() => setModalOpen(false)}
-            sx={{
-              background: 'linear-gradient(45deg, #1a237e 30%, #0d47a1 90%)',
-              borderRadius: 50,
-              px: 4
-            }}
-          >
-            Cerrar
-          </Button>
-        </Box>
-      </Modal>
-
       <Container maxWidth="xl" sx={{ py: 4, flex: 1 }}>
         <Box sx={{
           minHeight: '70vh',
           p: 4,
           borderRadius: 4,
-          boxShadow: 3,
-          background: 'white'
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.05)',
+          background: 'white',
+          border: '1px solid rgba(0, 0, 0, 0.05)'
         }}>
           {children}
         </Box>
@@ -201,7 +158,7 @@ const HomeLayout = ({ children }) => {
       </Zoom>
 
       <Box sx={{
-        bgcolor: '#1a237e',
+        bgcolor: '#1A337E',
         color: 'white',
         mt: 4,
         py: 4
@@ -209,48 +166,43 @@ const HomeLayout = ({ children }) => {
         <Container maxWidth="xl">
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                Infra Manager
-              </Typography>
-              <Typography variant="body2">
-                Soluciones integrales para la gestión de infraestructura tecnológica
+
+              <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                Agencia de Gobierno Electrónico y Tecnologías de Información y Comunicación
               </Typography>
             </Grid>
-            <Grid item xs={6} md={2}>
+            <Grid item xs={6} md={4}>
               <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
-                Legal
+                Contacto Institucional
               </Typography>
-              <Typography variant="body2">Términos de uso</Typography>
-              <Typography variant="body2">Privacidad</Typography>
-              <Typography variant="body2">Licencias</Typography>
+              <Typography variant="body2" sx={{ mb: 1, opacity: 0.9 }}>
+                Av. Mariscal Santa Cruz, Edificio Agetic
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1, opacity: 0.9 }}>
+                +591 2 2377717
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                info@agetic.gob.bo
+              </Typography>
             </Grid>
-            <Grid item xs={6} md={2}>
+            <Grid item xs={6} md={4}>
               <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
-                Recursos
+                Enlaces importantes
               </Typography>
-              <Typography variant="body2">Documentación</Typography>
-              <Typography variant="body2">Soporte</Typography>
-              <Typography variant="body2">API</Typography>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
-                Conecta con nosotros
+              <Typography variant="body2" sx={{ mb: 1, opacity: 0.9 }}>
+                Políticas de uso
               </Typography>
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <Fab size="small" sx={{ bgcolor: 'white', color: '#1a237e' }}>
-                  <Typography>X</Typography>
-                </Fab>
-                <Fab size="small" sx={{ bgcolor: 'white', color: '#1a237e' }}>
-                  <Typography>In</Typography>
-                </Fab>
-                <Fab size="small" sx={{ bgcolor: 'white', color: '#1a237e' }}>
-                  <Typography>Fb</Typography>
-                </Fab>
-              </Box>
+              <Typography variant="body2" sx={{ mb: 1, opacity: 0.9 }}>
+                Documentación técnica
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                Portal de transparencia
+              </Typography>
             </Grid>
           </Grid>
-          <Typography variant="body2" align="center" sx={{ mt: 4 }}>
-            © 2024 Infra Manager. Todos los derechos reservados.
+          <Divider sx={{ my: 4, borderColor: 'rgba(255,255,255,0.1)' }} />
+          <Typography variant="body2" align="center" sx={{ opacity: 0.8 }}>
+            © 2024 AGETIC - Estado Plurinacional de Bolivia
           </Typography>
         </Container>
       </Box>

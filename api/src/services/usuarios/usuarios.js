@@ -97,3 +97,12 @@ export const Usuario = {
     return db.usuarios.findUnique({ where: { id: root?.id } }).usuario_roles()
   },
 }
+
+// api/src/services/usuarios/usuarios.js
+
+export const usuariosCount = () => {
+  return db.usuarios.count()  // Usamos el método count de Prisma para obtener el número de registros
+}
+
+
+

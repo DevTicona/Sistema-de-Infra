@@ -1,3 +1,7 @@
+// api/src/graphql/usuarios.sdl.js
+
+import { gql } from '@redwoodjs/graphql-server'
+
 export const schema = gql`
   type Usuario {
     id: Int!
@@ -17,6 +21,7 @@ export const schema = gql`
   type Query {
     usuarios: [Usuario!]! @requireAuth
     usuario(id: Int!): Usuario @requireAuth
+    usuariosCount: Int @requireAuth  # Nueva consulta para contar los usuarios
   }
 
   input CreateUsuarioInput {
