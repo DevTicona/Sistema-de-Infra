@@ -22,11 +22,14 @@ import {
   DialogActions,
   Button,
   Typography,
+  TextField,
+  InputAdornment,
 } from '@mui/material';
 import {
   Visibility as VisibilityIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
+  Search as SearchIcon,
 } from '@mui/icons-material';
 
 import { QUERY } from 'src/components/Sistema/SistemasCell';
@@ -47,6 +50,7 @@ const SistemasList = ({ sistemas }) => {
   const [order, setOrder] = useState('asc');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [deleteSistema] = useMutation(DELETE_SISTEMA_MUTATION, {
     onCompleted: () => {
@@ -66,7 +70,15 @@ const SistemasList = ({ sistemas }) => {
     setOrderBy(property);
   };
 
-  const sortedData = [...sistemas].sort((a, b) => {
+  const filteredData = sistemas.filter((sistema) => {
+    const searchTermLower = searchTerm.toLowerCase();
+    return (
+      sistema.sigla?.toLowerCase().includes(searchTermLower) ||
+      sistema.nombre?.toLowerCase().includes(searchTermLower)
+    );
+  });
+
+  const sortedData = [...filteredData].sort((a, b) => {
     const aValue = a[orderBy];
     const bValue = b[orderBy];
 
@@ -95,6 +107,11 @@ const SistemasList = ({ sistemas }) => {
     deleteSistema({ variables: { id: selectedId } });
   };
 
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+    setPage(0);
+  };
+
   const headers = [
     { id: 'id', label: 'Id' },
     { id: 'id_padre', label: 'Id Padre' },
@@ -104,7 +121,7 @@ const SistemasList = ({ sistemas }) => {
     { id: 'nombre', label: 'Nombre' },
     { id: 'descripcion', label: 'Descripción' },
     { id: 'estado', label: 'Estado' },
-    { id: 'respaldo', label: 'Respaldo' },
+    { id: 'respaldo_creacion', label: 'Respaldo_Creacion' },
     { id: 'fecha_creacion', label: 'Fecha Creación' },
     { id: 'usuario_creacion', label: 'Usuario Creación' },
     { id: 'fecha_modificacion', label: 'Fecha Modificación' },
@@ -113,6 +130,38 @@ const SistemasList = ({ sistemas }) => {
 
   return (
     <Box sx={{ width: '100%' }}>
+      {/* Buscador */}
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
+        <Paper
+          elevation={3}
+          sx={{
+            p: '2px 4px',
+            display: 'flex',
+            alignItems: 'center',
+            width: 400,
+            borderRadius: '12px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          }}
+        >
+          <TextField
+            fullWidth
+            value={searchTerm}
+            onChange={handleSearchChange}
+            placeholder="Buscar por sigla o nombre..."
+            variant="standard"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon style={{ color: '#1976d2' }} />
+                </InputAdornment>
+              ),
+              disableUnderline: true,
+              sx: { px: 2, py: 1 }
+            }}
+          />
+        </Paper>
+      </Box>
+
       <Paper style={{
         width: '100%',
         marginBottom: '16px',
@@ -177,7 +226,7 @@ const SistemasList = ({ sistemas }) => {
                     <TableCell>{truncate(sistema.descripcion)}</TableCell>
 
                     <TableCell>{truncate(sistema.estado)}</TableCell>
-                    <TableCell>{jsonTruncate(sistema.respaldo)}</TableCell>
+                    <TableCell>{jsonTruncate(sistema.respaldo_creacion)}</TableCell>
                     <TableCell>{timeTag(sistema.fecha_creacion)}</TableCell>
                     <TableCell>{truncate(sistema.usuario_creacion)}</TableCell>
                     <TableCell>{timeTag(sistema.fecha_modificacion)}</TableCell>
@@ -224,7 +273,7 @@ const SistemasList = ({ sistemas }) => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25, 50]}
           component="div"
-          count={sistemas.length}
+          count={filteredData.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

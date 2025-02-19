@@ -8,6 +8,7 @@ import {
   TextField,
   NumberField,
   Submit,
+  SelectField,
 } from '@redwoodjs/forms'
 
 // Component for structured JSON input for Profile
@@ -203,13 +204,17 @@ const UsuarioForm = (props) => {
           Estado
         </Label>
 
-        <TextField
+
+                <SelectField
           name="estado"
-          defaultValue={props.usuario?.estado}
+          defaultValue={props.componente?.estado || 'ACTIVO'}  // Valor por defecto
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
-        />
+        >
+          <option value="ACTIVO">Activo</option>
+          <option value="INACTIVO">Inactivo</option>
+        </SelectField>
 
         <FieldError name="estado" className="rw-field-error" />
 

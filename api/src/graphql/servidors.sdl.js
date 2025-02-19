@@ -15,7 +15,7 @@ enum estado {
     ip: String!
     tipo: String!
     estado: estado!
-    respaldo: JSON
+    metadata: JSON
     fecha_creacion: DateTime!
     usuario_creacion: Int!
     fecha_modificacion: DateTime
@@ -38,7 +38,7 @@ enum estado {
     ip: String!
     tipo: String!
     estado: estado!
-    respaldo: JSON
+    metadata: JSON
     usuario_creacion: Int!
     usuario_modificacion: Int
     sistema_operativo: String
@@ -53,7 +53,7 @@ enum estado {
     ip: String
     tipo: String
     estado: Estado
-    respaldo: JSON
+    metadata: JSON
     fecha_creacion: DateTime
     usuario_creacion: Int
     fecha_modificacion: DateTime

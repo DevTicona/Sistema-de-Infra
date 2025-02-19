@@ -55,7 +55,7 @@ const RespaldoField = ({ defaultValue }) => {
       />
       <input
         type="hidden"
-        name="respaldo"
+        name="respaldo_creacion"
         value={JSON.stringify(respaldoData)} // Convertir los datos del respaldo a JSON
       />
     </div>
@@ -71,7 +71,7 @@ const SistemaForm = (props) => {
       ...data,
       id_padre: parseInt(data.id_padre, 10),
       id_entidad: parseInt(data.id_entidad, 10),
-      respaldo: data.respaldo ? JSON.parse(data.respaldo) : {},
+      respaldo_creacion: data.respaldo_creacion ? JSON.parse(data.respaldo_creacion) : {},
     }
     props.onSave(formData, props?.sistema?.id)
   }
@@ -239,7 +239,7 @@ const SistemaForm = (props) => {
         <FieldError name="estado" className="rw-field-error" />
 
         {/* Profile JSON Input */}
-        <RespaldoField defaultValue={props.sistema?.respaldo} />
+        <RespaldoField defaultValue={props.sistema?.respaldo_creacion} />
 
         <Label
           name="usuario_creacion"

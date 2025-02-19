@@ -1,61 +1,62 @@
 import { db } from 'src/lib/db'
-import * as yup from 'yup'
-
-// Esquema de validación
-const componenteSchema = yup.object({
-  id_sistema: yup.number().required(),
-  nombre: yup.string().required().max(30),
-  descripcion: yup.string().required(),
-  estado: yup.string().oneOf(['ACTIVO', 'INACTIVO']).required(),
-  entorno: yup.string().oneOf(['Demo', 'PreProd', 'Prod', 'Test']).required(),
-  categoria: yup.string().oneOf(['Backend', 'Frontend', 'Database', 'NFS']).required(),
-})
 
 export const componentes = () => {
-  return db.componentes.findMany({
-    include: {
-      sistemas: true,
-      despliegue: true,
-    },
-  })
+  return db.componentes.findMany()
 }
 
 export const componente = ({ id }) => {
   return db.componentes.findUnique({
     where: { id },
-    include: {
-      sistemas: true,
-      despliegue: true,
-    },
   })
 }
 
-export const createComponente = async ({ input }) => {
-  await componenteSchema.validate(input)
+export const createComponente = ({ input }) => {
+
   return db.componentes.create({
     data: {
-      ...input,
+      id_sistema: input.id_sistema,
+      nombre: input.nombre,
+      descripcion: input.descripcion,
+      estado: input.estado,
+      entorno: input.entorno,
+      categoria: input.categoria,
       fecha_creacion: new Date(),
+      usuario_creacion: input.usuario_creacion,
       fecha_modificacion: new Date(),
-      usuario_creacion: context.currentUser.id,
-      usuario_modificacion: context.currentUser.id,
+      usuario_modificacion: input.usuario_modificacion,
     },
   })
 }
 
 export const updateComponente = ({ id, input }) => {
   return db.componentes.update({
-    where: { id },
     data: {
-      ...input,
+      id_sistema: input.id_sistema,
+      nombre: input.nombre,
+      descripcion: input.descripcion,
+      estado: input.estado,
+      entorno: input.entorno,
+      categoria: input.categoria,
+      usuario_creacion: input.usuario_creacion,
       fecha_modificacion: new Date(),
-      usuario_modificacion: context.currentUser.id,
+      usuario_modificacion: input.usuario_modificacion,
     },
+    where: { id },
   })
 }
 
-export const deleteComponente = ({ id }) => {
+export const deleteComponente = async ({ id }) => {
+  await db.despliegue.deleteMany({ where: { id_componente: id } })
   return db.componentes.delete({
     where: { id },
   })
+}
+
+export const Componente = {
+  sistemas: (_obj, { root }) => {
+    return db.componentes.findUnique({ where: { id: root?.id } }).sistemas()
+  },
+  despliegue: (_obj, { root }) => {
+    return db.componentes.findUnique({ where: { id: root?.id } }).despliegue()
+  },
 }

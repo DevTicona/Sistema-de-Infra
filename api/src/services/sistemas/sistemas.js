@@ -1,3 +1,4 @@
+import { estado } from '@prisma/client'
 import { db } from 'src/lib/db'
 
 export const sistemas = () => {
@@ -22,8 +23,8 @@ export const createSistema = ({ input }) => {
       sigla: input.sigla,
       nombre: input.nombre,
       descripcion: input.descripcion,
-      estado: input.estado,
-      respaldo: respaldoData,
+      estado: estado,
+      respaldo_creacion: respaldoData,
       usuario_creacion: input.usuario_creacion,
       usuario_modificacion: input.usuario_modificacion,
       fecha_creacion: new Date(),
@@ -45,8 +46,8 @@ export const updateSistema = ({ id, input }) => {
       nombre: input.nombre,
       descripcion: input.descripcion,
 
-      estado: input.estado,
-      respaldo: respaldoData,
+      estado: estado,
+      respaldo_creacion: respaldoData,
       usuario_creacion: input.usuario_creacion,
       usuario_modificacion: input.usuario_modificacion,
       fecha_modificacion: new Date(),

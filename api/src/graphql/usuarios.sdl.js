@@ -1,4 +1,9 @@
 export const schema = gql`
+enum estado {
+  ACTIVO
+  INACTIVO
+}
+
   type Usuario {
     id: Int!
     uuid_ciudadano: String
@@ -6,7 +11,7 @@ export const schema = gql`
     profile: JSON!
     telefono: JSON!
     correo_electronico: JSON!
-    estado: String!
+    estado: estado!
     fecha_creacion: DateTime!
     usuario_creacion: Int!
     fecha_modificacion: DateTime
@@ -25,7 +30,7 @@ export const schema = gql`
     profile: JSON!
     telefono: JSON!
     correo_electronico: JSON!
-    estado: String!
+    estado: estado!
     usuario_creacion: Int!
     usuario_modificacion: Int
 
@@ -43,7 +48,7 @@ export const schema = gql`
     profile: JSON
     telefono: JSON
     correo_electronico: JSON
-    estado: String
+    estado: estado
     fecha_creacion: DateTime
     usuario_creacion: Int
     fecha_modificacion: DateTime

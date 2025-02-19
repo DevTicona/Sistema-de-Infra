@@ -11,19 +11,16 @@ export const rol = ({ id }) => {
 }
 
 export const createRol = ({ input }) => {
+   // Validación de estado
+  const estado = input.estado === 'ACTIVO' ? 'ACTIVO' : 'INACTIVO'
   // Creamos los objetos profileData, telefonoData y correoData directamente
-  const respaldoData = {
-    descripcion: input.descripcion,
-    permisos: input.permisos,
-    modulo_asociado: input.modulo_asociado,
-    acceso_remoto: input.acceso_remoto,
-  }
+
   return db.roles.create({
     data: {
       nombre: input.nombre,
       tipo: input.tipo,
-      estado: input.estado,
-      respaldo: respaldoData,
+      estado: estado,
+
       fecha_creacion: new Date(), // Si existe
       usuario_creacion: input.usuario_creacion,
       fecha_modificacion: new Date(),
@@ -33,19 +30,16 @@ export const createRol = ({ input }) => {
 }
 
 export const updateRol = ({ id, input }) => {
+   // Validación de estado
+  const estado = input.estado === 'ACTIVO' ? 'ACTIVO' : 'INACTIVO'
   // Creamos los objetos profileData, telefonoData y correoData directamente
-  const respaldoData = {
-    descripcion: input.descripcion,
-    permisos: input.permisos,
-    modulo_asociado: input.modulo_asociado,
-    acceso_remoto: input.acceso_remoto,
-  }
+
   return db.roles.update({
     data: {
       nombre: input.nombre,
       tipo: input.tipo,
-      estado: input.estado,
-      respaldo: respaldoData,
+      estado: estado,
+
       usuario_creacion: input.usuario_creacion,
       fecha_modificacion: new Date(),
       usuario_modificacion: input.usuario_modificacion,

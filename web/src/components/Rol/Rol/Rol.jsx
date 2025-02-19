@@ -56,10 +56,7 @@ const Rol = ({ rol }) => {
               <th>Estado</th>
               <td>{rol.estado}</td>
             </tr>
-            <tr>
-              <th>Respaldo</th>
-              <td>{jsonDisplay(rol.respaldo)}</td>
-            </tr>
+
             <tr>
               <th>Fecha creacion</th>
               <td>{timeTag(rol.fecha_creacion)}</td>

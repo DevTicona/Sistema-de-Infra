@@ -16,7 +16,7 @@ export const QUERY = gql`
       ip
       tipo
       estado
-      respaldo
+      metadata
       fecha_creacion
       usuario_creacion
       fecha_modificacion
@@ -36,7 +36,7 @@ const UPDATE_SERVIDOR_MUTATION = gql`
       ip
       tipo
       estado
-      respaldo
+      metadata
       fecha_creacion
       usuario_creacion
       fecha_modificacion

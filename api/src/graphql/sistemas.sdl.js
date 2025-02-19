@@ -15,7 +15,7 @@ enum estado {
     nombre: String!
     descripcion: String!
     estado: estado!
-    respaldo: JSON
+    respaldo_creacion: JSON
     fecha_creacion: DateTime!
     usuario_creacion: Int!
     fecha_modificacion: DateTime
@@ -40,7 +40,7 @@ enum estado {
     nombre: String!
     descripcion: String!
     estado: estado!
-    respaldo: JSON
+    respaldo_creacion: JSON
     usuario_creacion: Int!
     usuario_modificacion: Int
 
@@ -55,7 +55,7 @@ enum estado {
     nombre: String
     descripcion: String
     estado: estado
-    respaldo: JSON
+    respaldo_creacion: JSON
     fecha_creacion: DateTime
     usuario_creacion: Int
     fecha_modificacion: DateTime

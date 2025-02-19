@@ -21,6 +21,7 @@ const HomeLayout = ({ children }) => {
     { name: 'Entidades', route: routes.entidads(), icon: <Business /> },
     { name: 'Sistemas', route: routes.sistemas(), icon: <Code /> },
     { name: 'Componentes', route: routes.componentes(), icon: <Storage /> },
+    { name: 'Despliegue', route: routes.despliegues(), icon: <Cloud /> },
     { name: 'Servidores', route: routes.servidors(), icon: <Cloud /> },
     { name: 'Contenedores', route: routes.contenedorlogicos(), icon: <Layers /> },
     { name: 'Usuarios', route: routes.usuarios(), icon: <People /> },

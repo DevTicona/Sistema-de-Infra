@@ -11,6 +11,10 @@ export const servidor = ({ id }) => {
 }
 
 export const createServidor = ({ input }) => {
+    // Validación de estado
+    const estado = input.estado === 'ACTIVO' ? 'ACTIVO' : 'INACTIVO'
+
+
   return db.servidores.create({
     data: {
       nro_cluster: input.nro_cluster,
@@ -19,8 +23,8 @@ export const createServidor = ({ input }) => {
       nodo: input.nodo,
       ip: input.ip,
       tipo: input.tipo,
-      estado: input.estado,
-      respaldo: input.respaldo,
+      estado: estado,
+      metadata: input.metadata,
       fecha_creacion: new Date(),
       usuario_creacion: input.usuario_creacion,
       fecha_modificacion: new Date(),
@@ -30,6 +34,10 @@ export const createServidor = ({ input }) => {
 }
 
 export const updateServidor = ({ id, input }) => {
+
+    // Validación de estado
+    const estado = input.estado === 'ACTIVO' ? 'ACTIVO' : 'INACTIVO'
+
   return db.servidores.update({
     data: {
       nro_cluster: input.nro_cluster,
@@ -38,8 +46,8 @@ export const updateServidor = ({ id, input }) => {
       nodo: input.nodo,
       ip: input.ip,
       tipo: input.tipo,
-      estado: input.estado,
-      respaldo: input.respaldo,
+      estado: estado,
+      metadata: input.metadata,
       usuario_creacion: input.usuario_creacion,
       fecha_modificacion: new Date(),
       usuario_modificacion: input.usuario_modificacion,

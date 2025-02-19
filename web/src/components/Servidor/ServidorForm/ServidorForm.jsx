@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import {
   Form,
@@ -8,32 +8,174 @@ import {
   NumberField,
   TextField,
   Submit,
+  SelectField,
 } from '@redwoodjs/forms'
 
 import PLANTILLAS_RESPALDO from 'src/utils/plantillasRespaldo.js'
 
-const RespaldoField = ({ defaultValue, tipo }) => {
-  const [respaldoData, setRespaldoData] = useState(
+// Componente para validación y autocompletado de IP
+const IPAutoComplete = ({ defaultValue, className, errorClassName }) => {
+  const [inputValue, setInputValue] = useState(defaultValue || '')
+  const [suggestions, setSuggestions] = useState([])
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [isValid, setIsValid] = useState(true)
+
+  // Redes comunes en infraestructura AGETIC
+  const commonPrefixes = [
+    '10.0.10.',
+    '10.0.20.',
+    '10.1.0.',
+    '172.16.10.',
+    '172.16.20.',
+    '192.168.1.',
+    '192.168.10.',
+  ]
+
+  // Últimos octetos comunes
+  const commonLastOctets = ['1', '2', '5', '10', '20', '50', '100', '200', '254']
+
+  // Validar formato de IP
+  const validateIP = (ip) => {
+    if (!ip) return true // Vacío es válido para el UI (aunque requerido en validación)
+    const ipRegex = /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+    return ipRegex.test(ip)
+  }
+
+  // Actualizar sugerencias basadas en el input
+  useEffect(() => {
+    if (inputValue) {
+      const parts = inputValue.split('.')
+      let filtered = []
+
+      // Si estamos escribiendo un prefijo (menos de 4 partes)
+      if (parts.length < 4) {
+        filtered = commonPrefixes
+          .filter(prefix => prefix.startsWith(inputValue))
+          .slice(0, 6)
+      }
+      // Si ya tenemos 3 partes completas, sugerir el último octeto
+      else if (parts.length === 4 && parts[3] === '') {
+        const prefix = parts.slice(0, 3).join('.')
+        filtered = commonLastOctets.map(octeto => `${prefix}.${octeto}`)
+      }
+      // Si estamos escribiendo el último octeto
+      else if (parts.length === 4 && parts[3]) {
+        const prefix = parts.slice(0, 3).join('.')
+        filtered = commonLastOctets
+          .filter(octeto => octeto.startsWith(parts[3]))
+          .map(octeto => `${prefix}.${octeto}`)
+      }
+
+      setSuggestions(filtered)
+      setShowSuggestions(filtered.length > 0)
+
+      // Validar formato
+      setIsValid(validateIP(inputValue))
+    } else {
+      setSuggestions([])
+      setShowSuggestions(false)
+      setIsValid(true)
+    }
+  }, [inputValue])
+
+  const handleChange = (e) => {
+    setInputValue(e.target.value)
+  }
+
+  const handleKeyDown = (e) => {
+    // Autocompletar con Tab
+    if (e.key === 'Tab' && showSuggestions && suggestions.length > 0) {
+      e.preventDefault()
+      setInputValue(suggestions[0])
+      setShowSuggestions(false)
+    }
+
+    // Auto-añadir punto después de ingresar un número
+    if (e.key >= '0' && e.key <= '9') {
+      const parts = inputValue.split('.')
+      if (parts.length < 4) {
+        const lastPart = parts[parts.length - 1]
+        if (lastPart && lastPart.length === 2 && !isNaN(lastPart)) {
+          setTimeout(() => {
+            setInputValue(prev => prev + '.')
+          }, 10)
+        }
+      }
+    }
+  }
+
+  const selectSuggestion = (suggestion) => {
+    setInputValue(suggestion)
+    setShowSuggestions(false)
+    setIsValid(validateIP(suggestion))
+  }
+
+  return (
+    <div className="relative">
+      <div className="flex items-center">
+        <TextField
+          name="ip"
+          value={inputValue}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          className={`${className} ${!isValid ? errorClassName : ''}`}
+          placeholder="Ej: 10.0.10.1 (Tab para autocompletar)"
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+          onFocus={() => inputValue && setSuggestions.length > 0 && setShowSuggestions(true)}
+          validation={{
+            required: true,
+            validate: {
+              validIp: (value) => validateIP(value) || 'Formato de IP inválido'
+            }
+          }}
+        />
+        {!isValid && (
+          <div className="ml-2 text-xs text-red-500">
+            ⚠️ Formato inválido
+          </div>
+        )}
+      </div>
+
+      {/* Sugerencias rápidas */}
+      {showSuggestions && (
+        <div className="absolute z-10 mt-1 w-full bg-white shadow-md rounded border border-gray-200">
+          {suggestions.map((suggestion, index) => (
+            <div
+              key={index}
+              className="px-3 py-1 hover:bg-blue-50 cursor-pointer text-sm"
+              onClick={() => selectSuggestion(suggestion)}
+            >
+              {suggestion}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+const MetadataField = ({ defaultValue, tipo }) => {
+  const [metadataData, setMetadataData] = useState(
     defaultValue || PLANTILLAS_RESPALDO[tipo] || {}
   )
 
   const handleChange = (event) => {
     const { name, value } = event.target
-    setRespaldoData((prevData) => {
+    setMetadataData((prevData) => {
       const updatedData = { ...prevData, [name]: value }
-      console.log('Actualizando respaldoData:', updatedData)
+      console.log('Actualizando metadataData:', updatedData)
       return updatedData
     })
   }
 
   return (
     <div>
-      {Object.keys(respaldoData).map((key) => (
+      {Object.keys(metadataData).map((key) => (
         <div key={key}>
           <Label className="rw-label">{key}</Label>
           <TextField
             name={key}
-            value={respaldoData[key] || ''}
+            value={metadataData[key] || ''}
             onChange={handleChange}
             className="rw-input"
           />
@@ -41,25 +183,35 @@ const RespaldoField = ({ defaultValue, tipo }) => {
       ))}
       <input
         type="hidden"
-        name="respaldo"
-        value={JSON.stringify(respaldoData)}
+        name="metadata"
+        value={JSON.stringify(metadataData)}
       />
-      {console.log(
-        'Valor en input hidden respaldo:',
-        JSON.stringify(respaldoData)
-      )}
     </div>
   )
 }
 
 const ServidorForm = (props) => {
   const onSubmit = (data) => {
-    const respaldoInput = document.querySelector('input[name="respaldo"]')
+    const metadataInput = document.querySelector('input[name="metadata"]')
+
+    // Asegurarse que la IP tiene un formato válido
+    const ipValue = data.ip?.trim();
+    if (ipValue) {
+      // Validar formato IP correcto antes de enviar
+      const ipRegex = /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+      if (!ipRegex.test(ipValue)) {
+        console.error('Error: IP inválida', ipValue);
+        alert('Formato de IP inválido. Debe tener formato: xxx.xxx.xxx.xxx con valores entre 0-255');
+        return;
+      }
+    }
+
     const formData = {
       ...data,
-      respaldo: respaldoInput ? JSON.parse(respaldoInput.value) : {}, // Asegurar que sea un objeto
+      metadata: metadataInput ? JSON.parse(metadataInput.value) : {}, // Asegurar que sea un objeto
     }
-    console.log('Formulario enviado con respaldo:', formData)
+
+    console.log('Formulario enviado con metadata:', formData)
     props.onSave(formData, props?.servidor?.id)
   }
 
@@ -142,14 +294,12 @@ const ServidorForm = (props) => {
           className="rw-label"
           errorClassName="rw-label rw-label-error"
         >
-          Ip
+          IP
         </Label>
-        <TextField
-          name="ip"
+        <IPAutoComplete
           defaultValue={props.servidor?.ip}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
         />
         <FieldError name="ip" className="rw-field-error" />
 
@@ -160,13 +310,17 @@ const ServidorForm = (props) => {
         >
           Tipo
         </Label>
-        <TextField
+        <SelectField
           name="tipo"
           defaultValue={props.servidor?.tipo}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
-        />
+        >
+          <option value="">Selecciona una opción</option>
+          <option value="Fisico">Físico</option>
+          <option value="Virtual">Virtual</option>
+        </SelectField>
         <FieldError name="tipo" className="rw-field-error" />
 
         <Label
@@ -176,17 +330,18 @@ const ServidorForm = (props) => {
         >
           Estado
         </Label>
-        <TextField
+        <SelectField
           name="estado"
-          defaultValue={props.servidor?.estado}
+          defaultValue={props.componente?.estado || 'ACTIVO'}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
-        />
-        <FieldError name="estado" className="rw-field-error" />
-
-        <RespaldoField
-          defaultValue={props.servidor?.respaldo}
+        >
+          <option value="ACTIVO">Activo</option>
+          <option value="INACTIVO">Inactivo</option>
+        </SelectField>
+        <MetadataField
+          defaultValue={props.servidor?.metadata}
           tipo="servidor"
         />
 

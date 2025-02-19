@@ -91,7 +91,7 @@ const ServidorsList = ({ servidors }) => {
           <Table size="small" stickyHeader>
             <TableHead>
               <TableRow>
-                {[ 'Id', 'Nro Cluster', 'VMID', 'Nombre', 'Nodo', 'IP', 'Tipo', 'Estado', 'Respaldo', 'Fecha Creación', 'Usuario Creación', 'Fecha Modificación', 'Usuario Modificación' ].map((header, index) => (
+                {[ 'Id', 'Nro Cluster', 'VMID', 'Nombre', 'Nodo', 'IP', 'Tipo', 'Estado', 'Metadata', 'Fecha Creación', 'Usuario Creación', 'Fecha Modificación', 'Usuario Modificación' ].map((header, index) => (
                   <TableCell key={index} sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: 'white' }}>
                     <TableSortLabel active={orderBy === header.toLowerCase()} direction={orderBy === header.toLowerCase() ? order : 'asc'} onClick={() => handleSort(header.toLowerCase())}>
                       {header}
@@ -112,7 +112,7 @@ const ServidorsList = ({ servidors }) => {
                   <TableCell>{truncate(servidor.ip)}</TableCell>
                   <TableCell>{truncate(servidor.tipo)}</TableCell>
                   <TableCell>{truncate(servidor.estado)}</TableCell>
-                  <TableCell>{jsonTruncate(servidor.respaldo)}</TableCell>
+                  <TableCell>{jsonTruncate(servidor.metadata)}</TableCell>
                   <TableCell>{timeTag(servidor.fecha_creacion)}</TableCell>
                   <TableCell>{truncate(servidor.usuario_creacion)}</TableCell>
                   <TableCell>{timeTag(servidor.fecha_modificacion)}</TableCell>

@@ -1,3 +1,4 @@
+import { estado } from '@prisma/client'
 import { db } from 'src/lib/db'
 
 export const servidorcontenedors = () => {
@@ -22,7 +23,7 @@ export const createServidorcontenedor = ({ input }) => {
       nombre: input.nombre,
       descripcion: input.descripcion,
       tipo: input.tipo,
-      estado: input.estado,
+      estado: estado,
       respaldo: respaldoData,
       fecha_creacion: new Date(),
       usuario_creacion: input.usuario_creacion,
@@ -44,7 +45,7 @@ export const updateServidorcontenedor = ({ id, input }) => {
       nombre: input.nombre,
       descripcion: input.descripcion,
       tipo: input.tipo,
-      estado: input.estado,
+      estado: estado,
       respaldo: respaldoData,
       usuario_creacion: input.usuario_creacion,
       fecha_modificacion: new Date(),

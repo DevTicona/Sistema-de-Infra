@@ -91,7 +91,7 @@ const RolsList = ({ rols }) => {
           <Table size="small" stickyHeader>
             <TableHead>
               <TableRow>
-                {['Id', 'Nombre', 'Tipo', 'Estado', 'Respaldo', 'Fecha Creación', 'Usuario Creación', 'Fecha Modificación', 'Usuario Modificación'].map((header, index) => (
+                {['Id', 'Nombre', 'Tipo', 'Estado','Fecha Creación', 'Usuario Creación', 'Fecha Modificación', 'Usuario Modificación'].map((header, index) => (
                   <TableCell key={index} sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: 'white' }}>
                     <TableSortLabel active={orderBy === header.toLowerCase()} direction={orderBy === header.toLowerCase() ? order : 'asc'} onClick={() => handleSort(header.toLowerCase())}>
                       {header}
@@ -108,7 +108,7 @@ const RolsList = ({ rols }) => {
                   <TableCell>{truncate(rol.nombre)}</TableCell>
                   <TableCell>{truncate(rol.tipo)}</TableCell>
                   <TableCell>{truncate(rol.estado)}</TableCell>
-                  <TableCell>{jsonTruncate(rol.respaldo)}</TableCell>
+
                   <TableCell>{timeTag(rol.fecha_creacion)}</TableCell>
                   <TableCell>{truncate(rol.usuario_creacion)}</TableCell>
                   <TableCell>{timeTag(rol.fecha_modificacion)}</TableCell>

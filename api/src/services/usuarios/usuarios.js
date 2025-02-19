@@ -1,3 +1,4 @@
+import { estado } from '@prisma/client'
 import { db } from 'src/lib/db'
 
 export const usuarios = () => {
@@ -11,6 +12,9 @@ export const usuario = ({ id }) => {
 }
 
 export const createUsuario = ({ input }) => {
+ // Validación de estado
+ const estado = input.estado === 'ACTIVO' ? 'ACTIVO' : 'INACTIVO'
+
   // Creamos los objetos profileData, telefonoData y correoData directamente
   const profileData = {
     nombre: input.nombre,
@@ -32,7 +36,7 @@ export const createUsuario = ({ input }) => {
     data: {
       uuid_ciudadano: input.uuid_ciudadano || null, // Si estos campos son parte de input, úsalos
       nombre_usuario: input.nombre_usuario || '', // Asegúrate de que nombre_usuario siempre tenga un valor
-      estado: input.estado || 'Activo', // Estado por defecto si no se especifica
+      estado: estado, // Estado por defecto si no se especifica
       usuario_creacion: input.usuario_creacion || 1, // Asegúrate de que usuario_creacion esté presente
       usuario_modificacion: input.usuario_modificacion || 1, // Asigna un valor por defecto
       profile: profileData, // Guardamos el objeto como JSON
@@ -45,6 +49,9 @@ export const createUsuario = ({ input }) => {
 }
 
 export const updateUsuario = ({ id, input }) => {
+   // Validación de estado
+   const estado = input.estado === 'ACTIVO' ? 'ACTIVO' : 'INACTIVO'
+
   // Creamos los objetos profileData, telefonoData y correoData directamente
   const profileData = {
     nombre: input.nombre,
@@ -64,7 +71,7 @@ export const updateUsuario = ({ id, input }) => {
     data: {
       uuid_ciudadano: input.uuid_ciudadano || null, // Si estos campos son parte de input, úsalos
       nombre_usuario: input.nombre_usuario || '', // Asegúrate de que nombre_usuario siempre tenga un valor
-      estado: input.estado || 'Activo', // Estado por defecto si no se especifica
+      estado: estado, // Estado por defecto si no se especifica
       usuario_creacion: input.usuario_creacion || 1, // Asegúrate de que usuario_creacion esté presente
       usuario_modificacion: input.usuario_modificacion || 1, // Asigna un valor por defecto
       profile: {

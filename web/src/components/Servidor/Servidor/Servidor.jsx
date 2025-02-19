@@ -73,8 +73,8 @@ const Servidor = ({ servidor }) => {
               <td>{servidor.estado}</td>
             </tr>
             <tr>
-              <th>Respaldo</th>
-              <td>{jsonDisplay(servidor.respaldo)}</td>
+              <th>Metadata</th>
+              <td>{jsonDisplay(servidor.metadata)}</td>
             </tr>
             <tr>
               <th>Fecha creacion</th>

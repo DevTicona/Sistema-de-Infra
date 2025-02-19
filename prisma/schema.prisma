@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model componentes {
   id                   Int          @id(map: "componente_pk") @default(autoincrement())
   id_sistema           Int
@@ -23,6 +24,7 @@ model componentes {
   despliegue           despliegue[]
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model contenedor_logico {
   id                   Int                   @id(map: "contenedor_logico_pk") @default(autoincrement())
   codigo               String                @db.VarChar(10)
@@ -40,6 +42,7 @@ model contenedor_logico {
   usuario_roles        usuario_roles[]
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model despliegue {
   id                   Int               @id(map: "despliegue_pk") @default(autoincrement())
   id_componente        Int?
@@ -58,6 +61,7 @@ model despliegue {
   contenedor_logico    contenedor_logico @relation(fields: [id_contenedor_logico], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_contenedor_logico_2_id")
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model entidades {
   id                   Int        @id(map: "entidades_pk") @default(autoincrement())
   codigo               String     @db.VarChar(10)
@@ -71,6 +75,7 @@ model entidades {
   sistemas             sistemas[]
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model roles {
   id                   Int             @id(map: "roles_pk") @default(autoincrement())
   nombre               String          @db.VarChar(15)
@@ -83,6 +88,7 @@ model roles {
   usuario_roles        usuario_roles[]
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model servidor_contenedor {
   id                   Int                @id(map: "servidor_contenedor_pk") @default(autoincrement())
   id_servidor          Int?
@@ -101,6 +107,7 @@ model servidor_contenedor {
   servidores           servidores?        @relation(fields: [id_servidor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_servidor_id")
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model servidores {
   id                   Int                   @id(map: "servidor_pk") @default(autoincrement())
   nro_cluster          Int
@@ -118,6 +125,7 @@ model servidores {
   servidor_contenedor  servidor_contenedor[]
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model sistemas {
   id                   Int             @id(map: "sistema_pk") @default(autoincrement())
   id_padre             Int?
@@ -139,6 +147,7 @@ model sistemas {
   usuario_roles        usuario_roles[]
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model usuario_roles {
   id                   Int               @id(map: "usuario_roles_pk") @default(autoincrement())
   id_usuario           Int?
@@ -159,6 +168,7 @@ model usuario_roles {
   usuarios             usuarios?         @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_id")
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model usuarios {
   id                   Int             @id(map: "usuario_pk") @default(autoincrement())
   uuid_ciudadano       String?         @db.VarChar

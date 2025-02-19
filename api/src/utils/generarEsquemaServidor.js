@@ -21,8 +21,8 @@ const esquemaServidor = `
     nodo: String!
     ip: String!
     tipo: String!
-    estado: String!
-    respaldo: JSON
+    estado: estado!
+    metadata: JSON
     fecha_creacion: DateTime!
     usuario_creacion: Int!
     fecha_modificacion: DateTime
@@ -43,8 +43,8 @@ const esquemaServidor = `
     nodo: String!
     ip: String!
     tipo: String!
-    estado: String!
-    respaldo: JSON
+    estado: estado!
+    metadata: JSON
     usuario_creacion: Int!
     usuario_modificacion: Int
     ${camposServidor}
@@ -58,7 +58,7 @@ const esquemaServidor = `
     ip: String
     tipo: String
     estado: String
-    respaldo: JSON
+    metadata: JSON
     fecha_creacion: DateTime
     usuario_creacion: Int
     fecha_modificacion: DateTime

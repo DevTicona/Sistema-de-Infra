@@ -74,8 +74,8 @@ const Sistema = ({ sistema }) => {
               <td>{sistema.estado}</td>
             </tr>
             <tr>
-              <th>Respaldo</th>
-              <td>{jsonDisplay(sistema.respaldo)}</td>
+              <th>Respaldo Creacion</th>
+              <td>{jsonDisplay(sistema.respaldo_creacion)}</td>
             </tr>
             <tr>
               <th>Fecha creacion</th>

@@ -16,7 +16,7 @@ export const QUERY = gql`
       nombre
       descripcion
       estado
-      respaldo
+      respaldo_creacion
       fecha_creacion
       usuario_creacion
       fecha_modificacion
@@ -36,7 +36,7 @@ const UPDATE_SISTEMA_MUTATION = gql`
       nombre
       descripcion
       estado
-      respaldo
+      respaldo_creacion
       fecha_creacion
       usuario_creacion
       fecha_modificacion

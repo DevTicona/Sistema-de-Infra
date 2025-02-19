@@ -109,7 +109,7 @@ const ComponenteForm = (props) => {
   className="rw-label"
   errorClassName="rw-label rw-label-error"
 >
-  Estado
+  estado
 </Label>
 
 <SelectField
