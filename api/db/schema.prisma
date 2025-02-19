@@ -194,6 +194,21 @@ model Usuario {
   @@map("usuarios")
 }
 
+model User {
+  id                  Int       @id @default(autoincrement())
+  nombre              String?
+  email               String    @unique
+  hashedPassword      String    @default("")
+  salt                String    @default("")
+  resetToken          String?
+  resetTokenExpiresAt DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  roles               String    @default("usuario")
+
+  @@map("user")
+}
+
 enum categoria {
   Backend
   Frontend
@@ -217,19 +232,4 @@ enum estado {
   INACTIVO
 
   @@map("estado")
-}
-
-model User {
-  id                  Int       @id @default(autoincrement())
-  nombre              String?
-  email               String    @unique
-  hashedPassword      String    @default("")
-  salt                String    @default("")
-  resetToken          String?
-  resetTokenExpiresAt DateTime?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-  roles               String    @default("usuario")
-
-  @@map("user")
 }
