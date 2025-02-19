@@ -9,10 +9,26 @@ export const getCurrentUser = async (session) => {
     throw new Error('Invalid session')
   }
 
-  return await db.user.findUnique({
+  const user = await db.user.findUnique({
     where: { id: session.id },
-    select: { id: true, email: true, roles: true, nombre: true },
+    select: {
+      id: true,
+      email: true,
+      nombre: true,
+      userRoles: {
+        select: {
+          role: {
+            select: { name: true }, // Recuperar solo los nombres de los roles
+          },
+        },
+      },
+    },
   })
+
+  return {
+    ...user,
+    roles: user.userRoles.map((userRole) => userRole.role.name),
+  }
 }
 
 /**
@@ -23,11 +39,6 @@ export const getCurrentUser = async (session) => {
 export const isAuthenticated = () => {
   return !!context.currentUser
 }
-
-/**
- * When checking role membership, roles can be a single value, a list, or none.
- * You can use Prisma enums too (if you're using them for roles), just import your enum type from `@prisma/client`
- */
 
 /**
  * Checks if the currentUser is authenticated (and assigned one of the given roles)
@@ -42,28 +53,16 @@ export const hasRole = (roles) => {
     return false
   }
 
-  const currentUserRoles = context.currentUser?.roles
+  const currentUserRoles = context.currentUser?.userRoles.map(
+    (userRole) => userRole.role.name
+  )
 
   if (typeof roles === 'string') {
-    if (typeof currentUserRoles === 'string') {
-      // roles to check is a string, currentUser.roles is a string
-      return currentUserRoles === roles
-    } else if (Array.isArray(currentUserRoles)) {
-      // roles to check is a string, currentUser.roles is an array
-      return currentUserRoles?.some((allowedRole) => roles === allowedRole)
-    }
+    return currentUserRoles.includes(roles)
   }
 
   if (Array.isArray(roles)) {
-    if (Array.isArray(currentUserRoles)) {
-      // roles to check is an array, currentUser.roles is an array
-      return currentUserRoles?.some((allowedRole) =>
-        roles.includes(allowedRole)
-      )
-    } else if (typeof currentUserRoles === 'string') {
-      // roles to check is an array, currentUser.roles is a string
-      return roles.some((allowedRole) => currentUserRoles === allowedRole)
-    }
+    return roles.some((role) => currentUserRoles.includes(role))
   }
 
   // roles not found

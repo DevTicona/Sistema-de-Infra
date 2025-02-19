@@ -49,7 +49,6 @@ const UsersList = ({ users }) => {
             <th>Reset token expires at</th>
             <th>Created at</th>
             <th>Updated at</th>
-            <th>Roles</th>
             <th>&nbsp;</th>
           </tr>
         </thead>
@@ -65,7 +64,6 @@ const UsersList = ({ users }) => {
               <td>{timeTag(user.resetTokenExpiresAt)}</td>
               <td>{timeTag(user.createdAt)}</td>
               <td>{timeTag(user.updatedAt)}</td>
-              <td>{truncate(user.roles)}</td>
               <td>
                 <nav className="rw-table-actions">
                   <Link

@@ -193,7 +193,7 @@ CREATE TABLE "user" (
     "resetTokenExpiresAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "roles" TEXT NOT NULL,
+    "roles" TEXT NOT NULL DEFAULT 'usuario',
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );

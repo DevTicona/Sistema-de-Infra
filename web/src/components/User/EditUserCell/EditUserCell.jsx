@@ -17,7 +17,6 @@ export const QUERY = gql`
       resetTokenExpiresAt
       createdAt
       updatedAt
-      roles
     }
   }
 `
@@ -34,7 +33,6 @@ const UPDATE_USER_MUTATION = gql`
       resetTokenExpiresAt
       createdAt
       updatedAt
-      roles
     }
   }
 `

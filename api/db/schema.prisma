@@ -195,18 +195,36 @@ model Usuario {
 }
 
 model User {
-  id                  Int       @id @default(autoincrement())
+  id                  Int        @id @default(autoincrement())
   nombre              String?
-  email               String    @unique
-  hashedPassword      String    @default("")
-  salt                String    @default("")
+  email               String     @unique
+  hashedPassword      String     @default("")
+  salt                String     @default("")
   resetToken          String?
   resetTokenExpiresAt DateTime?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-  roles               String    @default("usuario")
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  userRoles           UserRole[] // Relación con la tabla intermedia
 
   @@map("user")
+}
+
+model Role {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  userRoles UserRole[] // Relación con la tabla intermedia
+
+  @@map("rol")
+}
+
+model UserRole {
+  id     Int  @id @default(autoincrement())
+  userId Int // Foreign key para User
+  roleId Int // Foreign key para Role
+  user   User @relation(fields: [userId], references: [id])
+  role   Role @relation(fields: [roleId], references: [id])
+
+  @@map("user_rol")
 }
 
 enum categoria {

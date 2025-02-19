@@ -14,7 +14,6 @@ export const QUERY = gql`
       resetTokenExpiresAt
       createdAt
       updatedAt
-      roles
     }
   }
 `

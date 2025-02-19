@@ -8,11 +8,23 @@ import HomeLayout from './layouts/HomeLayout/HomeLayout'
 const Routes = () => {
   return (
     <Router useAuth={useAuth}>
+      <Set wrap={ScaffoldLayout} title="Roles" titleTo="roles" buttonLabel="New Role" buttonTo="newRole">
+        <Route path="/roles/new" page={RoleNewRolePage} name="newRole" />
+        <Route path="/roles/{id:Int}/edit" page={RoleEditRolePage} name="editRole" />
+        <Route path="/roles/{id:Int}" page={RoleRolePage} name="role" />
+        <Route path="/roles" page={RoleRolesPage} name="roles" />
+      </Set>
       <Route path="/login" page={LoginPage} name="login" />
       <Route path="/signup" page={SignupPage} name="signup" />
       <Route path="/forgot-password" page={ForgotPasswordPage} name="forgotPassword" />
       <Route path="/reset-password" page={ResetPasswordPage} name="resetPassword" />
       <Set wrap={HomeLayout}>
+        <Set wrap={ScaffoldLayout} title="UserRoles" titleTo="userRoles" buttonLabel="New UserRole" buttonTo="newUserRole">
+          <Route path="/user-roles/new" page={UserRoleNewUserRolePage} name="newUserRole" />
+          <Route path="/user-roles/{id:Int}/edit" page={UserRoleEditUserRolePage} name="editUserRole" />
+          <Route path="/user-roles/{id:Int}" page={UserRoleUserRolePage} name="userRole" />
+          <Route path="/user-roles" page={UserRoleUserRolesPage} name="userRoles" />
+        </Set>
         <Route path="/" page={HomePage} name="home" />
         <Route path="/about" page={AboutPage} name="about" />
         <Set wrap={ScaffoldLayout} title="Users" titleTo="users" buttonLabel="New User" buttonTo="newUser">

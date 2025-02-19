@@ -4,17 +4,23 @@ import {
   FieldError,
   Label,
   TextField,
-  DatetimeLocalField,
   Submit,
+  SelectField,
 } from '@redwoodjs/forms'
+import { useQuery } from '@redwoodjs/web'
 
-const formatDatetime = (value) => {
-  if (value) {
-    return value.replace(/:\d{2}\.\d{3}\w/, '')
+const GET_ROLES = gql`
+  query GetRoles {
+    roles {
+      id
+      name
+    }
   }
-}
+`
 
 const UserForm = (props) => {
+  const { data } = useQuery(GET_ROLES)
+
   const onSubmit = (data) => {
     props.onSave(data, props?.user?.id)
   }
@@ -36,14 +42,12 @@ const UserForm = (props) => {
         >
           Nombre
         </Label>
-
         <TextField
           name="nombre"
           defaultValue={props.user?.nombre}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
         />
-
         <FieldError name="nombre" className="rw-field-error" />
 
         <Label
@@ -53,7 +57,6 @@ const UserForm = (props) => {
         >
           Email
         </Label>
-
         <TextField
           name="email"
           defaultValue={props.user?.email}
@@ -61,78 +64,7 @@ const UserForm = (props) => {
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="email" className="rw-field-error" />
-
-        <Label
-          name="hashedPassword"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Hashed password
-        </Label>
-
-        <TextField
-          name="hashedPassword"
-          defaultValue={props.user?.hashedPassword}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="hashedPassword" className="rw-field-error" />
-
-        <Label
-          name="salt"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Salt
-        </Label>
-
-        <TextField
-          name="salt"
-          defaultValue={props.user?.salt}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="salt" className="rw-field-error" />
-
-        <Label
-          name="resetToken"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Reset token
-        </Label>
-
-        <TextField
-          name="resetToken"
-          defaultValue={props.user?.resetToken}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="resetToken" className="rw-field-error" />
-
-        <Label
-          name="resetTokenExpiresAt"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Reset token expires at
-        </Label>
-
-        <DatetimeLocalField
-          name="resetTokenExpiresAt"
-          defaultValue={formatDatetime(props.user?.resetTokenExpiresAt)}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="resetTokenExpiresAt" className="rw-field-error" />
 
         <Label
           name="roles"
@@ -141,16 +73,18 @@ const UserForm = (props) => {
         >
           Roles
         </Label>
-
-        <TextField
-          name="roles"
-          defaultValue={props.user?.roles}
+        <SelectField
+          name="roleId"
           className="rw-input"
           errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="roles" className="rw-field-error" />
+        >
+          {data?.roles.map((role) => (
+            <option key={role.id} value={role.id}>
+              {role.name}
+            </option>
+          ))}
+        </SelectField>
+        <FieldError name="roleId" className="rw-field-error" />
 
         <div className="rw-button-group">
           <Submit disabled={props.loading} className="rw-button rw-button-blue">

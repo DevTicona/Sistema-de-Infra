@@ -76,10 +76,6 @@ const User = ({ user }) => {
               <th>Updated at</th>
               <td>{timeTag(user.updatedAt)}</td>
             </tr>
-            <tr>
-              <th>Roles</th>
-              <td>{user.roles}</td>
-            </tr>
           </tbody>
         </table>
       </div>

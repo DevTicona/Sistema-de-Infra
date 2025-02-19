@@ -5,66 +5,36 @@ import { db } from 'src/lib/db'
 
 export const handler = async (event, context) => {
   const forgotPasswordOptions = {
-    // handler() is invoked after verifying that a user was found with the given
-    // username. This is where you can send the user an email with a link to
-    // reset their password. With the default dbAuth routes and field names, the
-    // URL to reset the password will be:
-    //
-    // https://example.com/reset-password?resetToken=${user.resetToken}
-    //
-    // Whatever is returned from this function will be returned from
-    // the `forgotPassword()` function that is destructured from `useAuth()`.
-    // You could use this return value to, for example, show the email
-    // address in a toast message so the user will know it worked and where
-    // to look for the email.
-    //
-    // Note that this return value is sent to the client in *plain text*
-    // so don't include anything you wouldn't want prying eyes to see. The
-    // `user` here has been sanitized to only include the fields listed in
-    // `allowedUserFields` so it should be safe to return as-is.
     handler: (user, _resetToken) => {
-      // TODO: Send user an email/message with a link to reset their password,
-      // including the `resetToken`. The URL should look something like:
-      // `http://localhost:8910/reset-password?resetToken=${resetToken}`
-
       return user
     },
 
-    // How long the resetToken is valid for, in seconds (default is 24 hours)
     expires: 60 * 60 * 24,
 
     errors: {
-      // for security reasons you may want to be vague here rather than expose
-      // the fact that the email address wasn't found (prevents fishing for
-      // valid email addresses)
       usernameNotFound: 'Username not found',
-      // if the user somehow gets around client validation
       usernameRequired: 'Username is required',
     },
   }
 
   const loginOptions = {
-    // handler() is called after finding the user that matches the
-    // username/password provided at login, but before actually considering them
-    // logged in. The `user` argument will be the user in the database that
-    // matched the username/password.
-    //
-    // If you want to allow this user to log in simply return the user.
-    //
-    // If you want to prevent someone logging in for another reason (maybe they
-    // didn't validate their email yet), throw an error and it will be returned
-    // by the `logIn()` function from `useAuth()` in the form of:
-    // `{ message: 'Error message' }`
-    handler: (user) => {
-      return user
+    handler: async (user) => {
+      // Obtener los roles del usuario
+      const userWithRoles = await db.user.findUnique({
+        where: { id: user.id },
+        include: { userRoles: { include: { role: true } } },
+      })
+
+      // Devolver el usuario con sus roles
+      return {
+        ...user,
+        roles: userWithRoles.userRoles.map((userRole) => userRole.role.name),
+      }
     },
 
     errors: {
       usernameOrPasswordMissing: 'Both username and password are required',
       usernameNotFound: 'Username ${username} not found',
-      // For security reasons you may want to make this the same as the
-      // usernameNotFound error so that a malicious user can't use the error
-      // to narrow down if it's the username or password that's incorrect
       incorrectPassword: 'Incorrect password for ${username}',
     },
 
@@ -73,10 +43,6 @@ export const handler = async (event, context) => {
   }
 
   const resetPasswordOptions = {
-    // handler() is invoked after the password has been successfully updated in
-    // the database. Returning anything truthy will automatically log the user
-    // in. Return `false` otherwise, and in the Reset Password page redirect the
-    // user to the login page.
     handler: (_user) => {
       return true
     },
@@ -97,22 +63,36 @@ export const handler = async (event, context) => {
   }
 
   const signupOptions = {
-    handler: ({
+    handler: async ({
       username,
       hashedPassword,
       salt,
       userAttributes: _userAttributes,
     }) => {
-      return db.user.create({
+      // Crear el usuario y asignar el rol por defecto "usuario"
+      const user = await db.user.create({
         data: {
           email: username,
           hashedPassword: hashedPassword,
           salt: salt,
           nombre: _userAttributes.nombre,
           updatedAt: new Date(),
-          // name: userAttributes.name
+          userRoles: {
+            create: {
+              role: {
+                connect: { name: 'usuario' }, // Asignar el rol por defecto
+              },
+            },
+          },
         },
+        include: { userRoles: { include: { role: true } } }, // Incluir roles en la respuesta
       })
+
+      // Devolver el usuario con sus roles
+      return {
+        ...user,
+        roles: user.userRoles.map((userRole) => userRole.role.name),
+      }
     },
 
     // Include any format checks for password here. Return `true` if the
@@ -148,7 +128,6 @@ export const handler = async (event, context) => {
       resetToken: 'resetToken',
       resetTokenExpiresAt: 'resetTokenExpiresAt',
       nombre: 'nombre',
-      roles: 'roles',
     },
 
     // A list of fields on your user object that are safe to return to the

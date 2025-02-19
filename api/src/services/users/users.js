@@ -28,3 +28,9 @@ export const deleteUser = ({ id }) => {
     where: { id },
   })
 }
+
+export const User = {
+  userRoles: (_obj, { root }) => {
+    return db.user.findUnique({ where: { id: root?.id } }).userRoles()
+  },
+}

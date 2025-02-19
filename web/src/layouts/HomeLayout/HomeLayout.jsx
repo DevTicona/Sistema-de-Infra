@@ -42,7 +42,7 @@ const HomeLayout = ({ children }) => {
   const { isAuthenticated, currentUser, logOut, hasRole } = useAuth()
 
   console.log('useAuth data:', { isAuthenticated, currentUser, hasRole })
-  console.log('isAdmin:', hasRole('usuario'))
+  console.log('isAdmin:', hasRole(['admin', 'editor']))
   const menuItems = [
     { name: 'Home', route: routes.home(), icon: <Dashboard /> },
     { name: 'Entidades', route: routes.entidads(), icon: <Business /> },
@@ -62,8 +62,8 @@ const HomeLayout = ({ children }) => {
       route: routes.servidorcontenedors(),
       icon: <Security />,
     },
-    ...(isAuthenticated && hasRole('admin')
-      ? [{ name: 'Users', route: routes.users(), icon: <Security /> }]
+    ...(isAuthenticated && hasRole(['admin', 'editor'])
+      ? [{ name: 'userRoles', route: routes.userRoles(), icon: <Security /> }]
       : []),
     {
       name: 'Usuario y Roles',
