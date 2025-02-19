@@ -26,8 +26,6 @@ export const createDespliegue = ({ input }) => {
       respaldo: respaldoData,
       fecha_creacion: new Date(),
       usuario_creacion: input.usuario_creacion,
-      fecha_modificacion: new Date(),
-      usuario_modificacion: input.usuario_modificacion,
     },
   })
 }
@@ -46,7 +44,6 @@ export const updateDespliegue = ({ id, input }) => {
       tipo: input.tipo,
       estado: input.estado,
       respaldo: respaldoData,
-      usuario_creacion: input.usuario_creacion,
       fecha_modificacion: new Date(),
       usuario_modificacion: input.usuario_modificacion,
     },

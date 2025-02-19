@@ -1,29 +1,36 @@
 import { db } from 'src/lib/db'
 
 export const entidads = () => {
-  return db.entidades.findMany()
+  return db.entidad.findMany()
 }
 
 export const entidad = ({ id }) => {
-  return db.entidades.findUnique({
+  return db.entidad.findUnique({
     where: { id },
   })
 }
 
 export const createEntidad = ({ input }) => {
-  return db.entidades.create({
+  return db.entidad.create({
     data: {
-      ...input,
+      codigo: input.codigo,
+      sigla: input.sigla,
+      nombre: input.nombre,
+      estado: input.estado,
+      usuario_creacion: input.usuario_creacion,
       fecha_creacion: new Date(),
-      fecha_modificacion: new Date(),
     },
   })
 }
 
 export const updateEntidad = ({ id, input }) => {
-  return db.entidades.update({
+  return db.entidad.update({
     data: {
-      ...input,
+      codigo: input.codigo,
+      sigla: input.sigla,
+      nombre: input.nombre,
+      estado: input.estado,
+      usuario_modificacion: input.usuario_modificacion,
       fecha_modificacion: new Date(),
     },
     where: { id },
@@ -31,13 +38,13 @@ export const updateEntidad = ({ id, input }) => {
 }
 
 export const deleteEntidad = ({ id }) => {
-  return db.entidades.delete({
+  return db.entidad.delete({
     where: { id },
   })
 }
 
 export const Entidad = {
   sistemas: (_obj, { root }) => {
-    return db.entidades.findUnique({ where: { id: root?.id } }).sistemas()
+    return db.entidad.findUnique({ where: { id: root?.id } }).sistemas()
   },
 }

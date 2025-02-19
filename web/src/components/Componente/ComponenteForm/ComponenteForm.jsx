@@ -3,26 +3,31 @@ import {
   FormError,
   FieldError,
   Label,
-  NumberField,
   SelectField,
   TextField,
   Submit,
 } from '@redwoodjs/forms'
 import { gql } from '@redwoodjs/graphql-client'
 import { useQuery } from '@redwoodjs/web'
+
+import { useAuth } from 'src/auth'
 const OBTENER_SISTEMAS = gql`
-  query {
+  query obtenerSistemas {
     sistemas {
       id
       nombre
     }
   }
 `
+
 const ComponenteForm = (props) => {
+  const { currentUser } = useAuth() // Obtén el usuario logueado
   const { data: sistemasData } = useQuery(OBTENER_SISTEMAS)
   const onSubmit = (data) => {
     const formData = {
       ...data,
+      usuario_modificacion: currentUser?.id, // Asigna el ID del usuario logueado
+      usuario_creacion: currentUser?.id, // Asigna el ID si es creación o mantenimiento
       id_sistema: parseInt(data.id_sistema, 10),
     }
     props.onSave(formData, props?.componente?.id)
@@ -110,15 +115,18 @@ const ComponenteForm = (props) => {
         >
           Estado
         </Label>
-
-        <TextField
+        <SelectField
           name="estado"
-          defaultValue={props.componente?.estado}
+          defaultValue={props.componente?.estado || 'ACTIVO'}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
+        >
+          {['ACTIVO', 'INACTIVO'].map((estado) => (
+            <option key={estado} value={estado}>
+              {estado}
+            </option>
+          ))}
+        </SelectField>
         <FieldError name="estado" className="rw-field-error" />
 
         <Label
@@ -128,15 +136,18 @@ const ComponenteForm = (props) => {
         >
           Entorno
         </Label>
-
-        <TextField
+        <SelectField
           name="entorno"
-          defaultValue={props.componente?.entorno}
+          defaultValue={props.componente?.entorno || 'Demo'}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
+        >
+          {['Demo', 'PreProd', 'Prod', 'Test'].map((entorno) => (
+            <option key={entorno} value={entorno}>
+              {entorno}
+            </option>
+          ))}
+        </SelectField>
         <FieldError name="entorno" className="rw-field-error" />
 
         <Label
@@ -144,53 +155,21 @@ const ComponenteForm = (props) => {
           className="rw-label"
           errorClassName="rw-label rw-label-error"
         >
-          Categoria
+          Categoría
         </Label>
-
-        <TextField
+        <SelectField
           name="categoria"
-          defaultValue={props.componente?.categoria}
+          defaultValue={props.componente?.categoria || 'Backend'}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
+        >
+          {['Backend', 'Frontend', 'Database', 'NFS'].map((categoria) => (
+            <option key={categoria} value={categoria}>
+              {categoria}
+            </option>
+          ))}
+        </SelectField>
         <FieldError name="categoria" className="rw-field-error" />
-
-        <Label
-          name="usuario_creacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario creacion
-        </Label>
-
-        <NumberField
-          name="usuario_creacion"
-          defaultValue={props.componente?.usuario_creacion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="usuario_creacion" className="rw-field-error" />
-
-        <Label
-          name="usuario_modificacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario modificacion
-        </Label>
-
-        <NumberField
-          name="usuario_modificacion"
-          defaultValue={props.componente?.usuario_modificacion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="usuario_modificacion" className="rw-field-error" />
 
         <div className="rw-button-group">
           <Submit disabled={props.loading} className="rw-button rw-button-blue">

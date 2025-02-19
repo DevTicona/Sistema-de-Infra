@@ -31,18 +31,16 @@ describe('entidads', () => {
         codigo: 'String',
         sigla: 'String',
         nombre: 'String',
-        tipo: 'String',
-        estado: 'String',
-        usuario_creacion: 2771910,
+        estado: 'ACTIVO',
+        usuario_creacion: 2051143,
       },
     })
 
     expect(result.codigo).toEqual('String')
     expect(result.sigla).toEqual('String')
     expect(result.nombre).toEqual('String')
-    expect(result.tipo).toEqual('String')
-    expect(result.estado).toEqual('String')
-    expect(result.usuario_creacion).toEqual(2771910)
+    expect(result.estado).toEqual('ACTIVO')
+    expect(result.usuario_creacion).toEqual(2051143)
   })
 
   scenario('updates a entidad', async (scenario) => {

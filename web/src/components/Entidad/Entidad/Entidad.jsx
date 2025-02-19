@@ -3,7 +3,7 @@ import { useMutation } from '@redwoodjs/web'
 
 import { toast } from '@redwoodjs/web/toast'
 
-import { timeTag } from 'src/lib/formatters'
+import { formatEnum, timeTag } from 'src/lib/formatters'
 
 const DELETE_ENTIDAD_MUTATION = gql`
   mutation DeleteEntidadMutation($id: Int!) {
@@ -57,12 +57,8 @@ const Entidad = ({ entidad }) => {
               <td>{entidad.nombre}</td>
             </tr>
             <tr>
-              <th>Tipo</th>
-              <td>{entidad.tipo}</td>
-            </tr>
-            <tr>
               <th>Estado</th>
-              <td>{entidad.estado}</td>
+              <td>{formatEnum(entidad.estado)}</td>
             </tr>
             <tr>
               <th>Fecha creacion</th>

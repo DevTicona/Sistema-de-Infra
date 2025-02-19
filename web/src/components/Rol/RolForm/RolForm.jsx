@@ -6,10 +6,11 @@ import {
   FieldError,
   Label,
   TextField,
-  NumberField,
   CheckboxField,
   Submit,
 } from '@redwoodjs/forms'
+
+import { useAuth } from 'src/auth'
 
 const RespaldoField = ({ defaultValue }) => {
   const [respaldoData, setRespaldoData] = useState(
@@ -94,10 +95,13 @@ const RespaldoField = ({ defaultValue }) => {
 }
 
 const RolForm = (props) => {
+  const { currentUser } = useAuth() // Obtén el usuario logueado
   const onSubmit = (data) => {
     // Incluir respaldo (el campo JSON de respaldo) en los datos enviados
     const formData = {
       ...data,
+      usuario_modificacion: currentUser?.id, // Asigna el ID del usuario logueado
+      usuario_creacion: currentUser?.id, // Asigna el ID si es creación o mantenimiento
       respaldo: data.respaldo ? JSON.parse(data.respaldo) : {}, // Parse JSON if it's a string// Parse JSON if it's a string
     }
     props.onSave(formData, props?.rol?.id)
@@ -166,39 +170,6 @@ const RolForm = (props) => {
 
         {/* Respaldo JSON Input */}
         <RespaldoField defaultValue={props.rol?.respaldo} />
-
-        {/* Campo Usuario Creacion */}
-        <Label
-          name="usuario_creacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario Creacion
-        </Label>
-        <NumberField
-          name="usuario_creacion"
-          defaultValue={props.rol?.usuario_creacion || ''}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-        <FieldError name="usuario_creacion" className="rw-field-error" />
-
-        {/* Campo Usuario Modificacion */}
-        <Label
-          name="usuario_modificacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario Modificacion
-        </Label>
-        <NumberField
-          name="usuario_modificacion"
-          defaultValue={props.rol?.usuario_modificacion || ''}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-        <FieldError name="usuario_modificacion" className="rw-field-error" />
 
         {/* Botón de Envío */}
         <div className="rw-button-group">

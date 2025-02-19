@@ -1,17 +1,17 @@
 import { db } from 'src/lib/db'
 
 export const servidors = () => {
-  return db.servidores.findMany()
+  return db.servidor.findMany()
 }
 
 export const servidor = ({ id }) => {
-  return db.servidores.findUnique({
+  return db.servidor.findUnique({
     where: { id },
   })
 }
 
 export const createServidor = ({ input }) => {
-  return db.servidores.create({
+  return db.servidor.create({
     data: {
       nro_cluster: input.nro_cluster,
       vmid: input.vmid,
@@ -30,7 +30,7 @@ export const createServidor = ({ input }) => {
 }
 
 export const updateServidor = ({ id, input }) => {
-  return db.servidores.update({
+  return db.servidor.update({
     data: {
       nro_cluster: input.nro_cluster,
       vmid: input.vmid,
@@ -49,15 +49,15 @@ export const updateServidor = ({ id, input }) => {
 }
 
 export const deleteServidor = async ({ id }) => {
-  await db.servidor_contenedor.deleteMany({ where: { id_servidor: id } })
-  return db.servidores.delete({
+  await db.servidorcontenedor.deleteMany({ where: { id_servidor: id } })
+  return db.servidor.delete({
     where: { id },
   })
 }
 
 export const Servidor = {
   servidor_contenedor: (_obj, { root }) => {
-    return db.servidores
+    return db.servidor
       .findUnique({ where: { id: root?.id } })
       .servidor_contenedor()
   },

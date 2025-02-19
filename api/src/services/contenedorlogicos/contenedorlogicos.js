@@ -1,11 +1,11 @@
 import { db } from 'src/lib/db'
 
 export const contenedorlogicos = () => {
-  return db.contenedor_logico.findMany()
+  return db.contenedorlogico.findMany()
 }
 
 export const contenedorlogico = ({ id }) => {
-  return db.contenedor_logico.findUnique({
+  return db.contenedorlogico.findUnique({
     where: { id },
   })
 }
@@ -14,7 +14,7 @@ export const createContenedorlogico = ({ input }) => {
   const respaldoData = {
     version: input.version,
   }
-  return db.contenedor_logico.create({
+  return db.contenedorlogico.create({
     data: {
       id_padre: input.id_padre,
       codigo: input.codigo,
@@ -26,8 +26,6 @@ export const createContenedorlogico = ({ input }) => {
       respaldo: respaldoData,
       fecha_creacion: new Date(),
       usuario_creacion: input.usuario_creacion,
-      fecha_modificacion: new Date(),
-      usuario_modificacion: input.usuario_modificacion,
     },
   })
 }
@@ -36,7 +34,7 @@ export const updateContenedorlogico = ({ id, input }) => {
   const respaldoData = {
     version: input.version,
   }
-  return db.contenedor_logico.update({
+  return db.contenedorlogico.update({
     data: {
       id_padre: input.id_padre,
       codigo: input.codigo,
@@ -46,7 +44,6 @@ export const updateContenedorlogico = ({ id, input }) => {
       tipo: input.tipo,
       estado: input.estado,
       respaldo: respaldoData,
-      usuario_creacion: input.usuario_creacion,
       fecha_modificacion: new Date(),
       usuario_modificacion: input.usuario_modificacion,
     },
@@ -55,24 +52,24 @@ export const updateContenedorlogico = ({ id, input }) => {
 }
 
 export const deleteContenedorlogico = ({ id }) => {
-  return db.contenedor_logico.delete({
+  return db.contenedorlogico.delete({
     where: { id },
   })
 }
 
 export const Contenedorlogico = {
   despliegue: (_obj, { root }) => {
-    return db.contenedor_logico
+    return db.contenedorlogico
       .findUnique({ where: { id: root?.id } })
       .despliegue()
   },
   servidor_contenedor: (_obj, { root }) => {
-    return db.contenedor_logico
+    return db.contenedorlogico
       .findUnique({ where: { id: root?.id } })
       .servidor_contenedor()
   },
   usuario_roles: (_obj, { root }) => {
-    return db.contenedor_logico
+    return db.contenedorlogico
       .findUnique({ where: { id: root?.id } })
       .usuario_roles()
   },

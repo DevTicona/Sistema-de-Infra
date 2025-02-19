@@ -1,32 +1,76 @@
 import React, { useState } from 'react'
-import { Link, routes } from '@redwoodjs/router'
+
 import {
-  AppBar, Toolbar, Typography, Button, Drawer, List,
-  ListItem, ListItemText, Divider, IconButton, Container,
-  Box, Fab, useScrollTrigger, Zoom, Grid, Avatar
-} from '@mui/material'
-import {
-  Menu, Close, ArrowUpward,
-  Business, Code, Storage, People, Dashboard,
-  Cloud, Layers, Security, School
+  Menu,
+  Close,
+  ArrowUpward,
+  Business,
+  Code,
+  Storage,
+  People,
+  Dashboard,
+  Cloud,
+  Layers,
+  Security,
 } from '@mui/icons-material'
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  IconButton,
+  Container,
+  Box,
+  Fab,
+  useScrollTrigger,
+  Zoom,
+  Grid,
+} from '@mui/material'
 import { styled } from '@mui/material/styles'
+
+import { Link, routes } from '@redwoodjs/router'
+
+import { useAuth } from 'src/auth'
 
 const HomeLayout = ({ children }) => {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const trigger = useScrollTrigger({ threshold: 100 })
+  const { isAuthenticated, currentUser, logOut, hasRole } = useAuth()
 
+  console.log('useAuth data:', { isAuthenticated, currentUser, hasRole })
+  console.log('isAdmin:', hasRole('usuario'))
   const menuItems = [
     { name: 'Home', route: routes.home(), icon: <Dashboard /> },
     { name: 'Entidades', route: routes.entidads(), icon: <Business /> },
     { name: 'Sistemas', route: routes.sistemas(), icon: <Code /> },
     { name: 'Componentes', route: routes.componentes(), icon: <Storage /> },
     { name: 'Servidores', route: routes.servidors(), icon: <Cloud /> },
-    { name: 'Contenedores', route: routes.contenedorlogicos(), icon: <Layers /> },
+    {
+      name: 'Contenedores',
+      route: routes.contenedorlogicos(),
+      icon: <Layers />,
+    },
+    { name: 'Despliegues', route: routes.despliegues(), icon: <People /> },
     { name: 'Usuarios', route: routes.usuarios(), icon: <People /> },
     { name: 'Roles', route: routes.rols(), icon: <Security /> },
+    {
+      name: 'Servidor Contenedor',
+      route: routes.servidorcontenedors(),
+      icon: <Security />,
+    },
+    ...(isAuthenticated && hasRole('admin')
+      ? [{ name: 'Users', route: routes.users(), icon: <Security /> }]
+      : []),
+    {
+      name: 'Usuario y Roles',
+      route: routes.usuariorols(),
+      icon: <Security />,
+    },
   ]
-
 
   const ProfessionalAppBar = styled(AppBar)(({ theme }) => ({
     background: theme.palette.primary.main,
@@ -42,7 +86,7 @@ const HomeLayout = ({ children }) => {
     '&:hover': {
       transform: 'translateY(-5px)',
       boxShadow: '0 8px 15px rgba(26, 51, 126, 0.3)',
-    }
+    },
   })
 
   return (
@@ -50,25 +94,42 @@ const HomeLayout = ({ children }) => {
       <ProfessionalAppBar position="sticky">
         <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <IconButton color="inherit" edge="start" onClick={() => setDrawerOpen(true)}>
+            <IconButton
+              color="inherit"
+              edge="start"
+              onClick={() => setDrawerOpen(true)}
+            >
               <Menu sx={{ fontSize: 32 }} />
             </IconButton>
-            <img
+            {/*<img
               src="/img/logoagetic.png"
               alt="Logo AGETIC"
               style={{ height: '80px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}
-            />
+            />*/}
           </Box>
 
-          <Typography variant="h4" sx={{
-            fontWeight: 'bold',
-            background: 'linear-gradient(45deg, #fff 30%, #90caf9 90%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            display: { xs: 'none', md: 'block' }
-          }}>
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 'bold',
+              background: 'linear-gradient(45deg, #fff 30%, #90caf9 90%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              display: { xs: 'none', md: 'block' },
+            }}
+          >
             Unidad de Infraestructura Tecnológica
           </Typography>
+          {isAuthenticated ? (
+            <div>
+              <span>{currentUser.email}</span>{' '}
+              <button type="button" onClick={logOut}>
+                Cerrar Sesión
+              </button>
+            </div>
+          ) : (
+            <Link to={routes.login()}>Iniciar Sesión</Link>
+          )}
         </Toolbar>
       </ProfessionalAppBar>
 
@@ -79,14 +140,24 @@ const HomeLayout = ({ children }) => {
         PaperProps={{ sx: { width: 300 } }}
       >
         <Box sx={{ p: 2, background: '#F8FAFF', height: '100%' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 2,
+            }}
+          >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <img
                 src="/img/icono.jpg"
                 alt="Icono AGETIC"
                 style={{ height: '200px' }}
               />
-              <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#1A337E' }}>
+              <Typography
+                variant="body1"
+                sx={{ fontWeight: 'bold', color: '#1A337E' }}
+              >
                 UIT
               </Typography>
             </Box>
@@ -110,19 +181,23 @@ const HomeLayout = ({ children }) => {
                   transition: 'all 0.3s ease',
                   '&:hover': {
                     backgroundColor: '#E8F0FE',
-                    transform: 'translateX(5px)'
-                  }
+                    transform: 'translateX(5px)',
+                  },
                 }}
               >
                 <ListItemText
                   primary={
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      {React.cloneElement(item.icon, { sx: { color: '#1A337E' } })}
-                      <Typography sx={{
-                        ml: 2,
-                        fontWeight: 600,
-                        color: '#1A337E'
-                      }}>
+                      {React.cloneElement(item.icon, {
+                        sx: { color: '#1A337E' },
+                      })}
+                      <Typography
+                        sx={{
+                          ml: 2,
+                          fontWeight: 600,
+                          color: '#1A337E',
+                        }}
+                      >
                         {item.name}
                       </Typography>
                     </Box>
@@ -135,14 +210,16 @@ const HomeLayout = ({ children }) => {
       </Drawer>
 
       <Container maxWidth="xl" sx={{ py: 4, flex: 1 }}>
-        <Box sx={{
-          minHeight: '70vh',
-          p: 4,
-          borderRadius: 4,
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.05)',
-          background: 'white',
-          border: '1px solid rgba(0, 0, 0, 0.05)'
-        }}>
+        <Box
+          sx={{
+            minHeight: '70vh',
+            p: 4,
+            borderRadius: 4,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.05)',
+            background: 'white',
+            border: '1px solid rgba(0, 0, 0, 0.05)',
+          }}
+        >
           {children}
         </Box>
       </Container>
@@ -157,22 +234,28 @@ const HomeLayout = ({ children }) => {
         </StyledFab>
       </Zoom>
 
-      <Box sx={{
-        bgcolor: '#1A337E',
-        color: 'white',
-        mt: 4,
-        py: 4
-      }}>
+      <Box
+        sx={{
+          bgcolor: '#1A337E',
+          color: 'white',
+          mt: 4,
+          py: 4,
+        }}
+      >
         <Container maxWidth="xl">
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
-
               <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                Agencia de Gobierno Electrónico y Tecnologías de Información y Comunicación
+                Agencia de Gobierno Electrónico y Tecnologías de Información y
+                Comunicación
               </Typography>
             </Grid>
             <Grid item xs={6} md={4}>
-              <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
+              <Typography
+                variant="subtitle1"
+                gutterBottom
+                sx={{ fontWeight: 'bold' }}
+              >
                 Contacto Institucional
               </Typography>
               <Typography variant="body2" sx={{ mb: 1, opacity: 0.9 }}>
@@ -186,7 +269,11 @@ const HomeLayout = ({ children }) => {
               </Typography>
             </Grid>
             <Grid item xs={6} md={4}>
-              <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
+              <Typography
+                variant="subtitle1"
+                gutterBottom
+                sx={{ fontWeight: 'bold' }}
+              >
                 Enlaces importantes
               </Typography>
               <Typography variant="body2" sx={{ mb: 1, opacity: 0.9 }}>

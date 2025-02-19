@@ -13,6 +13,8 @@ import {
 import { gql } from '@redwoodjs/graphql-client'
 import { useQuery } from '@redwoodjs/web'
 
+import { useAuth } from 'src/auth'
+
 // Consulta GraphQL para obtener los sistemas
 const OBTENER_COMPONENTES = gql`
   query ObtenerComponentes {
@@ -62,6 +64,7 @@ const RespaldoField = ({ defaultValue }) => {
   )
 }
 const DespliegueForm = (props) => {
+  const { currentUser } = useAuth() // Obtén el usuario logueado
   const { data: componentesData } = useQuery(OBTENER_COMPONENTES)
   const { data: cotenedoresData } = useQuery(OBTENER_CONTENEDOR_LOGICO)
   const onSubmit = (data) => {
@@ -70,6 +73,8 @@ const DespliegueForm = (props) => {
       id_componente: parseInt(data.id_componente, 10),
       id_contenedor_logico: parseInt(data.id_contenedor_logico, 10),
       respaldo: data.respaldo ? JSON.parse(data.respaldo) : {},
+      usuario_modificacion: currentUser?.id, // Asigna el ID del usuario logueado
+      usuario_creacion: currentUser?.id, // Asigna el ID si es creación o mantenimiento
     }
     props.onSave(formData, props?.despliegue?.id)
   }

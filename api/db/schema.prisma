@@ -12,12 +12,12 @@ model Componente {
   id_sistema           Int
   nombre               String       @db.VarChar(30)
   descripcion          String
-  estado               String       @db.VarChar(15)
-  entorno              String       @db.VarChar(10)
-  categoria            String       @db.VarChar(15)
+  estado               estado
+  entorno              entorno
+  categoria            categoria
   fecha_creacion       DateTime     @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
   usuario_creacion     Int          @map("_usuario_creacion")
-  fecha_modificacion   DateTime?    @default(now()) @map("_fecha_modificacion") @db.Timestamptz(6)
+  fecha_modificacion   DateTime?    @map("_fecha_modificacion") @db.Timestamptz(6)
   usuario_modificacion Int?         @map("_usuario_modificacion")
   sistemas             Sistema      @relation(fields: [id_sistema], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sistema_id")
   despliegue           Despliegue[]
@@ -27,17 +27,15 @@ model Componente {
 
 model Contenedorlogico {
   id                   Int                  @id(map: "contenedor_logico_pk") @default(autoincrement())
-  id_padre             Int?
   codigo               String               @db.VarChar(10)
-  sigla                String               @db.VarChar(15)
   nombre               String               @db.VarChar(50)
   descripcion          String
   tipo                 String               @db.VarChar(15)
-  estado               String               @db.VarChar(15)
+  estado               estado
   respaldo             Json?
   fecha_creacion       DateTime             @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
   usuario_creacion     Int                  @map("_usuario_creacion")
-  fecha_modificacion   DateTime?            @default(now()) @map("_fecha_modificacion") @db.Timestamptz(6)
+  fecha_modificacion   DateTime?            @map("_fecha_modificacion") @db.Timestamptz(6)
   usuario_modificacion Int?                 @map("_usuario_modificacion")
   despliegue           Despliegue[]
   servidor_contenedor  Servidorcontenedor[]
@@ -54,11 +52,11 @@ model Despliegue {
   nombre               String           @db.VarChar(50)
   descripcion          String
   tipo                 String           @db.VarChar(15)
-  estado               String           @db.VarChar(15)
+  estado               estado
   respaldo             Json?
   fecha_creacion       DateTime         @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
   usuario_creacion     Int              @map("_usuario_creacion")
-  fecha_modificacion   DateTime?        @default(now()) @map("_fecha_modificacion") @db.Timestamptz(6)
+  fecha_modificacion   DateTime?        @map("_fecha_modificacion") @db.Timestamptz(6)
   usuario_modificacion Int?             @map("_usuario_modificacion")
   componentes          Componente?      @relation(fields: [id_componente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_componente_id")
   contenedor_logico    Contenedorlogico @relation(fields: [id_contenedor_logico], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_contenedor_logico_2_id")
@@ -70,12 +68,11 @@ model Entidad {
   id                   Int       @id(map: "entidades_pk") @default(autoincrement())
   codigo               String    @db.VarChar(10)
   sigla                String    @db.VarChar(15)
-  nombre               String    @db.VarChar(50)
-  tipo                 String    @db.VarChar(15)
-  estado               String    @db.VarChar(15)
+  nombre               String    @db.VarChar(150)
+  estado               estado
   fecha_creacion       DateTime  @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
   usuario_creacion     Int       @map("_usuario_creacion")
-  fecha_modificacion   DateTime? @default(now()) @map("_fecha_modificacion") @db.Timestamptz(6)
+  fecha_modificacion   DateTime? @map("_fecha_modificacion") @db.Timestamptz(6)
   usuario_modificacion Int?      @map("_usuario_modificacion")
   sistemas             Sistema[]
 
@@ -86,11 +83,10 @@ model Rol {
   id                   Int          @id(map: "roles_pk") @default(autoincrement())
   nombre               String       @db.VarChar(15)
   tipo                 String       @db.VarChar(15)
-  estado               String       @db.VarChar(15)
-  respaldo             Json?
-  fecha_creacion       DateTime?    @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  estado               estado
+  fecha_creacion       DateTime     @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
   usuario_creacion     Int          @map("_usuario_creacion")
-  fecha_modificacion   DateTime?    @default(now()) @map("_fecha_modificacion") @db.Timestamptz(6)
+  fecha_modificacion   DateTime?    @map("_fecha_modificacion") @db.Timestamptz(6)
   usuario_modificacion Int?         @map("_usuario_modificacion")
   usuario_roles        Usuariorol[]
 
@@ -105,11 +101,11 @@ model Servidorcontenedor {
   nombre               String            @db.VarChar(50)
   descripcion          String
   tipo                 String            @db.VarChar(15)
-  estado               String            @db.VarChar(15)
+  estado               estado
   respaldo             Json?
   fecha_creacion       DateTime          @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
   usuario_creacion     Int               @map("_usuario_creacion")
-  fecha_modificacion   DateTime?         @default(now()) @map("_fecha_modificacion") @db.Timestamptz(6)
+  fecha_modificacion   DateTime?         @map("_fecha_modificacion") @db.Timestamptz(6)
   usuario_modificacion Int?              @map("_usuario_modificacion")
   contenedor_logico    Contenedorlogico? @relation(fields: [id_contenedor_logico], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_contenedor_logico_id")
   servidores           Servidor?         @relation(fields: [id_servidor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_servidor_id")
@@ -123,13 +119,13 @@ model Servidor {
   vmid                 Int
   nombre               String               @db.VarChar(35)
   nodo                 String               @db.VarChar(20)
-  ip                   String               @db.VarChar(15)
+  ip                   String               @db.Inet
   tipo                 String               @db.VarChar(15)
-  estado               String               @db.VarChar(15)
-  respaldo             Json?
+  estado               estado
+  metadata             Json?
   fecha_creacion       DateTime             @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
   usuario_creacion     Int                  @map("_usuario_creacion")
-  fecha_modificacion   DateTime?            @default(now()) @map("_fecha_modificacion") @db.Timestamptz(6)
+  fecha_modificacion   DateTime?            @map("_fecha_modificacion") @db.Timestamptz(6)
   usuario_modificacion Int?                 @map("_usuario_modificacion")
   servidor_contenedor  Servidorcontenedor[]
 
@@ -144,12 +140,11 @@ model Sistema {
   sigla                String       @db.VarChar(15)
   nombre               String       @db.VarChar(50)
   descripcion          String
-  tipo                 String       @db.VarChar(15)
-  estado               String       @db.VarChar(15)
-  respaldo             Json?
+  estado               estado
+  respaldo_creacion    Json?
   fecha_creacion       DateTime     @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
   usuario_creacion     Int          @map("_usuario_creacion")
-  fecha_modificacion   DateTime?    @default(now()) @map("_fecha_modificacion") @db.Timestamptz(6)
+  fecha_modificacion   DateTime?    @map("_fecha_modificacion") @db.Timestamptz(6)
   usuario_modificacion Int?         @map("_usuario_modificacion")
   componentes          Componente[]
   entidades            Entidad      @relation(fields: [id_entidad], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_entidad_id")
@@ -168,11 +163,11 @@ model Usuariorol {
   id_sistema           Int
   descripcion          String
   tipo                 String           @db.VarChar(15)
-  estado               String           @db.VarChar(15)
+  estado               estado
   respaldo             Json?
   fecha_creacion       DateTime         @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
   usuario_creacion     Int              @map("_usuario_creacion")
-  fecha_modificacion   DateTime?        @default(now()) @map("_fecha_modificacion") @db.Timestamptz(6)
+  fecha_modificacion   DateTime?        @map("_fecha_modificacion") @db.Timestamptz(6)
   usuario_modificacion Int?             @map("_usuario_modificacion")
   contenedor_logico    Contenedorlogico @relation(fields: [id_contenedor_logico], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_contenedor_logico_3_id")
   roles                Rol              @relation(fields: [id_rol], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_rol_id")
@@ -186,15 +181,55 @@ model Usuario {
   id                   Int          @id(map: "usuario_pk") @default(autoincrement())
   uuid_ciudadano       String?      @db.VarChar
   nombre_usuario       String       @db.VarChar(20)
-  profile              Json         @default("{\"nombre\":\"\", \"apellido\":\"\"}")
+  profile              Json
   telefono             Json
   correo_electronico   Json
-  estado               String       @db.VarChar(15)
-  fecha_creacion       DateTime?    @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  estado               estado
+  fecha_creacion       DateTime     @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
   usuario_creacion     Int          @map("_usuario_creacion")
-  fecha_modificacion   DateTime?    @default(now()) @map("_fecha_modificacion") @db.Timestamptz(6)
+  fecha_modificacion   DateTime?    @map("_fecha_modificacion") @db.Timestamptz(6)
   usuario_modificacion Int?         @map("_usuario_modificacion")
   usuario_roles        Usuariorol[]
 
   @@map("usuarios")
+}
+
+enum categoria {
+  Backend
+  Frontend
+  Database
+  NFS
+
+  @@map("categoria")
+}
+
+enum entorno {
+  Demo
+  PreProd
+  Prod
+  Test
+
+  @@map("entorno")
+}
+
+enum estado {
+  ACTIVO
+  INACTIVO
+
+  @@map("estado")
+}
+
+model User {
+  id                  Int       @id @default(autoincrement())
+  nombre              String?
+  email               String    @unique
+  hashedPassword      String    @default("")
+  salt                String    @default("")
+  resetToken          String?
+  resetTokenExpiresAt DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  roles               String    @default("usuario")
+
+  @@map("user")
 }

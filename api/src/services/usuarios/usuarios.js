@@ -1,11 +1,11 @@
 import { db } from 'src/lib/db'
 
 export const usuarios = () => {
-  return db.usuarios.findMany()
+  return db.usuario.findMany()
 }
 
 export const usuario = ({ id }) => {
-  return db.usuarios.findUnique({
+  return db.usuario.findUnique({
     where: { id },
   })
 }
@@ -28,7 +28,7 @@ export const createUsuario = ({ input }) => {
   }
 
   // Asignación segura de datos en el objeto `data`
-  return db.usuarios.create({
+  return db.usuario.create({
     data: {
       uuid_ciudadano: input.uuid_ciudadano || null, // Si estos campos son parte de input, úsalos
       nombre_usuario: input.nombre_usuario || '', // Asegúrate de que nombre_usuario siempre tenga un valor
@@ -60,7 +60,7 @@ export const updateUsuario = ({ id, input }) => {
     personal: input.personal,
     trabajo: input.trabajo,
   }
-  return db.usuarios.update({
+  return db.usuario.update({
     data: {
       uuid_ciudadano: input.uuid_ciudadano || null, // Si estos campos son parte de input, úsalos
       nombre_usuario: input.nombre_usuario || '', // Asegúrate de que nombre_usuario siempre tenga un valor
@@ -87,13 +87,13 @@ export const updateUsuario = ({ id, input }) => {
 }
 
 export const deleteUsuario = ({ id }) => {
-  return db.usuarios.delete({
+  return db.usuario.delete({
     where: { id },
   })
 }
 
 export const Usuario = {
   usuario_roles: (_obj, { root }) => {
-    return db.usuarios.findUnique({ where: { id: root?.id } }).usuario_roles()
+    return db.usuario.findUnique({ where: { id: root?.id } }).usuario_roles()
   },
 }

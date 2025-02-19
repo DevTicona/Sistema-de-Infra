@@ -6,9 +6,10 @@ import {
   FieldError,
   Label,
   TextField,
-  NumberField,
   Submit,
 } from '@redwoodjs/forms'
+
+import { useAuth } from 'src/auth'
 
 // Component for structured JSON input for Profile
 const ProfileField = ({ defaultValue }) => {
@@ -124,6 +125,7 @@ const CorreoElectronicoField = ({ defaultValue }) => {
 }
 
 const UsuarioForm = (props) => {
+  const { currentUser } = useAuth() // Obtén el usuario logueado
   const onSubmit = (data) => {
     // Asegurarse de que los campos profile, telefono y correo_electronico se envíen como objetos
     const formData = {
@@ -133,6 +135,8 @@ const UsuarioForm = (props) => {
       correo_electronico: data.correo_electronico
         ? JSON.parse(data.correo_electronico)
         : {}, // Parse JSON if it's a string
+      usuario_modificacion: currentUser?.id, // Asigna el ID del usuario logueado
+      usuario_creacion: currentUser?.id, // Asigna el ID si es creación o mantenimiento
     }
 
     // Enviar los datos al servidor
@@ -212,41 +216,6 @@ const UsuarioForm = (props) => {
         />
 
         <FieldError name="estado" className="rw-field-error" />
-
-        <Label
-          name="usuario_creacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario creacion
-        </Label>
-
-        <NumberField
-          name="usuario_creacion"
-          defaultValue={props.usuario?.usuario_creacion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="usuario_creacion" className="rw-field-error" />
-
-        <Label
-          name="usuario_modificacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario modificacion
-        </Label>
-
-        <NumberField
-          name="usuario_modificacion"
-          defaultValue={props.usuario?.usuario_modificacion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="usuario_modificacion" className="rw-field-error" />
 
         <div className="rw-button-group">
           <Submit disabled={props.loading} className="rw-button rw-button-blue">

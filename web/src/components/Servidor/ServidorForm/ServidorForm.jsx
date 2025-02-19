@@ -10,6 +10,7 @@ import {
   Submit,
 } from '@redwoodjs/forms'
 
+import { useAuth } from 'src/auth'
 import PLANTILLAS_RESPALDO from 'src/utils/plantillasRespaldo.js'
 
 const RespaldoField = ({ defaultValue, tipo }) => {
@@ -53,11 +54,14 @@ const RespaldoField = ({ defaultValue, tipo }) => {
 }
 
 const ServidorForm = (props) => {
+  const { currentUser } = useAuth() // Obtén el usuario logueado
   const onSubmit = (data) => {
     const respaldoInput = document.querySelector('input[name="respaldo"]')
     const formData = {
       ...data,
       respaldo: respaldoInput ? JSON.parse(respaldoInput.value) : {}, // Asegurar que sea un objeto
+      usuario_modificacion: currentUser?.id, // Asigna el ID del usuario logueado
+      usuario_creacion: currentUser?.id, // Asigna el ID si es creación o mantenimiento
     }
     console.log('Formulario enviado con respaldo:', formData)
     props.onSave(formData, props?.servidor?.id)
@@ -189,37 +193,6 @@ const ServidorForm = (props) => {
           defaultValue={props.servidor?.respaldo}
           tipo="servidor"
         />
-
-        <Label
-          name="usuario_creacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario creacion
-        </Label>
-        <NumberField
-          name="usuario_creacion"
-          defaultValue={props.servidor?.usuario_creacion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-        <FieldError name="usuario_creacion" className="rw-field-error" />
-
-        <Label
-          name="usuario_modificacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario modificacion
-        </Label>
-        <NumberField
-          name="usuario_modificacion"
-          defaultValue={props.servidor?.usuario_modificacion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-        <FieldError name="usuario_modificacion" className="rw-field-error" />
 
         <div className="rw-button-group">
           <Submit disabled={props.loading} className="rw-button rw-button-blue">

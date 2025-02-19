@@ -10,6 +10,8 @@ import {
   Submit,
 } from '@redwoodjs/forms'
 
+import { useAuth } from 'src/auth'
+
 const RespaldoField = ({ defaultValue }) => {
   const [respaldoData, setRespaldoData] = useState(
     defaultValue || { version: '' }
@@ -41,9 +43,12 @@ const RespaldoField = ({ defaultValue }) => {
 }
 
 const ContenedorlogicoForm = (props) => {
+  const { currentUser } = useAuth() // Obtén el usuario logueado
   const onSubmit = (data) => {
     const formData = {
       ...data,
+      usuario_modificacion: currentUser?.id, // Asigna el ID del usuario logueado
+      usuario_creacion: currentUser?.id, // Asigna el ID si es creación o mantenimiento
       respaldo: data.respaldo ? JSON.parse(data.respaldo) : {},
     }
     props.onSave(formData, props?.contenedorlogico?.id)
@@ -186,41 +191,6 @@ const ContenedorlogicoForm = (props) => {
 
         {/* Profile JSON Input */}
         <RespaldoField defaultValue={props.contenedorlogico?.respaldo} />
-
-        <Label
-          name="usuario_creacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario creacion
-        </Label>
-
-        <NumberField
-          name="usuario_creacion"
-          defaultValue={props.contenedorlogico?.usuario_creacion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="usuario_creacion" className="rw-field-error" />
-
-        <Label
-          name="usuario_modificacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario modificacion
-        </Label>
-
-        <NumberField
-          name="usuario_modificacion"
-          defaultValue={props.contenedorlogico?.usuario_modificacion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="usuario_modificacion" className="rw-field-error" />
 
         <div className="rw-button-group">
           <Submit disabled={props.loading} className="rw-button rw-button-blue">

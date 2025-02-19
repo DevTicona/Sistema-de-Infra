@@ -5,13 +5,14 @@ import {
   FormError,
   FieldError,
   Label,
-  NumberField,
   TextField,
   SelectField,
   Submit,
 } from '@redwoodjs/forms'
 import { gql } from '@redwoodjs/graphql-client'
 import { useQuery } from '@redwoodjs/web'
+
+import { useAuth } from 'src/auth'
 
 // Consulta GraphQL para obtener los sistemas
 const OBTENER_SISTEMAS = gql`
@@ -63,6 +64,7 @@ const RespaldoField = ({ defaultValue }) => {
 }
 
 const SistemaForm = (props) => {
+  const { currentUser } = useAuth() // Obtén el usuario logueado
   const { data: sistemasData } = useQuery(OBTENER_SISTEMAS)
   const { data: entidadesData } = useQuery(OBTENER_ENTIDADES)
 
@@ -72,6 +74,8 @@ const SistemaForm = (props) => {
       id_padre: parseInt(data.id_padre, 10),
       id_entidad: parseInt(data.id_entidad, 10),
       respaldo: data.respaldo ? JSON.parse(data.respaldo) : {},
+      usuario_modificacion: currentUser?.id, // Asigna el ID del usuario logueado
+      usuario_creacion: currentUser?.id, // Asigna el ID si es creación o mantenimiento
     }
     props.onSave(formData, props?.sistema?.id)
   }
@@ -100,7 +104,6 @@ const SistemaForm = (props) => {
           defaultValue={props.sistema?.id_padre || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
         >
           <option value="">Seleccione un sistema</option>
           {sistemasData?.sistemas?.length > 0 ? (
@@ -255,40 +258,6 @@ const SistemaForm = (props) => {
         {/* Profile JSON Input */}
         <RespaldoField defaultValue={props.sistema?.respaldo} />
 
-        <Label
-          name="usuario_creacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario creacion
-        </Label>
-
-        <NumberField
-          name="usuario_creacion"
-          defaultValue={props.sistema?.usuario_creacion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="usuario_creacion" className="rw-field-error" />
-
-        <Label
-          name="usuario_modificacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario modificacion
-        </Label>
-
-        <NumberField
-          name="usuario_modificacion"
-          defaultValue={props.sistema?.usuario_modificacion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="usuario_modificacion" className="rw-field-error" />
         {/* Botón de guardar */}
         <div className="rw-button-group">
           <Submit disabled={props.loading} className="rw-button rw-button-blue">

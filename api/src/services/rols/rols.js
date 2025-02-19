@@ -1,11 +1,11 @@
 import { db } from 'src/lib/db'
 
 export const rols = () => {
-  return db.roles.findMany()
+  return db.rol.findMany()
 }
 
 export const rol = ({ id }) => {
-  return db.roles.findUnique({
+  return db.rol.findUnique({
     where: { id },
   })
 }
@@ -18,7 +18,7 @@ export const createRol = ({ input }) => {
     modulo_asociado: input.modulo_asociado,
     acceso_remoto: input.acceso_remoto,
   }
-  return db.roles.create({
+  return db.rol.create({
     data: {
       nombre: input.nombre,
       tipo: input.tipo,
@@ -40,7 +40,7 @@ export const updateRol = ({ id, input }) => {
     modulo_asociado: input.modulo_asociado,
     acceso_remoto: input.acceso_remoto,
   }
-  return db.roles.update({
+  return db.rol.update({
     data: {
       nombre: input.nombre,
       tipo: input.tipo,
@@ -55,13 +55,13 @@ export const updateRol = ({ id, input }) => {
 }
 
 export const deleteRol = ({ id }) => {
-  return db.roles.delete({
+  return db.rol.delete({
     where: { id },
   })
 }
 
 export const Rol = {
   usuario_roles: (_obj, { root }) => {
-    return db.roles.findUnique({ where: { id: root?.id } }).usuario_roles()
+    return db.rol.findUnique({ where: { id: root?.id } }).usuario_roles()
   },
 }

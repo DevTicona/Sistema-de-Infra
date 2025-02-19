@@ -8,6 +8,8 @@
   },
   "devDependencies": {
     "@prisma/client": "^6.3.1",
+    "@redwoodjs/auth-dbauth-setup": "8.5.0",
+    "@redwoodjs/cli-data-migrate": "8.5.0",
     "@redwoodjs/core": "8.5.0",
     "@redwoodjs/project-config": "8.5.0",
     "prisma": "^6.3.1"
@@ -26,7 +28,6 @@
   "resolutions": {
     "@storybook/react-dom-shim@npm:7.6.17": "https://verdaccio.tobbe.dev/@storybook/react-dom-shim/-/react-dom-shim-8.0.8.tgz"
   },
-  "type": "module",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",

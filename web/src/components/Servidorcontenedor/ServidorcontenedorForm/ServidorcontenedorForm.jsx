@@ -5,13 +5,14 @@ import {
   FormError,
   FieldError,
   Label,
-  NumberField,
   TextField,
   SelectField,
   Submit,
 } from '@redwoodjs/forms'
 import { gql } from '@redwoodjs/graphql-client'
 import { useQuery } from '@redwoodjs/web'
+
+import { useAuth } from 'src/auth'
 
 // Consulta GraphQL para obtener los sistemas
 const OBTENER_SERVIDORES = gql`
@@ -63,6 +64,7 @@ const RespaldoField = ({ defaultValue }) => {
 }
 
 const ServidorcontenedorForm = (props) => {
+  const { currentUser } = useAuth() // Obtén el usuario logueado
   const { data: servidoresData } = useQuery(OBTENER_SERVIDORES)
   const { data: contenedoresData } = useQuery(OBTENER_CONTENEDORES)
   const onSubmit = (data) => {
@@ -71,6 +73,8 @@ const ServidorcontenedorForm = (props) => {
       id_servidor: parseInt(data.id_servidor, 10),
       id_contenedor_logico: parseInt(data.id_contenedor_logico, 10),
       respaldo: data.respaldo ? JSON.parse(data.respaldo) : {},
+      usuario_modificacion: currentUser?.id, // Asigna el ID del usuario logueado
+      usuario_creacion: currentUser?.id, // Asigna el ID si es creación o mantenimiento
     }
     props.onSave(formData, props?.servidorcontenedor?.id)
   }
@@ -234,41 +238,6 @@ const ServidorcontenedorForm = (props) => {
 
         {/* Profile JSON Input */}
         <RespaldoField defaultValue={props.servidorcontenedor?.respaldo} />
-
-        <Label
-          name="usuario_creacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario creacion
-        </Label>
-
-        <NumberField
-          name="usuario_creacion"
-          defaultValue={props.servidorcontenedor?.usuario_creacion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="usuario_creacion" className="rw-field-error" />
-
-        <Label
-          name="usuario_modificacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario modificacion
-        </Label>
-
-        <NumberField
-          name="usuario_modificacion"
-          defaultValue={props.servidorcontenedor?.usuario_modificacion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="usuario_modificacion" className="rw-field-error" />
 
         <div className="rw-button-group">
           <Submit disabled={props.loading} className="rw-button rw-button-blue">

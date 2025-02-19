@@ -1,11 +1,11 @@
 import { db } from 'src/lib/db'
 
 export const servidorcontenedors = () => {
-  return db.servidor_contenedor.findMany()
+  return db.servidorcontenedor.findMany()
 }
 
 export const servidorcontenedor = ({ id }) => {
-  return db.servidor_contenedor.findUnique({
+  return db.servidorcontenedor.findUnique({
     where: { id },
   })
 }
@@ -14,7 +14,7 @@ export const createServidorcontenedor = ({ input }) => {
   const respaldoData = {
     version: input.version,
   }
-  return db.servidor_contenedor.create({
+  return db.servidorcontenedor.create({
     data: {
       id_servidor: input.id_servidor,
       id_contenedor_logico: input.id_contenedor_logico,
@@ -36,7 +36,7 @@ export const updateServidorcontenedor = ({ id, input }) => {
   const respaldoData = {
     version: input.version,
   }
-  return db.servidor_contenedor.update({
+  return db.servidorcontenedor.update({
     data: {
       id_servidor: input.id_servidor,
       id_contenedor_logico: input.id_contenedor_logico,
@@ -55,19 +55,19 @@ export const updateServidorcontenedor = ({ id, input }) => {
 }
 
 export const deleteServidorcontenedor = ({ id }) => {
-  return db.servidor_contenedor.delete({
+  return db.servidorcontenedor.delete({
     where: { id },
   })
 }
 
 export const Servidorcontenedor = {
   contenedor_logico: (_obj, { root }) => {
-    return db.servidor_contenedor
+    return db.servidorcontenedor
       .findUnique({ where: { id: root?.id } })
       .contenedor_logico()
   },
   servidores: (_obj, { root }) => {
-    return db.servidor_contenedor
+    return db.servidorcontenedor
       .findUnique({ where: { id: root?.id } })
       .servidores()
   },
