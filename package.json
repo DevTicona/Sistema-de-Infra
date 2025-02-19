@@ -7,10 +7,10 @@
     ]
   },
   "devDependencies": {
-    "@prisma/client": "^6.3.1",
-    "@redwoodjs/core": "8.5.0",
-    "@redwoodjs/project-config": "8.5.0",
-    "prisma": "^6.3.1"
+    "@prisma/client": "^6.4.0",
+    "@redwoodjs/core": "^8.5.0",
+    "@redwoodjs/project-config": "^8.5.0",
+    "prisma": "^6.4.0"
   },
   "eslintConfig": {
     "extends": "@redwoodjs/eslint-config",
@@ -32,7 +32,7 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.5",
     "@mui/material": "^6.4.5",
-    "@mui/x-charts": "^7.26.0",
+    "@mui/x-charts": "^7.27.0",
     "date-fns": "^4.1.0",
     "react-json-view": "^1.21.3",
     "recharts": "^2.15.1",
