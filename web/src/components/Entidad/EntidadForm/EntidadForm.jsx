@@ -6,6 +6,7 @@ import {
   TextField,
   NumberField,
   Submit,
+  SelectField,
 } from '@redwoodjs/forms'
 
 const EntidadForm = (props) => {
@@ -77,23 +78,6 @@ const EntidadForm = (props) => {
 
         <FieldError name="nombre" className="rw-field-error" />
 
-        <Label
-          name="tipo"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Tipo
-        </Label>
-
-        <TextField
-          name="tipo"
-          defaultValue={props.entidad?.tipo}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="tipo" className="rw-field-error" />
 
         <Label
           name="estado"
@@ -103,13 +87,16 @@ const EntidadForm = (props) => {
           Estado
         </Label>
 
-        <TextField
-          name="estado"
-          defaultValue={props.entidad?.estado}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
+        <SelectField
+  name="estado"
+  defaultValue={props.componente?.estado || 'ACTIVO'}  // Valor por defecto
+  className="rw-input"
+  errorClassName="rw-input rw-input-error"
+  validation={{ required: true }}
+>
+  <option value="ACTIVO">Activo</option>
+  <option value="INACTIVO">Inactivo</option>
+</SelectField>
 
         <FieldError name="estado" className="rw-field-error" />
 

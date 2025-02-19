@@ -10,7 +10,6 @@ export const QUERY = gql`
       sigla
       nombre
       descripcion
-      tipo
       estado
       respaldo
       fecha_creacion

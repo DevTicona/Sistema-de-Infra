@@ -21,8 +21,10 @@ import {
   DialogActions,
   Button,
   Typography,
+  TextField,
+  InputAdornment,
 } from '@mui/material';
-import { Visibility as VisibilityIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Visibility as VisibilityIcon, Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon } from '@mui/icons-material';
 import { QUERY } from 'src/components/Entidad/EntidadsCell';
 import { timeTag, truncate } from 'src/lib/formatters';
 
@@ -41,6 +43,7 @@ const EntidadsList = ({ entidads }) => {
   const [order, setOrder] = useState('asc');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [deleteEntidad] = useMutation(DELETE_ENTIDAD_MUTATION, {
     onCompleted: () => {
@@ -60,7 +63,15 @@ const EntidadsList = ({ entidads }) => {
     setOrderBy(property);
   };
 
-  const sortedData = [...entidads].sort((a, b) => {
+  const filteredData = entidads.filter((entidad) => {
+    const searchTermLower = searchTerm.toLowerCase();
+    return (
+      entidad.sigla.toLowerCase().includes(searchTermLower) ||
+      entidad.nombre.toLowerCase().includes(searchTermLower)
+    );
+  });
+
+  const sortedData = [...filteredData].sort((a, b) => {
     const aValue = a[orderBy];
     const bValue = b[orderBy];
     return order === 'asc' ? (aValue < bValue ? -1 : 1) : (bValue < aValue ? -1 : 1);
@@ -84,16 +95,55 @@ const EntidadsList = ({ entidads }) => {
     deleteEntidad({ variables: { id: selectedId } });
   };
 
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+    setPage(0); // Reset to first page when searching
+  };
+
   return (
     <Box sx={{ width: '100%' }}>
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
+        <Paper
+          elevation={3}
+          sx={{
+            p: '2px 4px',
+            display: 'flex',
+            alignItems: 'center',
+            width: 400,
+            borderRadius: '8px',
+          }}
+        >
+          <TextField
+            fullWidth
+            value={searchTerm}
+            onChange={handleSearchChange}
+            placeholder="Buscar por sigla o nombre..."
+            variant="standard"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="action" />
+                </InputAdornment>
+              ),
+              disableUnderline: true,
+              sx: { px: 2, py: 1 }
+            }}
+          />
+        </Paper>
+      </Box>
+
       <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: '12px', boxShadow: 3 }}>
         <TableContainer>
           <Table size="small" stickyHeader>
             <TableHead>
               <TableRow>
-                {['ID', 'Código', 'Sigla', 'Nombre', 'Tipo', 'Estado', 'Fecha Creación', 'Usuario Creación', 'Fecha Modificación', 'Usuario Modificación'].map((header, index) => (
+                {['ID', 'Código', 'Sigla', 'Nombre', 'Estado', 'Fecha Creación', 'Usuario Creación', 'Fecha Modificación', 'Usuario Modificación'].map((header, index) => (
                   <TableCell key={index} sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: 'white' }}>
-                    <TableSortLabel active={orderBy === header.toLowerCase()} direction={orderBy === header.toLowerCase() ? order : 'asc'} onClick={() => handleSort(header.toLowerCase())}>
+                    <TableSortLabel
+                      active={orderBy === header.toLowerCase()}
+                      direction={orderBy === header.toLowerCase() ? order : 'asc'}
+                      onClick={() => handleSort(header.toLowerCase())}
+                    >
                       {header}
                     </TableSortLabel>
                   </TableCell>
@@ -102,50 +152,63 @@ const EntidadsList = ({ entidads }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((entidad) => (
-                <TableRow key={entidad.id} hover>
-                  <TableCell>{truncate(entidad.id)}</TableCell>
-                  <TableCell>{truncate(entidad.codigo)}</TableCell>
-                  <TableCell>{truncate(entidad.sigla)}</TableCell>
-                  <TableCell>{truncate(entidad.nombre)}</TableCell>
-                  <TableCell>{truncate(entidad.tipo)}</TableCell>
-                  <TableCell>{truncate(entidad.estado)}</TableCell>
-                  <TableCell>{timeTag(entidad.fecha_creacion)}</TableCell>
-                  <TableCell>{truncate(entidad.usuario_creacion)}</TableCell>
-                  <TableCell>{timeTag(entidad.fecha_modificacion)}</TableCell>
-                  <TableCell>{truncate(entidad.usuario_modificacion)}</TableCell>
-                  <TableCell align="center">
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                      <Tooltip title="Ver Detalles">
-                        <IconButton size="small" component={Link} to={routes.entidad({ id: entidad.id })}>
-                          <VisibilityIcon fontSize="small" color="primary" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Editar">
-                        <IconButton size="small" component={Link} to={routes.editEntidad({ id: entidad.id })}>
-                          <EditIcon fontSize="small" color="primary" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Eliminar">
-                        <IconButton size="small" onClick={() => handleDeleteClick(entidad.id)}>
-                          <DeleteIcon fontSize="small" color="error" />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {sortedData
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((entidad) => (
+                  <TableRow key={entidad.id} hover>
+                    <TableCell>{truncate(entidad.id)}</TableCell>
+                    <TableCell>{truncate(entidad.codigo)}</TableCell>
+                    <TableCell>{truncate(entidad.sigla)}</TableCell>
+                    <TableCell>{truncate(entidad.nombre)}</TableCell>
+                    <TableCell>{truncate(entidad.estado)}</TableCell>
+                    <TableCell>{timeTag(entidad.fecha_creacion)}</TableCell>
+                    <TableCell>{truncate(entidad.usuario_creacion)}</TableCell>
+                    <TableCell>{timeTag(entidad.fecha_modificacion)}</TableCell>
+                    <TableCell>{truncate(entidad.usuario_modificacion)}</TableCell>
+                    <TableCell align="center">
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Tooltip title="Ver Detalles">
+                          <IconButton size="small" component={Link} to={routes.entidad({ id: entidad.id })}>
+                            <VisibilityIcon fontSize="small" color="primary" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Editar">
+                          <IconButton size="small" component={Link} to={routes.editEntidad({ id: entidad.id })}>
+                            <EditIcon fontSize="small" color="primary" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Eliminar">
+                          <IconButton size="small" onClick={() => handleDeleteClick(entidad.id)}>
+                            <DeleteIcon fontSize="small" color="error" />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination rowsPerPageOptions={[5, 10, 25]} component="div" count={entidads.length} rowsPerPage={rowsPerPage} page={page} onPageChange={handleChangePage} onRowsPerPageChange={handleChangeRowsPerPage} />
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredData.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </Paper>
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogTitle>Confirmar Eliminación</DialogTitle>
-        <DialogContent><Typography>¿Estás seguro de que deseas eliminar la entidad {selectedId}?</Typography></DialogContent>
+        <DialogContent>
+          <Typography>¿Estás seguro de que deseas eliminar la entidad {selectedId}?</Typography>
+        </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteDialogOpen(false)}>Cancelar</Button>
-          <Button onClick={handleDeleteConfirm} variant="contained" color="error">Eliminar</Button>
+          <Button onClick={handleDeleteConfirm} variant="contained" color="error">
+            Eliminar
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

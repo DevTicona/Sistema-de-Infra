@@ -68,10 +68,7 @@ const Sistema = ({ sistema }) => {
               <th>Descripcion</th>
               <td>{sistema.descripcion}</td>
             </tr>
-            <tr>
-              <th>Tipo</th>
-              <td>{sistema.tipo}</td>
-            </tr>
+
             <tr>
               <th>Estado</th>
               <td>{sistema.estado}</td>

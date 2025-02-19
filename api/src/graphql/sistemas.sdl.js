@@ -1,4 +1,11 @@
 export const schema = gql`
+
+
+enum estado {
+  ACTIVO
+  INACTIVO
+}
+
   type Sistema {
     id: Int!
     id_padre: Int
@@ -7,8 +14,7 @@ export const schema = gql`
     sigla: String!
     nombre: String!
     descripcion: String!
-    tipo: String!
-    estado: String!
+    estado: estado!
     respaldo: JSON
     fecha_creacion: DateTime!
     usuario_creacion: Int!
@@ -33,8 +39,7 @@ export const schema = gql`
     sigla: String!
     nombre: String!
     descripcion: String!
-    tipo: String!
-    estado: String!
+    estado: estado!
     respaldo: JSON
     usuario_creacion: Int!
     usuario_modificacion: Int
@@ -49,8 +54,7 @@ export const schema = gql`
     sigla: String
     nombre: String
     descripcion: String
-    tipo: String
-    estado: String
+    estado: estado
     respaldo: JSON
     fecha_creacion: DateTime
     usuario_creacion: Int

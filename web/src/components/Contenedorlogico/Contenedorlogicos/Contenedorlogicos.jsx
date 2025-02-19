@@ -98,9 +98,9 @@ const ContenedorlogicosList = ({ contenedorlogicos }) => {
 
   const headers = [
     { id: 'id', label: 'Id' },
-    { id: 'id_padre', label: 'Id Padre' },
+
     { id: 'codigo', label: 'Código' },
-    { id: 'sigla', label: 'Sigla' },
+
     { id: 'nombre', label: 'Nombre' },
     { id: 'descripcion', label: 'Descripción' },
     { id: 'tipo', label: 'Tipo' },
@@ -170,9 +170,9 @@ const ContenedorlogicosList = ({ contenedorlogicos }) => {
                     }}
                   >
                     <TableCell>{truncate(row.id)}</TableCell>
-                    <TableCell>{truncate(row.id_padre)}</TableCell>
+
                     <TableCell>{truncate(row.codigo)}</TableCell>
-                    <TableCell>{truncate(row.sigla)}</TableCell>
+
                     <TableCell>{truncate(row.nombre)}</TableCell>
                     <TableCell>{truncate(row.descripcion)}</TableCell>
                     <TableCell>{truncate(row.tipo)}</TableCell>

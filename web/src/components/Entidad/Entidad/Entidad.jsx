@@ -60,10 +60,7 @@ const Entidad = ({ entidad }) => {
               <th>Tipo</th>
               <td>{entidad.tipo}</td>
             </tr>
-            <tr>
-              <th>Estado</th>
-              <td>{entidad.estado}</td>
-            </tr>
+
             <tr>
               <th>Fecha creacion</th>
               <td>{timeTag(entidad.fecha_creacion)}</td>

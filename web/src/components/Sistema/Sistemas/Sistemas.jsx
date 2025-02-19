@@ -103,7 +103,6 @@ const SistemasList = ({ sistemas }) => {
     { id: 'sigla', label: 'Sigla' },
     { id: 'nombre', label: 'Nombre' },
     { id: 'descripcion', label: 'Descripción' },
-    { id: 'tipo', label: 'Tipo' },
     { id: 'estado', label: 'Estado' },
     { id: 'respaldo', label: 'Respaldo' },
     { id: 'fecha_creacion', label: 'Fecha Creación' },
@@ -176,7 +175,7 @@ const SistemasList = ({ sistemas }) => {
                     <TableCell>{truncate(sistema.sigla)}</TableCell>
                     <TableCell>{truncate(sistema.nombre)}</TableCell>
                     <TableCell>{truncate(sistema.descripcion)}</TableCell>
-                    <TableCell>{truncate(sistema.tipo)}</TableCell>
+
                     <TableCell>{truncate(sistema.estado)}</TableCell>
                     <TableCell>{jsonTruncate(sistema.respaldo)}</TableCell>
                     <TableCell>{timeTag(sistema.fecha_creacion)}</TableCell>

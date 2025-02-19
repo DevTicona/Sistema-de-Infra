@@ -12,7 +12,6 @@ export const QUERY = gql`
       codigo
       sigla
       nombre
-      tipo
       estado
       fecha_creacion
       usuario_creacion
@@ -29,7 +28,6 @@ const UPDATE_ENTIDAD_MUTATION = gql`
       codigo
       sigla
       nombre
-      tipo
       estado
       fecha_creacion
       usuario_creacion

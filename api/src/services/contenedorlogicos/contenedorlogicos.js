@@ -11,14 +11,17 @@ export const contenedorlogico = ({ id }) => {
 }
 
 export const createContenedorlogico = ({ input }) => {
+
+  // Validación de estado
+  const estado = input.estado === 'ACTIVO' ? 'ACTIVO' : 'INACTIVO'
   const respaldoData = {
     version: input.version,
   }
   return db.contenedor_logico.create({
     data: {
-      id_padre: input.id_padre,
+
       codigo: input.codigo,
-      sigla: input.sigla,
+
       nombre: input.nombre,
       descripcion: input.descripcion,
       tipo: input.tipo,
@@ -33,14 +36,17 @@ export const createContenedorlogico = ({ input }) => {
 }
 
 export const updateContenedorlogico = ({ id, input }) => {
+
+  // Validación de estado
+  const estado = input.estado === 'ACTIVO' ? 'ACTIVO' : 'INACTIVO'
   const respaldoData = {
     version: input.version,
   }
   return db.contenedor_logico.update({
     data: {
-      id_padre: input.id_padre,
+
       codigo: input.codigo,
-      sigla: input.sigla,
+
       nombre: input.nombre,
       descripcion: input.descripcion,
       tipo: input.tipo,

@@ -22,7 +22,6 @@ export const createSistema = ({ input }) => {
       sigla: input.sigla,
       nombre: input.nombre,
       descripcion: input.descripcion,
-      tipo: input.tipo,
       estado: input.estado,
       respaldo: respaldoData,
       usuario_creacion: input.usuario_creacion,
@@ -45,7 +44,7 @@ export const updateSistema = ({ id, input }) => {
       sigla: input.sigla,
       nombre: input.nombre,
       descripcion: input.descripcion,
-      tipo: input.tipo,
+
       estado: input.estado,
       respaldo: respaldoData,
       usuario_creacion: input.usuario_creacion,

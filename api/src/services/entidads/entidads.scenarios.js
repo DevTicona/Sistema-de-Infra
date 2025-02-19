@@ -5,7 +5,7 @@ export const standard = defineScenario({
         codigo: 'String',
         sigla: 'String',
         nombre: 'String',
-        tipo: 'String',
+
         estado: 'String',
         usuario_creacion: 9454206,
       },
@@ -15,7 +15,7 @@ export const standard = defineScenario({
         codigo: 'String',
         sigla: 'String',
         nombre: 'String',
-        tipo: 'String',
+
         estado: 'String',
         usuario_creacion: 5537499,
       },

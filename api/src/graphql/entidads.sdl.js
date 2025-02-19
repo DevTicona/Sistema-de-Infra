@@ -1,11 +1,16 @@
 export const schema = gql`
+  enum estado {
+  ACTIVO
+  INACTIVO
+}
+
+
   type Entidad {
     id: Int!
     codigo: String!
     sigla: String!
     nombre: String!
-    tipo: String!
-    estado: String!
+    estado: estado!
     fecha_creacion: DateTime!
     usuario_creacion: Int!
     fecha_modificacion: DateTime
@@ -22,8 +27,7 @@ export const schema = gql`
     codigo: String!
     sigla: String!
     nombre: String!
-    tipo: String!
-    estado: String!
+    estado: estado!
     usuario_creacion: Int!
     usuario_modificacion: Int
   }
@@ -32,8 +36,7 @@ export const schema = gql`
     codigo: String
     sigla: String
     nombre: String
-    tipo: String
-    estado: String
+    estado: estado
     fecha_creacion: DateTime
     usuario_creacion: Int
     fecha_modificacion: DateTime
@@ -45,4 +48,9 @@ export const schema = gql`
     updateEntidad(id: Int!, input: UpdateEntidadInput!): Entidad! @requireAuth
     deleteEntidad(id: Int!): Entidad! @requireAuth
   }
+
+  type Query {
+  entidadesBySigla(sigla: String!): [Entidad!]! @requireAuth
+}
+
 `

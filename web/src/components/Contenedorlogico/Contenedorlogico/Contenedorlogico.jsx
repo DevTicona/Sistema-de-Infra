@@ -49,18 +49,12 @@ const Contenedorlogico = ({ contenedorlogico }) => {
               <th>Id</th>
               <td>{contenedorlogico.id}</td>
             </tr>
-            <tr>
-              <th>Id padre</th>
-              <td>{contenedorlogico.id_padre}</td>
-            </tr>
+
             <tr>
               <th>Codigo</th>
               <td>{contenedorlogico.codigo}</td>
             </tr>
-            <tr>
-              <th>Sigla</th>
-              <td>{contenedorlogico.sigla}</td>
-            </tr>
+
             <tr>
               <th>Nombre</th>
               <td>{contenedorlogico.nombre}</td>

@@ -15,7 +15,6 @@ export const QUERY = gql`
       sigla
       nombre
       descripcion
-      tipo
       estado
       respaldo
       fecha_creacion
@@ -36,7 +35,6 @@ const UPDATE_SISTEMA_MUTATION = gql`
       sigla
       nombre
       descripcion
-      tipo
       estado
       respaldo
       fecha_creacion

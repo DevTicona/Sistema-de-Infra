@@ -8,6 +8,7 @@ import {
   NumberField,
   TextField,
   Submit,
+  SelectField,
 } from '@redwoodjs/forms'
 
 const RespaldoField = ({ defaultValue }) => {
@@ -59,22 +60,6 @@ const ContenedorlogicoForm = (props) => {
           listClassName="rw-form-error-list"
         />
 
-        <Label
-          name="id_padre"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Id padre
-        </Label>
-
-        <NumberField
-          name="id_padre"
-          defaultValue={props.contenedorlogico?.id_padre}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="id_padre" className="rw-field-error" />
 
         <Label
           name="codigo"
@@ -94,23 +79,6 @@ const ContenedorlogicoForm = (props) => {
 
         <FieldError name="codigo" className="rw-field-error" />
 
-        <Label
-          name="sigla"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Sigla
-        </Label>
-
-        <TextField
-          name="sigla"
-          defaultValue={props.contenedorlogico?.sigla}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="sigla" className="rw-field-error" />
 
         <Label
           name="nombre"
@@ -174,14 +142,17 @@ const ContenedorlogicoForm = (props) => {
           Estado
         </Label>
 
-        <TextField
-          name="estado"
-          defaultValue={props.contenedorlogico?.estado}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
 
+        <SelectField
+  name="estado"
+  defaultValue={props.componente?.estado || 'ACTIVO'}  // Valor por defecto
+  className="rw-input"
+  errorClassName="rw-input rw-input-error"
+  validation={{ required: true }}
+>
+  <option value="ACTIVO">Activo</option>
+  <option value="INACTIVO">Inactivo</option>
+</SelectField>
         <FieldError name="estado" className="rw-field-error" />
 
         {/* Profile JSON Input */}

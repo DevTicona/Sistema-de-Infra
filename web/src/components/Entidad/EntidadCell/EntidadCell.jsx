@@ -7,7 +7,6 @@ export const QUERY = gql`
       codigo
       sigla
       nombre
-      tipo
       estado
       fecha_creacion
       usuario_creacion

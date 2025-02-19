@@ -7,6 +7,7 @@ import {
   SelectField,
   TextField,
   Submit,
+
 } from '@redwoodjs/forms'
 import { gql } from '@redwoodjs/graphql-client'
 import { useQuery } from '@redwoodjs/web'
@@ -104,58 +105,71 @@ const ComponenteForm = (props) => {
         <FieldError name="descripcion" className="rw-field-error" />
 
         <Label
-          name="estado"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Estado
-        </Label>
+  name="estado"
+  className="rw-label"
+  errorClassName="rw-label rw-label-error"
+>
+  Estado
+</Label>
 
-        <TextField
-          name="estado"
-          defaultValue={props.componente?.estado}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
+<SelectField
+  name="estado"
+  defaultValue={props.componente?.estado}
+  className="rw-input"
+  errorClassName="rw-input rw-input-error"
+  validation={{ required: true }}
+>
+  <option value="ACTIVO">Activo</option>
+  <option value="INACTIVO">Inactivo</option>
+</SelectField>
 
-        <FieldError name="estado" className="rw-field-error" />
+<FieldError name="estado" className="rw-field-error" />
 
-        <Label
-          name="entorno"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Entorno
-        </Label>
+<Label
+  name="entorno"
+  className="rw-label"
+  errorClassName="rw-label rw-label-error"
+>
+  Entorno
+</Label>
 
-        <TextField
-          name="entorno"
-          defaultValue={props.componente?.entorno}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
+<SelectField
+  name="entorno"
+  defaultValue={props.componente?.entorno}
+  className="rw-input"
+  errorClassName="rw-input rw-input-error"
+  validation={{ required: true }}
+>
+  <option value="Demo">Demo</option>
+  <option value="PreProd">PreProducción</option>
+  <option value="Prod">Producción</option>
+  <option value="Test">Pruebas</option>
+</SelectField>
 
-        <FieldError name="entorno" className="rw-field-error" />
+<FieldError name="entorno" className="rw-field-error" />
 
-        <Label
-          name="categoria"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Categoria
-        </Label>
+<Label
+  name="categoria"
+  className="rw-label"
+  errorClassName="rw-label rw-label-error"
+>
+  Categoria
+</Label>
 
-        <TextField
-          name="categoria"
-          defaultValue={props.componente?.categoria}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
+<SelectField
+  name="categoria"
+  defaultValue={props.componente?.categoria}
+  className="rw-input"
+  errorClassName="rw-input rw-input-error"
+  validation={{ required: true }}
+>
+  <option value="Backend">Backend</option>
+  <option value="Frontend">Frontend</option>
+  <option value="Database">Base de Datos</option>
+  <option value="NFS">NFS</option>
+</SelectField>
 
-        <FieldError name="categoria" className="rw-field-error" />
+<FieldError name="categoria" className="rw-field-error" />
 
         <Label
           name="usuario_creacion"
