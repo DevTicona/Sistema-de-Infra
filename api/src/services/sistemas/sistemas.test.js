@@ -33,9 +33,8 @@ describe('sistemas', () => {
         sigla: 'String',
         nombre: 'String',
         descripcion: 'String',
-        tipo: 'String',
-        estado: 'String',
-        usuario_creacion: 9824080,
+        estado: 'ACTIVO',
+        usuario_creacion: 289370,
       },
     })
 
@@ -44,9 +43,8 @@ describe('sistemas', () => {
     expect(result.sigla).toEqual('String')
     expect(result.nombre).toEqual('String')
     expect(result.descripcion).toEqual('String')
-    expect(result.tipo).toEqual('String')
-    expect(result.estado).toEqual('String')
-    expect(result.usuario_creacion).toEqual(9824080)
+    expect(result.estado).toEqual('ACTIVO')
+    expect(result.usuario_creacion).toEqual(289370)
   })
 
   scenario('updates a sistema', async (scenario) => {

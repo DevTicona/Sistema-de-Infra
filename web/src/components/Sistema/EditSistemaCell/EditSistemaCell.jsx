@@ -1,5 +1,4 @@
 import { navigate, routes } from '@redwoodjs/router'
-
 import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
 
@@ -15,9 +14,8 @@ export const QUERY = gql`
       sigla
       nombre
       descripcion
-      tipo
       estado
-      respaldo
+      respaldo_creacion
       fecha_creacion
       usuario_creacion
       fecha_modificacion
@@ -36,9 +34,8 @@ const UPDATE_SISTEMA_MUTATION = gql`
       sigla
       nombre
       descripcion
-      tipo
       estado
-      respaldo
+      respaldo_creacion
       fecha_creacion
       usuario_creacion
       fecha_modificacion

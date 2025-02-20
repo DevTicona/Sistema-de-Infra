@@ -1,6 +1,5 @@
 import { Link, routes, navigate } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
-
 import { toast } from '@redwoodjs/web/toast'
 
 import { jsonDisplay, timeTag } from 'src/lib/formatters'
@@ -69,16 +68,12 @@ const Sistema = ({ sistema }) => {
               <td>{sistema.descripcion}</td>
             </tr>
             <tr>
-              <th>Tipo</th>
-              <td>{sistema.tipo}</td>
-            </tr>
-            <tr>
               <th>Estado</th>
               <td>{sistema.estado}</td>
             </tr>
             <tr>
               <th>Respaldo</th>
-              <td>{jsonDisplay(sistema.respaldo)}</td>
+              <td>{jsonDisplay(sistema.respaldo_creacion)}</td>
             </tr>
             <tr>
               <th>Fecha creacion</th>

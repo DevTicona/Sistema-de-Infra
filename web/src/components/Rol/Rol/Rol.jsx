@@ -3,7 +3,7 @@ import { useMutation } from '@redwoodjs/web'
 
 import { toast } from '@redwoodjs/web/toast'
 
-import { jsonDisplay, timeTag } from 'src/lib/formatters'
+import { formatEnum, timeTag } from 'src/lib/formatters'
 
 const DELETE_ROL_MUTATION = gql`
   mutation DeleteRolMutation($id: Int!) {
@@ -54,11 +54,7 @@ const Rol = ({ rol }) => {
             </tr>
             <tr>
               <th>Estado</th>
-              <td>{rol.estado}</td>
-            </tr>
-            <tr>
-              <th>Respaldo</th>
-              <td>{jsonDisplay(rol.respaldo)}</td>
+              <td>{formatEnum(rol.estado)}</td>
             </tr>
             <tr>
               <th>Fecha creacion</th>

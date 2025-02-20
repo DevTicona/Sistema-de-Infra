@@ -1,17 +1,17 @@
 import { db } from 'src/lib/db'
 
 export const entidads = () => {
-  return db.entidad.findMany()
+  return db.entidades.findMany()
 }
 
 export const entidad = ({ id }) => {
-  return db.entidad.findUnique({
+  return db.entidades.findUnique({
     where: { id },
   })
 }
 
 export const createEntidad = ({ input }) => {
-  return db.entidad.create({
+  return db.entidades.create({
     data: {
       codigo: input.codigo,
       sigla: input.sigla,
@@ -24,7 +24,7 @@ export const createEntidad = ({ input }) => {
 }
 
 export const updateEntidad = ({ id, input }) => {
-  return db.entidad.update({
+  return db.entidades.update({
     data: {
       codigo: input.codigo,
       sigla: input.sigla,
@@ -38,13 +38,13 @@ export const updateEntidad = ({ id, input }) => {
 }
 
 export const deleteEntidad = ({ id }) => {
-  return db.entidad.delete({
+  return db.entidades.delete({
     where: { id },
   })
 }
 
 export const Entidad = {
   sistemas: (_obj, { root }) => {
-    return db.entidad.findUnique({ where: { id: root?.id } }).sistemas()
+    return db.entidades.findUnique({ where: { id: root?.id } }).sistemas()
   },
 }

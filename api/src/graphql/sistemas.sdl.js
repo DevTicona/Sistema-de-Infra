@@ -7,9 +7,8 @@ export const schema = gql`
     sigla: String!
     nombre: String!
     descripcion: String!
-    tipo: String!
-    estado: String!
-    respaldo: JSON
+    estado: estado!
+    respaldo_creacion: JSON
     fecha_creacion: DateTime!
     usuario_creacion: Int!
     fecha_modificacion: DateTime
@@ -19,6 +18,11 @@ export const schema = gql`
     sistemas: Sistema
     other_sistemas: [Sistema]!
     usuario_roles: [Usuariorol]!
+  }
+
+  enum estado {
+    ACTIVO
+    INACTIVO
   }
 
   type Query {
@@ -33,9 +37,8 @@ export const schema = gql`
     sigla: String!
     nombre: String!
     descripcion: String!
-    tipo: String!
-    estado: String!
-    respaldo: JSON
+    estado: estado!
+    respaldo_creacion: JSON
     usuario_creacion: Int!
     usuario_modificacion: Int
 
@@ -49,9 +52,8 @@ export const schema = gql`
     sigla: String
     nombre: String
     descripcion: String
-    tipo: String
-    estado: String
-    respaldo: JSON
+    estado: estado
+    respaldo_creacion: JSON
     fecha_creacion: DateTime
     usuario_creacion: Int
     fecha_modificacion: DateTime

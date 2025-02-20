@@ -73,7 +73,9 @@ const SistemaForm = (props) => {
       ...data,
       id_padre: parseInt(data.id_padre, 10),
       id_entidad: parseInt(data.id_entidad, 10),
-      respaldo: data.respaldo ? JSON.parse(data.respaldo) : {},
+      respaldo_creacion: data.respaldo_creacion
+        ? JSON.parse(data.respaldo_creacion)
+        : {},
       usuario_modificacion: currentUser?.id, // Asigna el ID del usuario logueado
       usuario_creacion: currentUser?.id, // Asigna el ID si es creación o mantenimiento
     }
@@ -220,24 +222,6 @@ const SistemaForm = (props) => {
         <FieldError name="descripcion" className="rw-field-error" />
 
         <Label
-          name="tipo"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Tipo
-        </Label>
-
-        <TextField
-          name="tipo"
-          defaultValue={props.sistema?.tipo}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="tipo" className="rw-field-error" />
-
-        <Label
           name="estado"
           className="rw-label"
           errorClassName="rw-label rw-label-error"
@@ -256,7 +240,7 @@ const SistemaForm = (props) => {
         <FieldError name="estado" className="rw-field-error" />
 
         {/* Profile JSON Input */}
-        <RespaldoField defaultValue={props.sistema?.respaldo} />
+        <RespaldoField defaultValue={props.sistema?.respaldo_creacion} />
 
         {/* Botón de guardar */}
         <div className="rw-button-group">

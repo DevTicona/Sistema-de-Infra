@@ -7,7 +7,6 @@ export const QUERY = gql`
       nombre
       tipo
       estado
-      respaldo
       fecha_creacion
       usuario_creacion
       fecha_modificacion

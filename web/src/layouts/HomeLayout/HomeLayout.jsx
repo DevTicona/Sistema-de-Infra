@@ -62,8 +62,8 @@ const HomeLayout = ({ children }) => {
       route: routes.servidorcontenedors(),
       icon: <Security />,
     },
-    ...(isAuthenticated && hasRole(['admin', 'editor'])
-      ? [{ name: 'userRoles', route: routes.userRoles(), icon: <Security /> }]
+    ...(isAuthenticated && hasRole(['admin'])
+      ? [{ name: 'userRoles', route: routes.userRols(), icon: <Security /> }]
       : []),
     {
       name: 'Usuario y Roles',

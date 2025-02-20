@@ -106,9 +106,8 @@ const SistemasList = ({ sistemas }) => {
     { id: 'sigla', label: 'Sigla' },
     { id: 'nombre', label: 'Nombre' },
     { id: 'descripcion', label: 'Descripción' },
-    { id: 'tipo', label: 'Tipo' },
     { id: 'estado', label: 'Estado' },
-    { id: 'respaldo', label: 'Respaldo' },
+    { id: 'respaldo_creacion', label: 'Respaldo_creacion' },
     { id: 'fecha_creacion', label: 'Fecha Creación' },
     { id: 'usuario_creacion', label: 'Usuario Creación' },
     { id: 'fecha_modificacion', label: 'Fecha Modificación' },
@@ -183,9 +182,10 @@ const SistemasList = ({ sistemas }) => {
                     <TableCell>{truncate(sistema.sigla)}</TableCell>
                     <TableCell>{truncate(sistema.nombre)}</TableCell>
                     <TableCell>{truncate(sistema.descripcion)}</TableCell>
-                    <TableCell>{truncate(sistema.tipo)}</TableCell>
                     <TableCell>{truncate(sistema.estado)}</TableCell>
-                    <TableCell>{jsonTruncate(sistema.respaldo)}</TableCell>
+                    <TableCell>
+                      {jsonTruncate(sistema.respaldo_creacion)}
+                    </TableCell>
                     <TableCell>{timeTag(sistema.fecha_creacion)}</TableCell>
                     <TableCell>{truncate(sistema.usuario_creacion)}</TableCell>
                     <TableCell>{timeTag(sistema.fecha_modificacion)}</TableCell>
@@ -205,7 +205,7 @@ const SistemasList = ({ sistemas }) => {
                           </IconButton>
                         </Tooltip>
 
-                        {hasRole('Admin') && (
+                        {hasRole('admin') && (
                           <>
                             <Tooltip title="Edit">
                               <IconButton

@@ -21,20 +21,20 @@ describe('roles', () => {
 
   scenario('creates a role', async () => {
     const result = await createRole({
-      input: { name: 'String5900535' },
+      input: { name: 'String9686288' },
     })
 
-    expect(result.name).toEqual('String5900535')
+    expect(result.name).toEqual('String9686288')
   })
 
   scenario('updates a role', async (scenario) => {
     const original = await role({ id: scenario.role.one.id })
     const result = await updateRole({
       id: original.id,
-      input: { name: 'String97268442' },
+      input: { name: 'String22494182' },
     })
 
-    expect(result.name).toEqual('String97268442')
+    expect(result.name).toEqual('String22494182')
   })
 
   scenario('deletes a role', async (scenario) => {

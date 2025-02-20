@@ -22,13 +22,13 @@ export const handler = async (event, context) => {
       // Obtener los roles del usuario
       const userWithRoles = await db.user.findUnique({
         where: { id: user.id },
-        include: { userRoles: { include: { role: true } } },
+        include: { user_rol: { include: { rol: true } } }, // Cambiado a user_rol
       })
 
       // Devolver el usuario con sus roles
       return {
         ...user,
-        roles: userWithRoles.userRoles.map((userRole) => userRole.role.name),
+        roles: userWithRoles.user_rol.map((userRole) => userRole.rol.name), // Cambiado a user_rol
       }
     },
 
@@ -77,21 +77,22 @@ export const handler = async (event, context) => {
           salt: salt,
           nombre: _userAttributes.nombre,
           updatedAt: new Date(),
-          userRoles: {
+          user_rol: {
+            // Cambiado a user_rol
             create: {
-              role: {
+              rol: {
                 connect: { name: 'usuario' }, // Asignar el rol por defecto
               },
             },
           },
         },
-        include: { userRoles: { include: { role: true } } }, // Incluir roles en la respuesta
+        include: { user_rol: { include: { rol: true } } }, // Cambiado a user_rol
       })
 
       // Devolver el usuario con sus roles
       return {
         ...user,
-        roles: user.userRoles.map((userRole) => userRole.role.name),
+        roles: user.user_rol.map((userRole) => userRole.rol.name), // Cambiado a user_rol
       }
     },
 

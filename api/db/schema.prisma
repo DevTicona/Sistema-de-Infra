@@ -7,6 +7,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Role {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  user_rol UserRol[]
+
+  @@map("rol")
+}
+
+model User {
+  id                  Int       @id @default(autoincrement())
+  nombre              String?
+  email               String    @unique
+  hashedPassword      String    @default("")
+  salt                String    @default("")
+  resetToken          String?
+  resetTokenExpiresAt DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime
+  user_rol            UserRol[]
+
+  @@map("user")
+}
+
+model UserRol {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  roleId Int
+  rol    Role @relation(fields: [roleId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, roleId], map: "user_rol_unique")
+  @@map("user_rol")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Componente {
   id                   Int          @id(map: "componente_pk") @default(autoincrement())
   id_sistema           Int
@@ -25,6 +60,7 @@ model Componente {
   @@map("componentes")
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Contenedorlogico {
   id                   Int                  @id(map: "contenedor_logico_pk") @default(autoincrement())
   codigo               String               @db.VarChar(10)
@@ -44,6 +80,7 @@ model Contenedorlogico {
   @@map("contenedor_logico")
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Despliegue {
   id                   Int              @id(map: "despliegue_pk") @default(autoincrement())
   id_componente        Int?
@@ -64,6 +101,7 @@ model Despliegue {
   @@map("despliegue")
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Entidad {
   id                   Int       @id(map: "entidades_pk") @default(autoincrement())
   codigo               String    @db.VarChar(10)
@@ -79,6 +117,7 @@ model Entidad {
   @@map("entidades")
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Rol {
   id                   Int          @id(map: "roles_pk") @default(autoincrement())
   nombre               String       @db.VarChar(15)
@@ -93,6 +132,7 @@ model Rol {
   @@map("roles")
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Servidorcontenedor {
   id                   Int               @id(map: "servidor_contenedor_pk") @default(autoincrement())
   id_servidor          Int?
@@ -113,6 +153,7 @@ model Servidorcontenedor {
   @@map("servidor_contenedor")
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Servidor {
   id                   Int                  @id(map: "servidor_pk") @default(autoincrement())
   nro_cluster          Int
@@ -132,6 +173,7 @@ model Servidor {
   @@map("servidores")
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Sistema {
   id                   Int          @id(map: "sistema_pk") @default(autoincrement())
   id_padre             Int?
@@ -155,6 +197,7 @@ model Sistema {
   @@map("sistemas")
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Usuariorol {
   id                   Int              @id(map: "usuario_roles_pk") @default(autoincrement())
   id_usuario           Int?
@@ -177,6 +220,7 @@ model Usuariorol {
   @@map("usuario_roles")
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model Usuario {
   id                   Int          @id(map: "usuario_pk") @default(autoincrement())
   uuid_ciudadano       String?      @db.VarChar
@@ -192,39 +236,6 @@ model Usuario {
   usuario_roles        Usuariorol[]
 
   @@map("usuarios")
-}
-
-model User {
-  id                  Int        @id @default(autoincrement())
-  nombre              String?
-  email               String     @unique
-  hashedPassword      String     @default("")
-  salt                String     @default("")
-  resetToken          String?
-  resetTokenExpiresAt DateTime?
-  createdAt           DateTime   @default(now())
-  updatedAt           DateTime   @updatedAt
-  userRoles           UserRole[] // Relación con la tabla intermedia
-
-  @@map("user")
-}
-
-model Role {
-  id        Int        @id @default(autoincrement())
-  name      String     @unique
-  userRoles UserRole[] // Relación con la tabla intermedia
-
-  @@map("rol")
-}
-
-model UserRole {
-  id     Int  @id @default(autoincrement())
-  userId Int // Foreign key para User
-  roleId Int // Foreign key para Role
-  user   User @relation(fields: [userId], references: [id])
-  role   Role @relation(fields: [roleId], references: [id])
-
-  @@map("user_rol")
 }
 
 enum categoria {

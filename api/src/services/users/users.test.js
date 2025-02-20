@@ -21,21 +21,21 @@ describe('users', () => {
 
   scenario('creates a user', async () => {
     const result = await createUser({
-      input: { email: 'String7749329', updatedAt: '2025-02-19T15:37:42.667Z' },
+      input: { email: 'String3722334', updatedAt: '2025-02-20T13:52:47.838Z' },
     })
 
-    expect(result.email).toEqual('String7749329')
-    expect(result.updatedAt).toEqual(new Date('2025-02-19T15:37:42.667Z'))
+    expect(result.email).toEqual('String3722334')
+    expect(result.updatedAt).toEqual(new Date('2025-02-20T13:52:47.838Z'))
   })
 
   scenario('updates a user', async (scenario) => {
     const original = await user({ id: scenario.user.one.id })
     const result = await updateUser({
       id: original.id,
-      input: { email: 'String77799522' },
+      input: { email: 'String82489462' },
     })
 
-    expect(result.email).toEqual('String77799522')
+    expect(result.email).toEqual('String82489462')
   })
 
   scenario('deletes a user', async (scenario) => {

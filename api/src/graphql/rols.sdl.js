@@ -3,13 +3,17 @@ export const schema = gql`
     id: Int!
     nombre: String!
     tipo: String!
-    estado: String!
-    respaldo: JSON
-    fecha_creacion: DateTime
+    estado: estado!
+    fecha_creacion: DateTime!
     usuario_creacion: Int!
     fecha_modificacion: DateTime
     usuario_modificacion: Int
     usuario_roles: [Usuariorol]!
+  }
+
+  enum estado {
+    ACTIVO
+    INACTIVO
   }
 
   type Query {
@@ -20,31 +24,21 @@ export const schema = gql`
   input CreateRolInput {
     nombre: String!
     tipo: String!
-    estado: String!
-    respaldo: JSON
+    estado: estado!
+    fecha_creacion: DateTime!
     usuario_creacion: Int!
+    fecha_modificacion: DateTime
     usuario_modificacion: Int
-
-    descripcion: String
-    permisos: [String!]!
-    modulo_asociado: String
-    acceso_remoto: Boolean
   }
 
   input UpdateRolInput {
     nombre: String
     tipo: String
-    estado: String
-    respaldo: JSON
+    estado: estado
     fecha_creacion: DateTime
     usuario_creacion: Int
     fecha_modificacion: DateTime
     usuario_modificacion: Int
-
-    descripcion: String
-    permisos: [String!]!
-    modulo_asociado: String
-    acceso_remoto: Boolean
   }
 
   type Mutation {

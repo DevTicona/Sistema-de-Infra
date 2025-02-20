@@ -1,11 +1,11 @@
 import { db } from 'src/lib/db'
 
 export const sistemas = () => {
-  return db.sistema.findMany()
+  return db.sistemas.findMany()
 }
 
 export const sistema = ({ id }) => {
-  return db.sistema.findUnique({
+  return db.sistemas.findUnique({
     where: { id },
   })
 }
@@ -14,7 +14,7 @@ export const createSistema = ({ input }) => {
   const respaldoData = {
     version: input.version,
   }
-  return db.sistema.create({
+  return db.sistemas.create({
     data: {
       id_padre: input.id_padre,
       id_entidad: input.id_entidad,
@@ -22,9 +22,8 @@ export const createSistema = ({ input }) => {
       sigla: input.sigla,
       nombre: input.nombre,
       descripcion: input.descripcion,
-      tipo: input.tipo,
       estado: input.estado,
-      respaldo: respaldoData,
+      respaldo_creacion: respaldoData,
       usuario_creacion: input.usuario_creacion,
       fecha_creacion: new Date(),
     },
@@ -35,7 +34,7 @@ export const updateSistema = ({ id, input }) => {
   const respaldoData = {
     version: input.version,
   }
-  return db.sistema.update({
+  return db.sistemas.update({
     data: {
       id_padre: input.id_padre,
       id_entidad: input.id_entidad,
@@ -43,9 +42,8 @@ export const updateSistema = ({ id, input }) => {
       sigla: input.sigla,
       nombre: input.nombre,
       descripcion: input.descripcion,
-      tipo: input.tipo,
       estado: input.estado,
-      respaldo: respaldoData,
+      respaldo_creacion: respaldoData,
       usuario_modificacion: input.usuario_modificacion,
       fecha_modificacion: new Date(),
     },
@@ -53,33 +51,26 @@ export const updateSistema = ({ id, input }) => {
   })
 }
 
-export const deleteSistema = async ({ id }) => {
-  // Elimina registros dependientes en otras tablas
-  await db.componente.deleteMany({ where: { id_sistema: id } })
-  await db.usuariorol.deleteMany({ where: { id_sistema: id } })
-  await db.sistema.updateMany({
-    where: { id_padre: id },
-    data: { id_padre: null },
-  }) // Rompe relación recursiva
-
-  // Ahora sí, eliminar el sistema
-  return db.sistema.delete({ where: { id } })
+export const deleteSistema = ({ id }) => {
+  return db.sistemas.delete({
+    where: { id },
+  })
 }
 
 export const Sistema = {
   componentes: (_obj, { root }) => {
-    return db.sistema.findUnique({ where: { id: root?.id } }).componentes()
+    return db.sistemas.findUnique({ where: { id: root?.id } }).componentes()
   },
   entidades: (_obj, { root }) => {
-    return db.sistema.findUnique({ where: { id: root?.id } }).entidades()
+    return db.sistemas.findUnique({ where: { id: root?.id } }).entidades()
   },
   sistemas: (_obj, { root }) => {
-    return db.sistema.findUnique({ where: { id: root?.id } }).sistemas()
+    return db.sistemas.findUnique({ where: { id: root?.id } }).sistemas()
   },
   other_sistemas: (_obj, { root }) => {
-    return db.sistema.findUnique({ where: { id: root?.id } }).other_sistemas()
+    return db.sistemas.findUnique({ where: { id: root?.id } }).other_sistemas()
   },
   usuario_roles: (_obj, { root }) => {
-    return db.sistema.findUnique({ where: { id: root?.id } }).usuario_roles()
+    return db.sistemas.findUnique({ where: { id: root?.id } }).usuario_roles()
   },
 }

@@ -1,11 +1,11 @@
 import { db } from 'src/lib/db'
 
 export const roles = () => {
-  return db.role.findMany()
+  return db.rol.findMany()
 }
 
 export const role = ({ id }) => {
-  return db.role.findUnique({
+  return db.rol.findUnique({
     where: { id },
   })
 }
@@ -30,7 +30,7 @@ export const deleteRole = ({ id }) => {
 }
 
 export const Role = {
-  userRoles: (_obj, { root }) => {
-    return db.role.findUnique({ where: { id: root?.id } }).userRoles()
+  user_rol: (_obj, { root }) => {
+    return db.role.findUnique({ where: { id: root?.id } }).user_rol()
   },
 }

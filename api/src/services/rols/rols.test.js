@@ -24,15 +24,15 @@ describe('rols', () => {
       input: {
         nombre: 'String',
         tipo: 'String',
-        estado: 'String',
-        usuario_creacion: 6066403,
+        estado: 'ACTIVO',
+        usuario_creacion: 8147683,
       },
     })
 
     expect(result.nombre).toEqual('String')
     expect(result.tipo).toEqual('String')
-    expect(result.estado).toEqual('String')
-    expect(result.usuario_creacion).toEqual(6066403)
+    expect(result.estado).toEqual('ACTIVO')
+    expect(result.usuario_creacion).toEqual(8147683)
   })
 
   scenario('updates a rol', async (scenario) => {

@@ -2,7 +2,7 @@ export const schema = gql`
   type Role {
     id: Int!
     name: String!
-    userRoles: [UserRole]!
+    user_rol: [UserRol]!
   }
 
   type Query {
