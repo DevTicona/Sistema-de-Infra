@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { Link, routes } from '@redwoodjs/router';
-import { useMutation } from '@redwoodjs/web';
-import { toast } from '@redwoodjs/web/toast';
+import React, { useState } from 'react'
 
+import {
+  Visibility as VisibilityIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+} from '@mui/icons-material'
 import {
   Box,
   Paper,
@@ -22,15 +24,14 @@ import {
   DialogActions,
   Button,
   Typography,
-} from '@mui/material';
-import {
-  Visibility as VisibilityIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-} from '@mui/icons-material';
+} from '@mui/material'
 
-import { QUERY } from 'src/components/Sistema/SistemasCell';
-import { jsonTruncate, timeTag, truncate } from 'src/lib/formatters';
+import { Link, routes } from '@redwoodjs/router'
+import { useMutation } from '@redwoodjs/web'
+import { toast } from '@redwoodjs/web/toast'
+
+import { QUERY } from 'src/components/Sistema/SistemasCell'
+import { jsonTruncate, timeTag, truncate } from 'src/lib/formatters'
 
 const DELETE_SISTEMA_MUTATION = gql`
   mutation DeleteSistemaMutation($id: Int!) {
@@ -38,62 +39,62 @@ const DELETE_SISTEMA_MUTATION = gql`
       id
     }
   }
-`;
+`
 
 const SistemasList = ({ sistemas }) => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [orderBy, setOrderBy] = useState('id');
-  const [order, setOrder] = useState('asc');
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [orderBy, setOrderBy] = useState('id')
+  const [order, setOrder] = useState('asc')
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [selectedId, setSelectedId] = useState(null)
 
   const [deleteSistema] = useMutation(DELETE_SISTEMA_MUTATION, {
     onCompleted: () => {
-      toast.success('Sistema deleted successfully');
-      setDeleteDialogOpen(false);
+      toast.success('Sistema deleted successfully')
+      setDeleteDialogOpen(false)
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(error.message)
     },
     refetchQueries: [{ query: QUERY }],
     awaitRefetchQueries: true,
-  });
+  })
 
   const handleSort = (property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
+    const isAsc = orderBy === property && order === 'asc'
+    setOrder(isAsc ? 'desc' : 'asc')
+    setOrderBy(property)
+  }
 
   const sortedData = [...sistemas].sort((a, b) => {
-    const aValue = a[orderBy];
-    const bValue = b[orderBy];
+    const aValue = a[orderBy]
+    const bValue = b[orderBy]
 
     if (order === 'asc') {
-      return aValue < bValue ? -1 : 1;
+      return aValue < bValue ? -1 : 1
     } else {
-      return bValue < aValue ? -1 : 1;
+      return bValue < aValue ? -1 : 1
     }
-  });
+  })
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   const handleDeleteClick = (id) => {
-    setSelectedId(id);
-    setDeleteDialogOpen(true);
-  };
+    setSelectedId(id)
+    setDeleteDialogOpen(true)
+  }
 
   const handleDeleteConfirm = () => {
-    deleteSistema({ variables: { id: selectedId } });
-  };
+    deleteSistema({ variables: { id: selectedId } })
+  }
 
   const headers = [
     { id: 'id', label: 'Id' },
@@ -109,17 +110,19 @@ const SistemasList = ({ sistemas }) => {
     { id: 'usuario_creacion', label: 'Usuario Creación' },
     { id: 'fecha_modificacion', label: 'Fecha Modificación' },
     { id: 'usuario_modificacion', label: 'Usuario Modificación' },
-  ];
+  ]
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Paper style={{
-        width: '100%',
-        marginBottom: '16px',
-        overflow: 'hidden',
-        borderRadius: '12px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      }}>
+      <Paper
+        style={{
+          width: '100%',
+          marginBottom: '16px',
+          overflow: 'hidden',
+          borderRadius: '12px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        }}
+      >
         <TableContainer>
           <Table size="small" stickyHeader>
             <TableHead>
@@ -146,11 +149,13 @@ const SistemasList = ({ sistemas }) => {
                     </TableSortLabel>
                   </TableCell>
                 ))}
-                <TableCell style={{
-                  backgroundColor: '#1976d2',
-                  color: 'white',
-                  fontWeight: 'bold',
-                }}>
+                <TableCell
+                  style={{
+                    backgroundColor: '#1976d2',
+                    color: 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
                   Actions
                 </TableCell>
               </TableRow>
@@ -181,7 +186,9 @@ const SistemasList = ({ sistemas }) => {
                     <TableCell>{timeTag(sistema.fecha_creacion)}</TableCell>
                     <TableCell>{truncate(sistema.usuario_creacion)}</TableCell>
                     <TableCell>{timeTag(sistema.fecha_modificacion)}</TableCell>
-                    <TableCell>{truncate(sistema.usuario_modificacion)}</TableCell>
+                    <TableCell>
+                      {truncate(sistema.usuario_modificacion)}
+                    </TableCell>
                     <TableCell>
                       <Box style={{ display: 'flex', gap: '8px' }}>
                         <Tooltip title="View Details">
@@ -241,7 +248,7 @@ const SistemasList = ({ sistemas }) => {
         PaperProps={{
           style: {
             borderRadius: '8px',
-          }
+          },
         }}
       >
         <DialogTitle style={{ backgroundColor: '#1976d2', color: 'white' }}>
@@ -274,7 +281,7 @@ const SistemasList = ({ sistemas }) => {
         </DialogActions>
       </Dialog>
     </Box>
-  );
-};
+  )
+}
 
-export default SistemasList;
+export default SistemasList
