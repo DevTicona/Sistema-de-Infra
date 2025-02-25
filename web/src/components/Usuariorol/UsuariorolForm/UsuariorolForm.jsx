@@ -5,7 +5,6 @@ import {
   FormError,
   FieldError,
   Label,
-  NumberField,
   TextField,
   SelectField,
   Submit,
@@ -13,6 +12,7 @@ import {
 import { gql } from '@redwoodjs/graphql-client'
 import { useQuery } from '@redwoodjs/web'
 
+import { useAuth } from 'src/auth'
 // Consulta GraphQL para obtener los sistemas
 const OBTENER_USUARIOS = gql`
   query ObtenerUsuarios {
@@ -80,6 +80,7 @@ const RespaldoField = ({ defaultValue }) => {
   )
 }
 const UsuariorolForm = (props) => {
+  const { currentUser } = useAuth() // Obtén el usuario logueado
   const { data: usuariosData } = useQuery(OBTENER_USUARIOS)
   const { data: rolesData } = useQuery(OBTENER_ROLES)
   const { data: sistemasData } = useQuery(OBTENER_SISTEMAS)
@@ -92,6 +93,8 @@ const UsuariorolForm = (props) => {
       id_sistema: parseInt(data.id_sistema, 10),
       id_contenedor_logico: parseInt(data.id_contenedor_logico, 10),
       respaldo: data.respaldo ? JSON.parse(data.respaldo) : {},
+      usuario_modificacion: currentUser?.id, // Asigna el ID del usuario logueado
+      usuario_creacion: currentUser?.id, // Asigna el ID si es creación o mantenimiento
     }
     props.onSave(formData, props?.usuariorol?.id)
   }
@@ -265,54 +268,19 @@ const UsuariorolForm = (props) => {
         >
           Estado
         </Label>
-
-        <TextField
+        <SelectField
           name="estado"
           defaultValue={props.usuariorol?.estado}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
-        />
-
-        <FieldError name="estado" className="rw-field-error" />
+        >
+          <option value="ACTIVO">Activo</option>
+          <option value="INACTIVO">Inactivo</option>
+        </SelectField>
 
         {/* respaldo JSON Input */}
         <RespaldoField defaultValue={props.usuariorol?.respaldo} />
-
-        <Label
-          name="usuario_creacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario creacion
-        </Label>
-
-        <NumberField
-          name="usuario_creacion"
-          defaultValue={props.usuariorol?.usuario_creacion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="usuario_creacion" className="rw-field-error" />
-
-        <Label
-          name="usuario_modificacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario modificacion
-        </Label>
-
-        <NumberField
-          name="usuario_modificacion"
-          defaultValue={props.usuariorol?.usuario_modificacion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="usuario_modificacion" className="rw-field-error" />
 
         <div className="rw-button-group">
           <Submit disabled={props.loading} className="rw-button rw-button-blue">

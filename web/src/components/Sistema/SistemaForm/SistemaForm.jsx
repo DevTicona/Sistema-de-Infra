@@ -228,16 +228,16 @@ const SistemaForm = (props) => {
         >
           Estado
         </Label>
-
-        <TextField
+        <SelectField
           name="estado"
-          defaultValue={props.sistema?.estado}
+          defaultValue={props.servidor?.estado}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
-        />
-
-        <FieldError name="estado" className="rw-field-error" />
+        >
+          <option value="ACTIVO">Activo</option>
+          <option value="INACTIVO">Inactivo</option>
+        </SelectField>
 
         {/* Profile JSON Input */}
         <RespaldoField defaultValue={props.sistema?.respaldo_creacion} />

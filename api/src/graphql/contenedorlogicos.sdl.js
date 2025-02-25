@@ -1,13 +1,11 @@
 export const schema = gql`
   type Contenedorlogico {
     id: Int!
-    id_padre: Int
     codigo: String!
-    sigla: String!
     nombre: String!
     descripcion: String!
     tipo: String!
-    estado: String!
+    estado: estado!
     respaldo: JSON
     fecha_creacion: DateTime!
     usuario_creacion: Int!
@@ -18,34 +16,36 @@ export const schema = gql`
     usuario_roles: [Usuariorol]!
   }
 
+  enum estado {
+    ACTIVO
+    INACTIVO
+  }
+
   type Query {
     contenedorlogicos: [Contenedorlogico!]! @requireAuth
     contenedorlogico(id: Int!): Contenedorlogico @requireAuth
   }
 
   input CreateContenedorlogicoInput {
-    id_padre: Int
     codigo: String!
-    sigla: String!
     nombre: String!
     descripcion: String!
     tipo: String!
-    estado: String!
+    estado: estado!
     respaldo: JSON
     usuario_creacion: Int!
+    fecha_modificacion: DateTime
     usuario_modificacion: Int
 
     version: String
   }
 
   input UpdateContenedorlogicoInput {
-    id_padre: Int
     codigo: String
-    sigla: String
     nombre: String
     descripcion: String
     tipo: String
-    estado: String
+    estado: estado
     respaldo: JSON
     fecha_creacion: DateTime
     usuario_creacion: Int

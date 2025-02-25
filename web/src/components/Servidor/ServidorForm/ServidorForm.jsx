@@ -7,11 +7,12 @@ import {
   Label,
   NumberField,
   TextField,
+  SelectField,
   Submit,
 } from '@redwoodjs/forms'
 
 import { useAuth } from 'src/auth'
-import PLANTILLAS_RESPALDO from 'src/utils/plantillasRespaldo.js'
+import PLANTILLAS_RESPALDO from 'src/plantillas/plantillasRespaldo.js'
 
 const RespaldoField = ({ defaultValue, tipo }) => {
   const [respaldoData, setRespaldoData] = useState(
@@ -180,17 +181,19 @@ const ServidorForm = (props) => {
         >
           Estado
         </Label>
-        <TextField
+        <SelectField
           name="estado"
           defaultValue={props.servidor?.estado}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
-        />
-        <FieldError name="estado" className="rw-field-error" />
+        >
+          <option value="ACTIVO">Activo</option>
+          <option value="INACTIVO">Inactivo</option>
+        </SelectField>
 
         <RespaldoField
-          defaultValue={props.servidor?.respaldo}
+          defaultValue={props.servidor?.metadata}
           tipo="servidor"
         />
 

@@ -225,17 +225,16 @@ const ServidorcontenedorForm = (props) => {
         >
           Estado
         </Label>
-
-        <TextField
+        <SelectField
           name="estado"
           defaultValue={props.servidorcontenedor?.estado}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
-        />
-
-        <FieldError name="estado" className="rw-field-error" />
-
+        >
+          <option value="ACTIVO">Activo</option>
+          <option value="INACTIVO">Inactivo</option>
+        </SelectField>
         {/* Profile JSON Input */}
         <RespaldoField defaultValue={props.servidorcontenedor?.respaldo} />
 

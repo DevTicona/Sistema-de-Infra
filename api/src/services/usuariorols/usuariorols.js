@@ -1,11 +1,11 @@
 import { db } from 'src/lib/db'
 
 export const usuariorols = () => {
-  return db.usuariorol.findMany()
+  return db.usuario_roles.findMany()
 }
 
 export const usuariorol = ({ id }) => {
-  return db.usuariorol.findUnique({
+  return db.usuario_roles.findUnique({
     where: { id },
   })
 }
@@ -14,7 +14,7 @@ export const createUsuariorol = ({ input }) => {
   const respaldoData = {
     version: input.version,
   }
-  return db.usuariorol.create({
+  return db.usuario_roles.create({
     data: {
       id_usuario: input.id_usuario,
       id_rol: input.id_rol,
@@ -35,7 +35,7 @@ export const updateUsuariorol = ({ id, input }) => {
   const respaldoData = {
     version: input.version,
   }
-  return db.usuariorol.update({
+  return db.usuario_roles.update({
     data: {
       id_usuario: input.id_usuario,
       id_rol: input.id_rol,
@@ -54,24 +54,24 @@ export const updateUsuariorol = ({ id, input }) => {
 }
 
 export const deleteUsuariorol = ({ id }) => {
-  return db.usuariorol.delete({
+  return db.usuario_roles.delete({
     where: { id },
   })
 }
 
 export const Usuariorol = {
   contenedor_logico: (_obj, { root }) => {
-    return db.usuariorol
+    return db.usuario_roles
       .findUnique({ where: { id: root?.id } })
       .contenedor_logico()
   },
   roles: (_obj, { root }) => {
-    return db.usuariorol.findUnique({ where: { id: root?.id } }).roles()
+    return db.usuario_roles.findUnique({ where: { id: root?.id } }).roles()
   },
   sistemas: (_obj, { root }) => {
-    return db.usuariorol.findUnique({ where: { id: root?.id } }).sistemas()
+    return db.usuario_roles.findUnique({ where: { id: root?.id } }).sistemas()
   },
   usuarios: (_obj, { root }) => {
-    return db.usuariorol.findUnique({ where: { id: root?.id } }).usuarios()
+    return db.usuario_roles.findUnique({ where: { id: root?.id } }).usuarios()
   },
 }

@@ -1,4 +1,4 @@
-export const schema = gql `
+export const schema = gql`
   type Servidor {
     id: Int!
     nro_cluster: Int!
@@ -7,15 +7,20 @@ export const schema = gql `
     nodo: String!
     ip: String!
     tipo: String!
-    estado: String!
-    respaldo: JSON
+    estado: estado!
+    metadata: JSON
     fecha_creacion: DateTime!
     usuario_creacion: Int!
     fecha_modificacion: DateTime
     usuario_modificacion: Int
+    id_cuchilla: Int
     servidor_contenedor: [Servidorcontenedor]!
-    sistema_operativo: String
-    version_kernel: String
+    cuchillas: Cuchilla
+  }
+
+  enum estado {
+    ACTIVO
+    INACTIVO
   }
 
   type Query {
@@ -30,12 +35,16 @@ export const schema = gql `
     nodo: String!
     ip: String!
     tipo: String!
-    estado: String!
-    respaldo: JSON
+    estado: estado!
+    metadata: JSON
+    fecha_creacion: DateTime!
     usuario_creacion: Int!
+    fecha_modificacion: DateTime
     usuario_modificacion: Int
-    sistema_operativo: String
+    id_cuchilla: Int
+
     version_kernel: String
+    sistema_operativo: String
   }
 
   input UpdateServidorInput {
@@ -45,14 +54,16 @@ export const schema = gql `
     nodo: String
     ip: String
     tipo: String
-    estado: String
-    respaldo: JSON
+    estado: estado
+    metadata: JSON
     fecha_creacion: DateTime
     usuario_creacion: Int
     fecha_modificacion: DateTime
     usuario_modificacion: Int
-    sistema_operativo: String
+    id_cuchilla: Int
+
     version_kernel: String
+    sistema_operativo: String
   }
 
   type Mutation {

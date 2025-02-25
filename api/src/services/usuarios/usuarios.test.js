@@ -32,8 +32,8 @@ describe('usuarios', () => {
         profile: { foo: 'bar' },
         telefono: { foo: 'bar' },
         correo_electronico: { foo: 'bar' },
-        estado: 'String',
-        usuario_creacion: 6891469,
+        estado: 'ACTIVO',
+        usuario_creacion: 4173949,
       },
     })
 
@@ -41,8 +41,8 @@ describe('usuarios', () => {
     expect(result.profile).toEqual({ foo: 'bar' })
     expect(result.telefono).toEqual({ foo: 'bar' })
     expect(result.correo_electronico).toEqual({ foo: 'bar' })
-    expect(result.estado).toEqual('String')
-    expect(result.usuario_creacion).toEqual(6891469)
+    expect(result.estado).toEqual('ACTIVO')
+    expect(result.usuario_creacion).toEqual(4173949)
   })
 
   scenario('updates a usuario', async (scenario) => {

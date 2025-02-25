@@ -33,8 +33,8 @@ describe('despliegues', () => {
         nombre: 'String',
         descripcion: 'String',
         tipo: 'String',
-        estado: 'String',
-        usuario_creacion: 761324,
+        estado: 'ACTIVO',
+        usuario_creacion: 794052,
       },
     })
 
@@ -45,8 +45,8 @@ describe('despliegues', () => {
     expect(result.nombre).toEqual('String')
     expect(result.descripcion).toEqual('String')
     expect(result.tipo).toEqual('String')
-    expect(result.estado).toEqual('String')
-    expect(result.usuario_creacion).toEqual(761324)
+    expect(result.estado).toEqual('ACTIVO')
+    expect(result.usuario_creacion).toEqual(794052)
   })
 
   scenario('updates a despliegue', async (scenario) => {

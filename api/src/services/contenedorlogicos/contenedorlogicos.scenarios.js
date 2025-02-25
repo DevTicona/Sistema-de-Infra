@@ -3,23 +3,21 @@ export const standard = defineScenario({
     one: {
       data: {
         codigo: 'String',
-        sigla: 'String',
         nombre: 'String',
         descripcion: 'String',
         tipo: 'String',
-        estado: 'String',
-        usuario_creacion: 2208750,
+        estado: 'ACTIVO',
+        usuario_creacion: 7865712,
       },
     },
     two: {
       data: {
         codigo: 'String',
-        sigla: 'String',
         nombre: 'String',
         descripcion: 'String',
         tipo: 'String',
-        estado: 'String',
-        usuario_creacion: 1826963,
+        estado: 'ACTIVO',
+        usuario_creacion: 983144,
       },
     },
   },

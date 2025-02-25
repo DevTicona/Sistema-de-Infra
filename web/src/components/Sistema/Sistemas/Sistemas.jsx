@@ -174,6 +174,9 @@ const SistemasList = ({ sistemas }) => {
                         backgroundColor: '#f5f5f5',
                       },
                     }}
+                    sx={{ cursor: 'pointer' }}
+                    component={Link}
+                    to={routes.sistemaDetalle({ id: sistema.id })} // Asegúrate que esta ruta esté correctamente configurada en routes.js
                   >
                     <TableCell>{truncate(sistema.id)}</TableCell>
                     <TableCell>{truncate(sistema.id_padre)}</TableCell>

@@ -31,6 +31,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@escape.tech/graphql-armor-max-depth": "^2.4.0",
     "@mui/icons-material": "^6.4.4",
     "@mui/material": "^6.4.4",
     "@mui/x-charts": "^7.26.0",

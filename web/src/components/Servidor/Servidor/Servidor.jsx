@@ -1,6 +1,5 @@
 import { Link, routes, navigate } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
-
 import { toast } from '@redwoodjs/web/toast'
 
 import { jsonDisplay, timeTag } from 'src/lib/formatters'
@@ -73,8 +72,8 @@ const Servidor = ({ servidor }) => {
               <td>{servidor.estado}</td>
             </tr>
             <tr>
-              <th>Respaldo</th>
-              <td>{jsonDisplay(servidor.respaldo)}</td>
+              <th>Metadata</th>
+              <td>{jsonDisplay(servidor.metadata)}</td>
             </tr>
             <tr>
               <th>Fecha creacion</th>
@@ -91,6 +90,10 @@ const Servidor = ({ servidor }) => {
             <tr>
               <th>Usuario modificacion</th>
               <td>{servidor.usuario_modificacion}</td>
+            </tr>
+            <tr>
+              <th>Id cuchilla</th>
+              <td>{servidor.id_cuchilla}</td>
             </tr>
           </tbody>
         </table>

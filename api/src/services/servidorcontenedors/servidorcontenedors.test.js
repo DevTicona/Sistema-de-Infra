@@ -36,8 +36,8 @@ describe('servidorcontenedors', () => {
         nombre: 'String',
         descripcion: 'String',
         tipo: 'String',
-        estado: 'String',
-        usuario_creacion: 4501275,
+        estado: 'ACTIVO',
+        usuario_creacion: 6714933,
       },
     })
 
@@ -45,8 +45,8 @@ describe('servidorcontenedors', () => {
     expect(result.nombre).toEqual('String')
     expect(result.descripcion).toEqual('String')
     expect(result.tipo).toEqual('String')
-    expect(result.estado).toEqual('String')
-    expect(result.usuario_creacion).toEqual(4501275)
+    expect(result.estado).toEqual('ACTIVO')
+    expect(result.usuario_creacion).toEqual(6714933)
   })
 
   scenario('updates a servidorcontenedor', async (scenario) => {

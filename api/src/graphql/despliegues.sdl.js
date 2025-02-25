@@ -7,7 +7,7 @@ export const schema = gql`
     nombre: String!
     descripcion: String!
     tipo: String!
-    estado: String!
+    estado: estado!
     respaldo: JSON
     fecha_creacion: DateTime!
     usuario_creacion: Int!
@@ -15,6 +15,11 @@ export const schema = gql`
     usuario_modificacion: Int
     componentes: Componente
     contenedor_logico: Contenedorlogico!
+  }
+
+  enum estado {
+    ACTIVO
+    INACTIVO
   }
 
   type Query {
@@ -29,9 +34,10 @@ export const schema = gql`
     nombre: String!
     descripcion: String!
     tipo: String!
-    estado: String!
+    estado: estado!
     respaldo: JSON
     usuario_creacion: Int!
+    fecha_modificacion: DateTime
     usuario_modificacion: Int
 
     version: String
@@ -44,7 +50,7 @@ export const schema = gql`
     nombre: String
     descripcion: String
     tipo: String
-    estado: String
+    estado: estado
     respaldo: JSON
     fecha_creacion: DateTime
     usuario_creacion: Int

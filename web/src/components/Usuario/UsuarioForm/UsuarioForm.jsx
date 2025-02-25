@@ -5,6 +5,7 @@ import {
   FormError,
   FieldError,
   Label,
+  SelectField,
   TextField,
   Submit,
 } from '@redwoodjs/forms'
@@ -206,17 +207,16 @@ const UsuarioForm = (props) => {
         >
           Estado
         </Label>
-
-        <TextField
+        <SelectField
           name="estado"
           defaultValue={props.usuario?.estado}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
-        />
-
-        <FieldError name="estado" className="rw-field-error" />
-
+        >
+          <option value="ACTIVO">Activo</option>
+          <option value="INACTIVO">Inactivo</option>
+        </SelectField>
         <div className="rw-button-group">
           <Submit disabled={props.loading} className="rw-button rw-button-blue">
             Save

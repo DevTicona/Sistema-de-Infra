@@ -14,11 +14,10 @@ export const schema = gql`
     sistemas: Sistema!
     despliegue: [Despliegue]!
   }
-  enum categoria {
-    Backend
-    Frontend
-    Database
-    NFS
+
+  enum estado {
+    ACTIVO
+    INACTIVO
   }
 
   enum entorno {
@@ -28,9 +27,11 @@ export const schema = gql`
     Test
   }
 
-  enum estado {
-    ACTIVO
-    INACTIVO
+  enum categoria {
+    Backend
+    Frontend
+    Database
+    NFS
   }
 
   type Query {
@@ -46,6 +47,7 @@ export const schema = gql`
     entorno: entorno!
     categoria: categoria!
     usuario_creacion: Int!
+    fecha_modificacion: DateTime
     usuario_modificacion: Int
   }
 

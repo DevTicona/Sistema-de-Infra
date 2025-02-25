@@ -31,20 +31,20 @@ describe('componentes', () => {
         id_sistema: scenario.componente.two.id_sistema,
         nombre: 'String',
         descripcion: 'String',
-        estado: 'String',
-        entorno: 'String',
-        categoria: 'String',
-        usuario_creacion: 7013233,
+        estado: 'ACTIVO',
+        entorno: 'Demo',
+        categoria: 'Backend',
+        usuario_creacion: 7583623,
       },
     })
 
     expect(result.id_sistema).toEqual(scenario.componente.two.id_sistema)
     expect(result.nombre).toEqual('String')
     expect(result.descripcion).toEqual('String')
-    expect(result.estado).toEqual('String')
-    expect(result.entorno).toEqual('String')
-    expect(result.categoria).toEqual('String')
-    expect(result.usuario_creacion).toEqual(7013233)
+    expect(result.estado).toEqual('ACTIVO')
+    expect(result.entorno).toEqual('Demo')
+    expect(result.categoria).toEqual('Backend')
+    expect(result.usuario_creacion).toEqual(7583623)
   })
 
   scenario('updates a componente', async (scenario) => {

@@ -151,7 +151,9 @@ model servidores {
   usuario_creacion     Int                   @map("_usuario_creacion")
   fecha_modificacion   DateTime?             @map("_fecha_modificacion") @db.Timestamptz(6)
   usuario_modificacion Int?                  @map("_usuario_modificacion")
+  id_cuchilla          Int?
   servidor_contenedor  servidor_contenedor[]
+  cuchillas            cuchillas?            @relation(fields: [id_cuchilla], references: [id], map: "fk_servidores_cuchillas")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -211,6 +213,49 @@ model usuarios {
   fecha_modificacion   DateTime?       @map("_fecha_modificacion") @db.Timestamptz(6)
   usuario_modificacion Int?            @map("_usuario_modificacion")
   usuario_roles        usuario_roles[]
+}
+
+model cuchillas {
+  id                   Int          @id(map: "servidores_blade_pk") @default(autoincrement())
+  id_rack              Int
+  nombre               String       @db.VarChar(100)
+  posicion_slot        Int?
+  estado               estado       @default(ACTIVO)
+  metadata             Json?
+  fecha_creacion       DateTime     @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int          @map("_usuario_creacion")
+  fecha_modificacion   DateTime?    @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?         @map("_usuario_modificacion")
+  racks                racks        @relation(fields: [id_rack], references: [id], onDelete: Cascade, map: "fk_blade_rack")
+  servidores           servidores[]
+}
+
+model data_centers {
+  id                   Int       @id(map: "data_centers_pk") @default(autoincrement())
+  nombre               String    @db.VarChar(100)
+  ubicacion            String?   @db.VarChar(200)
+  capacidad            Int?
+  estado               estado    @default(ACTIVO)
+  fecha_creacion       DateTime  @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int       @map("_usuario_creacion")
+  fecha_modificacion   DateTime? @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?      @map("_usuario_modificacion")
+  racks                racks[]
+}
+
+model racks {
+  id                   Int          @id(map: "racks_pk") @default(autoincrement())
+  id_data_center       Int
+  nombre               String       @db.VarChar(100)
+  ubicacion            String?      @db.VarChar(200)
+  capacidad_en_u       Int?
+  estado               estado       @default(ACTIVO)
+  fecha_creacion       DateTime     @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int          @map("_usuario_creacion")
+  fecha_modificacion   DateTime?    @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?         @map("_usuario_modificacion")
+  cuchillas            cuchillas[]
+  data_centers         data_centers @relation(fields: [id_data_center], references: [id], onDelete: Cascade, map: "fk_racks_data_centers")
 }
 
 enum categoria {

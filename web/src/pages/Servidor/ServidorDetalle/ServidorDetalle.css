@@ -1,0 +1,40 @@
+/* ServidorDetalle.css */
+
+.ServidorDetalle {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.ServidorDetalle h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.ServidorDetalle table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.ServidorDetalle th,
+.ServidorDetalle td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.ServidorDetalle th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.ServidorDetalle tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.ServidorDetalle tr:hover {
+  background-color: #e9e9e9;
+}

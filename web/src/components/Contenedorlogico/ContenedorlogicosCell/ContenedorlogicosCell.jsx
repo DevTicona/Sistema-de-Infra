@@ -6,9 +6,7 @@ export const QUERY = gql`
   query FindContenedorlogicos {
     contenedorlogicos {
       id
-      id_padre
       codigo
-      sigla
       nombre
       descripcion
       tipo

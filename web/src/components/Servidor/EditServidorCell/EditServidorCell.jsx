@@ -1,5 +1,4 @@
 import { navigate, routes } from '@redwoodjs/router'
-
 import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
 
@@ -16,11 +15,12 @@ export const QUERY = gql`
       ip
       tipo
       estado
-      respaldo
+      metadata
       fecha_creacion
       usuario_creacion
       fecha_modificacion
       usuario_modificacion
+      id_cuchilla
     }
   }
 `
@@ -36,11 +36,12 @@ const UPDATE_SERVIDOR_MUTATION = gql`
       ip
       tipo
       estado
-      respaldo
+      metadata
       fecha_creacion
       usuario_creacion
       fecha_modificacion
       usuario_modificacion
+      id_cuchilla
     }
   }
 `

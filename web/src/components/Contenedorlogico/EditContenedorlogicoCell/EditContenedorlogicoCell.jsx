@@ -1,5 +1,4 @@
 import { navigate, routes } from '@redwoodjs/router'
-
 import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
 
@@ -9,9 +8,7 @@ export const QUERY = gql`
   query EditContenedorlogicoById($id: Int!) {
     contenedorlogico: contenedorlogico(id: $id) {
       id
-      id_padre
       codigo
-      sigla
       nombre
       descripcion
       tipo
@@ -32,9 +29,7 @@ const UPDATE_CONTENEDORLOGICO_MUTATION = gql`
   ) {
     updateContenedorlogico(id: $id, input: $input) {
       id
-      id_padre
       codigo
-      sigla
       nombre
       descripcion
       tipo

@@ -1,6 +1,5 @@
 import { Link, routes, navigate } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
-
 import { toast } from '@redwoodjs/web/toast'
 
 import { jsonDisplay, timeTag } from 'src/lib/formatters'
@@ -50,16 +49,8 @@ const Contenedorlogico = ({ contenedorlogico }) => {
               <td>{contenedorlogico.id}</td>
             </tr>
             <tr>
-              <th>Id padre</th>
-              <td>{contenedorlogico.id_padre}</td>
-            </tr>
-            <tr>
               <th>Codigo</th>
               <td>{contenedorlogico.codigo}</td>
-            </tr>
-            <tr>
-              <th>Sigla</th>
-              <td>{contenedorlogico.sigla}</td>
             </tr>
             <tr>
               <th>Nombre</th>

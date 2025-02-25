@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
-import { Link, routes } from '@redwoodjs/router';
-import { useMutation } from '@redwoodjs/web';
-import { toast } from '@redwoodjs/web/toast';
+import React, { useState } from 'react'
 
+import {
+  Visibility as VisibilityIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+} from '@mui/icons-material'
 import {
   Box,
   Paper,
   Table,
   TableBody,
   TableCell,
-  tableCellClasses,
   TableContainer,
   TableHead,
   TablePagination,
@@ -23,15 +24,14 @@ import {
   DialogActions,
   Button,
   Typography,
-} from '@mui/material';
-import {
-  Visibility as VisibilityIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-} from '@mui/icons-material';
+} from '@mui/material'
 
-import { QUERY } from 'src/components/Contenedorlogico/ContenedorlogicosCell';
-import { jsonTruncate, timeTag, truncate } from 'src/lib/formatters';
+import { Link, routes } from '@redwoodjs/router'
+import { useMutation } from '@redwoodjs/web'
+import { toast } from '@redwoodjs/web/toast'
+
+import { QUERY } from 'src/components/Contenedorlogico/ContenedorlogicosCell'
+import { jsonTruncate, timeTag, truncate } from 'src/lib/formatters'
 
 const DELETE_CONTENEDORLOGICO_MUTATION = gql`
   mutation DeleteContenedorlogicoMutation($id: Int!) {
@@ -39,68 +39,69 @@ const DELETE_CONTENEDORLOGICO_MUTATION = gql`
       id
     }
   }
-`;
+`
 
 const ContenedorlogicosList = ({ contenedorlogicos }) => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [orderBy, setOrderBy] = useState('id');
-  const [order, setOrder] = useState('asc');
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [orderBy, setOrderBy] = useState('id')
+  const [order, setOrder] = useState('asc')
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [selectedId, setSelectedId] = useState(null)
 
-  const [deleteContenedorlogico] = useMutation(DELETE_CONTENEDORLOGICO_MUTATION, {
-    onCompleted: () => {
-      toast.success('Contenedorlogico deleted successfully');
-      setDeleteDialogOpen(false);
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-    refetchQueries: [{ query: QUERY }],
-    awaitRefetchQueries: true,
-  });
+  const [deleteContenedorlogico] = useMutation(
+    DELETE_CONTENEDORLOGICO_MUTATION,
+    {
+      onCompleted: () => {
+        toast.success('Contenedorlogico deleted successfully')
+        setDeleteDialogOpen(false)
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      },
+      refetchQueries: [{ query: QUERY }],
+      awaitRefetchQueries: true,
+    }
+  )
 
   const handleSort = (property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
+    const isAsc = orderBy === property && order === 'asc'
+    setOrder(isAsc ? 'desc' : 'asc')
+    setOrderBy(property)
+  }
 
   const sortedData = [...contenedorlogicos].sort((a, b) => {
-    const aValue = a[orderBy];
-    const bValue = b[orderBy];
+    const aValue = a[orderBy]
+    const bValue = b[orderBy]
 
     if (order === 'asc') {
-      return aValue < bValue ? -1 : 1;
+      return aValue < bValue ? -1 : 1
     } else {
-      return bValue < aValue ? -1 : 1;
+      return bValue < aValue ? -1 : 1
     }
-  });
+  })
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   const handleDeleteClick = (id) => {
-    setSelectedId(id);
-    setDeleteDialogOpen(true);
-  };
+    setSelectedId(id)
+    setDeleteDialogOpen(true)
+  }
 
   const handleDeleteConfirm = () => {
-    deleteContenedorlogico({ variables: { id: selectedId } });
-  };
+    deleteContenedorlogico({ variables: { id: selectedId } })
+  }
 
   const headers = [
     { id: 'id', label: 'Id' },
-    { id: 'id_padre', label: 'Id Padre' },
     { id: 'codigo', label: 'Código' },
-    { id: 'sigla', label: 'Sigla' },
     { id: 'nombre', label: 'Nombre' },
     { id: 'descripcion', label: 'Descripción' },
     { id: 'tipo', label: 'Tipo' },
@@ -110,17 +111,19 @@ const ContenedorlogicosList = ({ contenedorlogicos }) => {
     { id: 'usuario_creacion', label: 'Usuario Creación' },
     { id: 'fecha_modificacion', label: 'Fecha Modificación' },
     { id: 'usuario_modificacion', label: 'Usuario Modificación' },
-  ];
+  ]
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Paper sx={{
-        width: '100%',
-        mb: 2,
-        overflow: 'hidden',
-        borderRadius: '12px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      }}>
+      <Paper
+        sx={{
+          width: '100%',
+          mb: 2,
+          overflow: 'hidden',
+          borderRadius: '12px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        }}
+      >
         <TableContainer>
           <Table size="small" stickyHeader>
             <TableHead>
@@ -147,11 +150,13 @@ const ContenedorlogicosList = ({ contenedorlogicos }) => {
                     </TableSortLabel>
                   </TableCell>
                 ))}
-                <TableCell style={{
-                  backgroundColor: '#1976d2',
-                  color: 'white',
-                  fontWeight: 'bold',
-                }}>
+                <TableCell
+                  style={{
+                    backgroundColor: '#1976d2',
+                    color: 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
                   Actions
                 </TableCell>
               </TableRow>
@@ -170,9 +175,7 @@ const ContenedorlogicosList = ({ contenedorlogicos }) => {
                     }}
                   >
                     <TableCell>{truncate(row.id)}</TableCell>
-                    <TableCell>{truncate(row.id_padre)}</TableCell>
                     <TableCell>{truncate(row.codigo)}</TableCell>
-                    <TableCell>{truncate(row.sigla)}</TableCell>
                     <TableCell>{truncate(row.nombre)}</TableCell>
                     <TableCell>{truncate(row.descripcion)}</TableCell>
                     <TableCell>{truncate(row.tipo)}</TableCell>
@@ -241,7 +244,7 @@ const ContenedorlogicosList = ({ contenedorlogicos }) => {
         PaperProps={{
           style: {
             borderRadius: '8px',
-          }
+          },
         }}
       >
         <DialogTitle style={{ backgroundColor: '#1976d2', color: 'white' }}>
@@ -274,7 +277,7 @@ const ContenedorlogicosList = ({ contenedorlogicos }) => {
         </DialogActions>
       </Dialog>
     </Box>
-  );
-};
+  )
+}
 
-export default ContenedorlogicosList;
+export default ContenedorlogicosList

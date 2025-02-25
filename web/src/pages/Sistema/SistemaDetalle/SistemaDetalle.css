@@ -1,0 +1,40 @@
+/* ServidorDetalle.css */
+
+.SistemaDetalle {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.SistemaDetalle h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.SistemaDetalle table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.SistemaDetalle th,
+.SistemaDetalle td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.SistemaDetalle th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.SistemaDetalle tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.SistemaDetalle tr:hover {
+  background-color: #e9e9e9;
+}

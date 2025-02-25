@@ -1,11 +1,11 @@
 import { db } from 'src/lib/db'
 
 export const contenedorlogicos = () => {
-  return db.contenedorlogico.findMany()
+  return db.contenedor_logico.findMany()
 }
 
 export const contenedorlogico = ({ id }) => {
-  return db.contenedorlogico.findUnique({
+  return db.contenedor_logico.findUnique({
     where: { id },
   })
 }
@@ -14,11 +14,9 @@ export const createContenedorlogico = ({ input }) => {
   const respaldoData = {
     version: input.version,
   }
-  return db.contenedorlogico.create({
+  return db.contenedor_logico.create({
     data: {
-      id_padre: input.id_padre,
       codigo: input.codigo,
-      sigla: input.sigla,
       nombre: input.nombre,
       descripcion: input.descripcion,
       tipo: input.tipo,
@@ -34,11 +32,9 @@ export const updateContenedorlogico = ({ id, input }) => {
   const respaldoData = {
     version: input.version,
   }
-  return db.contenedorlogico.update({
+  return db.contenedor_logico.update({
     data: {
-      id_padre: input.id_padre,
       codigo: input.codigo,
-      sigla: input.sigla,
       nombre: input.nombre,
       descripcion: input.descripcion,
       tipo: input.tipo,
@@ -52,24 +48,24 @@ export const updateContenedorlogico = ({ id, input }) => {
 }
 
 export const deleteContenedorlogico = ({ id }) => {
-  return db.contenedorlogico.delete({
+  return db.contenedor_logico.delete({
     where: { id },
   })
 }
 
 export const Contenedorlogico = {
   despliegue: (_obj, { root }) => {
-    return db.contenedorlogico
+    return db.contenedor_logico
       .findUnique({ where: { id: root?.id } })
       .despliegue()
   },
   servidor_contenedor: (_obj, { root }) => {
-    return db.contenedorlogico
+    return db.contenedor_logico
       .findUnique({ where: { id: root?.id } })
       .servidor_contenedor()
   },
   usuario_roles: (_obj, { root }) => {
-    return db.contenedorlogico
+    return db.contenedor_logico
       .findUnique({ where: { id: root?.id } })
       .usuario_roles()
   },

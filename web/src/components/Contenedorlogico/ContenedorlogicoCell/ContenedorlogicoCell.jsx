@@ -4,9 +4,7 @@ export const QUERY = gql`
   query FindContenedorlogicoById($id: Int!) {
     contenedorlogico: contenedorlogico(id: $id) {
       id
-      id_padre
       codigo
-      sigla
       nombre
       descripcion
       tipo
