@@ -1,18 +1,36 @@
+import {
+  Storage,
+  Cloud,
+  Code,
+  People,
+  Warning,
+  Timeline,
+  BarChart,
+  Refresh,
+} from '@mui/icons-material'
+import {
+  Box,
+  Grid,
+  Typography,
+  Card,
+  CardContent,
+  IconButton,
+  useTheme,
+  Container,
+} from '@mui/material'
+import {
+  LineChart,
+  Line,
+  Bar,
+  BarChart as RechartsBarChart,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 
 import { Link, routes } from '@redwoodjs/router'
-import {
-  Box, Grid, Typography, Card, CardContent,
-  LinearProgress, IconButton, useTheme, Container
-} from '@mui/material'
-
-
-import {
-  Storage, Cloud, Code, People,
-  Warning, Timeline, BarChart, Refresh
-} from '@mui/icons-material'
-import { LineChart, Line, Bar, BarChart as RechartsBarChart,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
-} from 'recharts'
 
 const HomePage = () => {
   const theme = useTheme()
@@ -23,7 +41,7 @@ const HomePage = () => {
     servidores: 45,
     contenedores: 128,
     usuarios: 23,
-    alertas: 3
+    alertas: 3,
   }
 
   const serverStatusData = [
@@ -53,17 +71,21 @@ const HomePage = () => {
   ]
 
   const InfoCard = ({ icon, title, value, link }) => (
-    <Card sx={{
-      height: '100%',
-      background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.secondary.main} 90%)`,
-      color: 'white',
-      transition: 'transform 0.3s',
-      '&:hover': { transform: 'translateY(-5px)' }
-    }}>
+    <Card
+      sx={{
+        height: '100%',
+        background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.secondary.main} 90%)`,
+        color: 'white',
+        transition: 'transform 0.3s',
+        '&:hover': { transform: 'translateY(-5px)' },
+      }}
+    >
       <CardContent>
         <Box display="flex" alignItems="center" mb={2}>
           {icon}
-          <Typography variant="h6" sx={{ ml: 1 }}>{title}</Typography>
+          <Typography variant="h6" sx={{ ml: 1 }}>
+            {title}
+          </Typography>
         </Box>
         <Typography variant="h4" component="div" gutterBottom>
           {value}
@@ -106,14 +128,14 @@ const HomePage = () => {
             link={routes.servidors()}
           />
         </Grid>
-        <Grid item xs={12} md={6} lg={3}>
+        {/*<Grid item xs={12} md={6} lg={3}>
           <InfoCard
             icon={<Code fontSize="large" />}
             title="Contenedores"
-            value={systemStats.contenedores}
-            link={routes.contenedorlogicos()}
+            value={systemStats.data_centers}
+            link={routes.data_centers()}
           />
-        </Grid>
+        </Grid>*/}
         <Grid item xs={12} md={6} lg={3}>
           <InfoCard
             icon={<People fontSize="large" />}
@@ -128,7 +150,11 @@ const HomePage = () => {
       <Grid container spacing={4}>
         <Grid item xs={12} lg={8}>
           <Card sx={{ p: 2 }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
               <SectionHeader
                 title="Estado de Servidores"
                 icon={<Timeline color="primary" />}
@@ -198,10 +224,12 @@ const HomePage = () => {
                     borderRadius: 2,
                     bgcolor: theme.palette.error.light,
                     display: 'flex',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
                   }}
                 >
-                  <Typography><strong>{alert.server}</strong></Typography>
+                  <Typography>
+                    <strong>{alert.server}</strong>
+                  </Typography>
                   <Typography>{alert.description}</Typography>
                 </Box>
               ))}
@@ -225,14 +253,21 @@ const HomePage = () => {
                     borderRadius: 2,
                     bgcolor: theme.palette.grey[100],
                     display: 'flex',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
                   }}
                 >
-                  <Typography><strong>{deploy.system}</strong> v{deploy.version}</Typography>
-                  <Typography color={
-                    deploy.status === 'Exitoso' ? 'success.main' :
-                    deploy.status === 'Fallido' ? 'error.main' : 'warning.main'
-                  }>
+                  <Typography>
+                    <strong>{deploy.system}</strong> v{deploy.version}
+                  </Typography>
+                  <Typography
+                    color={
+                      deploy.status === 'Exitoso'
+                        ? 'success.main'
+                        : deploy.status === 'Fallido'
+                          ? 'error.main'
+                          : 'warning.main'
+                    }
+                  >
                     {deploy.status}
                   </Typography>
                 </Box>
@@ -240,7 +275,6 @@ const HomePage = () => {
             </Box>
           </Card>
         </Grid>
-
       </Grid>
     </Container>
   )

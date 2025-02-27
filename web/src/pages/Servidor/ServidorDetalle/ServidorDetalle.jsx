@@ -9,28 +9,17 @@ const SERVIDOR_DETALLE_QUERY = gql`
   query GetServidorDetalle($id: Int!) {
     servidor(id: $id) {
       nombre
-      servidor_contenedor {
-        contenedor_logico {
+      despliegue {
+        nombre
+        componentes {
           nombre
-          despliegue {
+          sistemas {
             nombre
-            componentes {
-              nombre
-              sistemas {
-                nombre
-              }
-            }
           }
         }
       }
-      cuchillas {
+      data_centers {
         nombre
-        racks {
-          nombre
-          data_centers {
-            nombre
-          }
-        }
       }
     }
   }

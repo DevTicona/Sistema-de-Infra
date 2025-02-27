@@ -1,0 +1,70 @@
+/* src/styles/ServidoresPage.css */
+
+/* Estilo para la tabla */
+.table-container {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.table-container table {
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+.table-container th,
+.table-container td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.table-container th {
+  background-color: #4CAF50;
+  color: white;
+  font-weight: bold;
+}
+
+.table-container td {
+  background-color: #fff;
+}
+
+.table-container tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Estilo para los encabezados */
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* Estilo para las tarjetas de los elementos */
+.card {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin: 10px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.card h2 {
+  margin-top: 10px;
+  font-size: 20px;
+  font-weight: 500;
+}

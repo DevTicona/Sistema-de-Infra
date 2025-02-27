@@ -28,25 +28,23 @@ describe('despliegues', () => {
   scenario('creates a despliegue', async (scenario) => {
     const result = await createDespliegue({
       input: {
-        id_contenedor_logico: scenario.despliegue.two.id_contenedor_logico,
-        sigla: 'String',
+        id_servidor: scenario.despliegue.two.id_servidor,
+        agrupador: 'String',
         nombre: 'String',
         descripcion: 'String',
         tipo: 'String',
         estado: 'ACTIVO',
-        usuario_creacion: 794052,
+        usuario_creacion: 6361034,
       },
     })
 
-    expect(result.id_contenedor_logico).toEqual(
-      scenario.despliegue.two.id_contenedor_logico
-    )
-    expect(result.sigla).toEqual('String')
+    expect(result.id_servidor).toEqual(scenario.despliegue.two.id_servidor)
+    expect(result.agrupador).toEqual('String')
     expect(result.nombre).toEqual('String')
     expect(result.descripcion).toEqual('String')
     expect(result.tipo).toEqual('String')
     expect(result.estado).toEqual('ACTIVO')
-    expect(result.usuario_creacion).toEqual(794052)
+    expect(result.usuario_creacion).toEqual(6361034)
   })
 
   scenario('updates a despliegue', async (scenario) => {
@@ -55,10 +53,10 @@ describe('despliegues', () => {
     })
     const result = await updateDespliegue({
       id: original.id,
-      input: { sigla: 'String2' },
+      input: { agrupador: 'String2' },
     })
 
-    expect(result.sigla).toEqual('String2')
+    expect(result.agrupador).toEqual('String2')
   })
 
   scenario('deletes a despliegue', async (scenario) => {

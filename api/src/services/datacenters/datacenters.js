@@ -12,13 +12,27 @@ export const datacenter = ({ id }) => {
 
 export const createDatacenter = ({ input }) => {
   return db.data_centers.create({
-    data: input,
+    data: {
+      nombre: input.nombre,
+      ubicacion: input.ubicacion,
+      capacidad: input.capacidad,
+      estado: input.estado,
+      fecha_creacion: new Date(),
+      usuario_creacion: input.usuario_creacion,
+    },
   })
 }
 
 export const updateDatacenter = ({ id, input }) => {
   return db.data_centers.update({
-    data: input,
+    data: {
+      nombre: input.nombre,
+      ubicacion: input.ubicacion,
+      capacidad: input.capacidad,
+      estado: input.estado,
+      fecha_modificacion: new Date(),
+      usuario_modificacion: input.usuario_modificacion,
+    },
     where: { id },
   })
 }
@@ -30,7 +44,7 @@ export const deleteDatacenter = ({ id }) => {
 }
 
 export const Datacenter = {
-  racks: (_obj, { root }) => {
-    return db.data_centers.findUnique({ where: { id: root?.id } }).racks()
+  servidores: (_obj, { root }) => {
+    return db.data_centers.findUnique({ where: { id: root?.id } }).servidores()
   },
 }

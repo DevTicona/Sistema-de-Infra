@@ -29,24 +29,22 @@ describe('usuariorols', () => {
     const result = await createUsuariorol({
       input: {
         id_rol: scenario.usuariorol.two.id_rol,
-        id_contenedor_logico: scenario.usuariorol.two.id_contenedor_logico,
+        id_despliegue: scenario.usuariorol.two.id_despliegue,
         id_sistema: scenario.usuariorol.two.id_sistema,
         descripcion: 'String',
         tipo: 'String',
-        estado: 'String',
-        usuario_creacion: 1897998,
+        estado: 'ACTIVO',
+        usuario_creacion: 5770252,
       },
     })
 
     expect(result.id_rol).toEqual(scenario.usuariorol.two.id_rol)
-    expect(result.id_contenedor_logico).toEqual(
-      scenario.usuariorol.two.id_contenedor_logico
-    )
+    expect(result.id_despliegue).toEqual(scenario.usuariorol.two.id_despliegue)
     expect(result.id_sistema).toEqual(scenario.usuariorol.two.id_sistema)
     expect(result.descripcion).toEqual('String')
     expect(result.tipo).toEqual('String')
-    expect(result.estado).toEqual('String')
-    expect(result.usuario_creacion).toEqual(1897998)
+    expect(result.estado).toEqual('ACTIVO')
+    expect(result.usuario_creacion).toEqual(5770252)
   })
 
   scenario('updates a usuariorol', async (scenario) => {

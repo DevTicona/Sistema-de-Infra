@@ -1,9 +1,10 @@
 import { Link, routes } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
+
 import { toast } from '@redwoodjs/web/toast'
 
 import { QUERY } from 'src/components/Usuariorol/UsuariorolsCell'
-import { jsonTruncate, timeTag, truncate } from 'src/lib/formatters'
+import { formatEnum, jsonTruncate, timeTag, truncate } from 'src/lib/formatters'
 
 const DELETE_USUARIOROL_MUTATION = gql`
   mutation DeleteUsuariorolMutation($id: Int!) {
@@ -42,7 +43,7 @@ const UsuariorolsList = ({ usuariorols }) => {
             <th>Id</th>
             <th>Id usuario</th>
             <th>Id rol</th>
-            <th>Id contenedor logico</th>
+            <th>Id despliegue</th>
             <th>Id sistema</th>
             <th>Descripcion</th>
             <th>Tipo</th>
@@ -61,11 +62,11 @@ const UsuariorolsList = ({ usuariorols }) => {
               <td>{truncate(usuariorol.id)}</td>
               <td>{truncate(usuariorol.id_usuario)}</td>
               <td>{truncate(usuariorol.id_rol)}</td>
-              <td>{truncate(usuariorol.id_contenedor_logico)}</td>
+              <td>{truncate(usuariorol.id_despliegue)}</td>
               <td>{truncate(usuariorol.id_sistema)}</td>
               <td>{truncate(usuariorol.descripcion)}</td>
               <td>{truncate(usuariorol.tipo)}</td>
-              <td>{truncate(usuariorol.estado)}</td>
+              <td>{formatEnum(usuariorol.estado)}</td>
               <td>{jsonTruncate(usuariorol.respaldo)}</td>
               <td>{timeTag(usuariorol.fecha_creacion)}</td>
               <td>{truncate(usuariorol.usuario_creacion)}</td>

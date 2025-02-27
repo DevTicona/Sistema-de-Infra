@@ -7,14 +7,14 @@ export const standard = defineScenario({
         nombre: 'String',
         descripcion: 'String',
         estado: 'ACTIVO',
-        usuario_creacion: 2953136,
+        usuario_creacion: 5499029,
         entidades: {
           create: {
             codigo: 'String',
             sigla: 'String',
             nombre: 'String',
             estado: 'ACTIVO',
-            usuario_creacion: 838051,
+            usuario_creacion: 1688766,
           },
         },
       },
@@ -26,14 +26,14 @@ export const standard = defineScenario({
         nombre: 'String',
         descripcion: 'String',
         estado: 'ACTIVO',
-        usuario_creacion: 7788891,
+        usuario_creacion: 4088412,
         entidades: {
           create: {
             codigo: 'String',
             sigla: 'String',
             nombre: 'String',
             estado: 'ACTIVO',
-            usuario_creacion: 8202403,
+            usuario_creacion: 9105699,
           },
         },
       },

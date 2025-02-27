@@ -13,9 +13,9 @@ export const schema = gql`
     usuario_creacion: Int!
     fecha_modificacion: DateTime
     usuario_modificacion: Int
-    id_cuchilla: Int
-    servidor_contenedor: [Servidorcontenedor]!
-    cuchillas: Cuchilla
+    id_data_center: Int
+    despliegue: [Despliegue]!
+    data_centers: Datacenter
   }
 
   enum estado {
@@ -24,8 +24,8 @@ export const schema = gql`
   }
 
   type Query {
-    servidors: [Servidor!]! @requireAuth
-    servidor(id: Int!): Servidor @requireAuth
+    servidors: [Servidor!]! @skipAuth
+    servidor(id: Int!): Servidor @skipAuth
   }
 
   input CreateServidorInput {
@@ -37,14 +37,13 @@ export const schema = gql`
     tipo: String!
     estado: estado!
     metadata: JSON
-    fecha_creacion: DateTime!
     usuario_creacion: Int!
     fecha_modificacion: DateTime
     usuario_modificacion: Int
-    id_cuchilla: Int
+    id_data_center: Int
 
-    version_kernel: String
-    sistema_operativo: String
+    blade: String
+    chasis: String
   }
 
   input UpdateServidorInput {
@@ -60,16 +59,14 @@ export const schema = gql`
     usuario_creacion: Int
     fecha_modificacion: DateTime
     usuario_modificacion: Int
-    id_cuchilla: Int
-
-    version_kernel: String
-    sistema_operativo: String
+    id_data_center: Int
+    blade: String
+    chasis: String
   }
 
   type Mutation {
-    createServidor(input: CreateServidorInput!): Servidor! @requireAuth
-    updateServidor(id: Int!, input: UpdateServidorInput!): Servidor!
-      @requireAuth
-    deleteServidor(id: Int!): Servidor! @requireAuth
+    createServidor(input: CreateServidorInput!): Servidor! @skipAuth
+    updateServidor(id: Int!, input: UpdateServidorInput!): Servidor! @skipAuth
+    deleteServidor(id: Int!): Servidor! @skipAuth
   }
 `

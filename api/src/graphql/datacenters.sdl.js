@@ -9,7 +9,7 @@ export const schema = gql`
     usuario_creacion: Int!
     fecha_modificacion: DateTime
     usuario_modificacion: Int
-    racks: [Rack]!
+    servidores: [Servidor]!
   }
 
   enum estado {
@@ -18,8 +18,8 @@ export const schema = gql`
   }
 
   type Query {
-    datacenters: [Datacenter!]! @requireAuth
-    datacenter(id: Int!): Datacenter @requireAuth
+    datacenters: [Datacenter!]! @skipAuth
+    datacenter(id: Int!): Datacenter @skipAuth
   }
 
   input CreateDatacenterInput {
@@ -27,7 +27,6 @@ export const schema = gql`
     ubicacion: String
     capacidad: Int
     estado: estado!
-    fecha_creacion: DateTime!
     usuario_creacion: Int!
     fecha_modificacion: DateTime
     usuario_modificacion: Int

@@ -11,9 +11,9 @@ export const servidor = ({ id }) => {
 }
 
 export const createServidor = ({ input }) => {
-  const respaldoData = {
-    sistema_operativo: input.sistema_operativo,
-    version_kernel: input.version_kernel,
+  const metadataData = {
+    blade: input.blade,
+    chasis: input.chasis,
   }
   return db.servidores.create({
     data: {
@@ -24,18 +24,18 @@ export const createServidor = ({ input }) => {
       ip: input.ip,
       tipo: input.tipo,
       estado: input.estado,
-      metadata: respaldoData,
+      metadata: metadataData,
       fecha_creacion: new Date(),
-      usuario_creacion: input.usuario_creacion,
-      id_cuchilla: input.id_cuchilla,
+      usuario_creacion: 1,
+      id_data_center: input.id_data_center,
     },
   })
 }
 
 export const updateServidor = ({ id, input }) => {
-  const respaldoData = {
-    sistema_operativo: input.sistema_operativo,
-    version_kernel: input.version_kernel,
+  const metadataData = {
+    blade: input.blade,
+    chasis: input.chasis,
   }
   return db.servidores.update({
     data: {
@@ -46,10 +46,10 @@ export const updateServidor = ({ id, input }) => {
       ip: input.ip,
       tipo: input.tipo,
       estado: input.estado,
-      metadata: respaldoData,
-      fecha_modificacion: new Date(),
-      usuario_modificacion: input.usuario_modificacion,
-      id_cuchilla: input.id_cuchilla,
+      metadata: metadataData,
+      fecha_creacion: new Date(),
+      usuario_creacion: input.usuario_creacion,
+      id_data_center: input.id_data_center,
     },
     where: { id },
   })
@@ -62,12 +62,10 @@ export const deleteServidor = ({ id }) => {
 }
 
 export const Servidor = {
-  servidor_contenedor: (_obj, { root }) => {
-    return db.servidores
-      .findUnique({ where: { id: root?.id } })
-      .servidor_contenedor()
+  despliegue: (_obj, { root }) => {
+    return db.servidores.findUnique({ where: { id: root?.id } }).despliegue()
   },
-  cuchillas: (_obj, { root }) => {
-    return db.servidores.findUnique({ where: { id: root?.id } }).cuchillas()
+  data_centers: (_obj, { root }) => {
+    return db.servidores.findUnique({ where: { id: root?.id } }).data_centers()
   },
 }

@@ -26,8 +26,8 @@ export const schema = gql`
   }
 
   type Query {
-    sistemas: [Sistema!]! @requireAuth
-    sistema(id: Int!): Sistema @requireAuth
+    sistemas: [Sistema!]! @skipAuth
+    sistema(id: Int!): Sistema @skipAuth
   }
 
   input CreateSistemaInput {
@@ -40,9 +40,13 @@ export const schema = gql`
     estado: estado!
     respaldo_creacion: JSON
     usuario_creacion: Int!
+    fecha_modificacion: DateTime
     usuario_modificacion: Int
 
-    version: String
+    tipo_respaldo: String # Nuevo campo
+    detalle_respaldo: String # Nuevo campo
+    fecha_solicitud: String # Nuevo campo
+    responsable_admin: String! # Nuevo campo
   }
 
   input UpdateSistemaInput {
@@ -59,12 +63,15 @@ export const schema = gql`
     fecha_modificacion: DateTime
     usuario_modificacion: Int
 
-    version: String
+    tipo_respaldo: String # Nuevo campo
+    detalle_respaldo: String # Nuevo campo
+    fecha_solicitud: String! # Nuevo campo
+    responsable_admin: String! # Nuevo campo
   }
 
   type Mutation {
-    createSistema(input: CreateSistemaInput!): Sistema! @requireAuth
-    updateSistema(id: Int!, input: UpdateSistemaInput!): Sistema! @requireAuth
-    deleteSistema(id: Int!): Sistema! @requireAuth
+    createSistema(input: CreateSistemaInput!): Sistema! @skipAuth
+    updateSistema(id: Int!, input: UpdateSistemaInput!): Sistema! @skipAuth
+    deleteSistema(id: Int!): Sistema! @skipAuth
   }
 `

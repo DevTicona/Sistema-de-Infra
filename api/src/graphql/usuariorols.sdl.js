@@ -3,63 +3,66 @@ export const schema = gql`
     id: Int!
     id_usuario: Int
     id_rol: Int!
-    id_contenedor_logico: Int!
+    id_despliegue: Int!
     id_sistema: Int!
     descripcion: String!
     tipo: String!
-    estado: String!
+    estado: estado!
     respaldo: JSON
     fecha_creacion: DateTime!
     usuario_creacion: Int!
     fecha_modificacion: DateTime
     usuario_modificacion: Int
-    contenedor_logico: Contenedorlogico!
+    despliegue: Despliegue!
     roles: Rol!
     sistemas: Sistema!
     usuarios: Usuario
   }
 
+  enum estado {
+    ACTIVO
+    INACTIVO
+  }
+
   type Query {
-    usuariorols: [Usuariorol!]! @requireAuth
-    usuariorol(id: Int!): Usuariorol @requireAuth
+    usuariorols: [Usuariorol!]! @skipAuth
+    usuariorol(id: Int!): Usuariorol @skipAuth
   }
 
   input CreateUsuariorolInput {
     id_usuario: Int
     id_rol: Int!
-    id_contenedor_logico: Int!
+    id_despliegue: Int!
     id_sistema: Int!
     descripcion: String!
     tipo: String!
-    estado: String!
+    estado: estado!
     respaldo: JSON
+    fecha_creacion: DateTime!
     usuario_creacion: Int!
+    fecha_modificacion: DateTime
     usuario_modificacion: Int
-
-    version: String
   }
 
   input UpdateUsuariorolInput {
     id_usuario: Int
     id_rol: Int
-    id_contenedor_logico: Int
+    id_despliegue: Int
     id_sistema: Int
     descripcion: String
     tipo: String
-    estado: String
+    estado: estado
     respaldo: JSON
     fecha_creacion: DateTime
     usuario_creacion: Int
     fecha_modificacion: DateTime
     usuario_modificacion: Int
-
-    version: String
   }
 
   type Mutation {
-    createUsuariorol(input: CreateUsuariorolInput!): Usuariorol! @requireAuth
+    createUsuariorol(input: CreateUsuariorolInput!): Usuariorol! @skipAuth
     updateUsuariorol(id: Int!, input: UpdateUsuariorolInput!): Usuariorol!
-      @requireAuth
-    deleteUsuariorol(id: Int!): Usuariorol! @requireAuth
+      @skipAuth
+    deleteUsuariorol(id: Int!): Usuariorol! @skipAuth
   }
 `

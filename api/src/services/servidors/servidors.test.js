@@ -28,25 +28,25 @@ describe('servidors', () => {
   scenario('creates a servidor', async () => {
     const result = await createServidor({
       input: {
-        nro_cluster: 9691510,
-        vmid: 5689526,
+        nro_cluster: 5032789,
+        vmid: 2167162,
         nombre: 'String',
         nodo: 'String',
         ip: 'String',
         tipo: 'String',
         estado: 'ACTIVO',
-        usuario_creacion: 9399229,
+        usuario_creacion: 1162104,
       },
     })
 
-    expect(result.nro_cluster).toEqual(9691510)
-    expect(result.vmid).toEqual(5689526)
+    expect(result.nro_cluster).toEqual(5032789)
+    expect(result.vmid).toEqual(2167162)
     expect(result.nombre).toEqual('String')
     expect(result.nodo).toEqual('String')
     expect(result.ip).toEqual('String')
     expect(result.tipo).toEqual('String')
     expect(result.estado).toEqual('ACTIVO')
-    expect(result.usuario_creacion).toEqual(9399229)
+    expect(result.usuario_creacion).toEqual(1162104)
   })
 
   scenario('updates a servidor', async (scenario) => {
@@ -55,10 +55,10 @@ describe('servidors', () => {
     })
     const result = await updateServidor({
       id: original.id,
-      input: { nro_cluster: 489486 },
+      input: { nro_cluster: 6731926 },
     })
 
-    expect(result.nro_cluster).toEqual(489486)
+    expect(result.nro_cluster).toEqual(6731926)
   })
 
   scenario('deletes a servidor', async (scenario) => {

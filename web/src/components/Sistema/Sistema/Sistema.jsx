@@ -1,8 +1,9 @@
 import { Link, routes, navigate } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
+
 import { toast } from '@redwoodjs/web/toast'
 
-import { jsonDisplay, timeTag } from 'src/lib/formatters'
+import { formatEnum, jsonDisplay, timeTag } from 'src/lib/formatters'
 
 const DELETE_SISTEMA_MUTATION = gql`
   mutation DeleteSistemaMutation($id: Int!) {
@@ -69,10 +70,10 @@ const Sistema = ({ sistema }) => {
             </tr>
             <tr>
               <th>Estado</th>
-              <td>{sistema.estado}</td>
+              <td>{formatEnum(sistema.estado)}</td>
             </tr>
             <tr>
-              <th>Respaldo</th>
+              <th>Respaldo creacion</th>
               <td>{jsonDisplay(sistema.respaldo_creacion)}</td>
             </tr>
             <tr>

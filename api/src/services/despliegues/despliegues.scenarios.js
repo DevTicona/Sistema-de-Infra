@@ -2,40 +2,44 @@ export const standard = defineScenario({
   despliegue: {
     one: {
       data: {
-        sigla: 'String',
+        agrupador: 'String',
         nombre: 'String',
         descripcion: 'String',
         tipo: 'String',
         estado: 'ACTIVO',
-        usuario_creacion: 4887145,
-        contenedor_logico: {
+        usuario_creacion: 1205112,
+        servidores: {
           create: {
-            codigo: 'String',
+            nro_cluster: 4191119,
+            vmid: 8542666,
             nombre: 'String',
-            descripcion: 'String',
+            nodo: 'String',
+            ip: 'String',
             tipo: 'String',
             estado: 'ACTIVO',
-            usuario_creacion: 5676900,
+            usuario_creacion: 4202965,
           },
         },
       },
     },
     two: {
       data: {
-        sigla: 'String',
+        agrupador: 'String',
         nombre: 'String',
         descripcion: 'String',
         tipo: 'String',
         estado: 'ACTIVO',
-        usuario_creacion: 5910650,
-        contenedor_logico: {
+        usuario_creacion: 847961,
+        servidores: {
           create: {
-            codigo: 'String',
+            nro_cluster: 551485,
+            vmid: 2781750,
             nombre: 'String',
-            descripcion: 'String',
+            nodo: 'String',
+            ip: 'String',
             tipo: 'String',
             estado: 'ACTIVO',
-            usuario_creacion: 685572,
+            usuario_creacion: 551679,
           },
         },
       },

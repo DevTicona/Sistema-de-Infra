@@ -27,11 +27,11 @@ describe('datacenters', () => {
 
   scenario('creates a datacenter', async () => {
     const result = await createDatacenter({
-      input: { nombre: 'String', usuario_creacion: 3551454 },
+      input: { nombre: 'String', usuario_creacion: 3112083 },
     })
 
     expect(result.nombre).toEqual('String')
-    expect(result.usuario_creacion).toEqual(3551454)
+    expect(result.usuario_creacion).toEqual(3112083)
   })
 
   scenario('updates a datacenter', async (scenario) => {

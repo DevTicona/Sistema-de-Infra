@@ -7,8 +7,8 @@ export const QUERY = gql`
     despliegues {
       id
       id_componente
-      id_contenedor_logico
-      sigla
+      id_servidor
+      agrupador
       nombre
       descripcion
       tipo

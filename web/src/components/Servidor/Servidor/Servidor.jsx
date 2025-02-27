@@ -1,8 +1,9 @@
 import { Link, routes, navigate } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
+
 import { toast } from '@redwoodjs/web/toast'
 
-import { jsonDisplay, timeTag } from 'src/lib/formatters'
+import { formatEnum, jsonDisplay, timeTag } from 'src/lib/formatters'
 
 const DELETE_SERVIDOR_MUTATION = gql`
   mutation DeleteServidorMutation($id: Int!) {
@@ -69,7 +70,7 @@ const Servidor = ({ servidor }) => {
             </tr>
             <tr>
               <th>Estado</th>
-              <td>{servidor.estado}</td>
+              <td>{formatEnum(servidor.estado)}</td>
             </tr>
             <tr>
               <th>Metadata</th>
@@ -92,8 +93,8 @@ const Servidor = ({ servidor }) => {
               <td>{servidor.usuario_modificacion}</td>
             </tr>
             <tr>
-              <th>Id cuchilla</th>
-              <td>{servidor.id_cuchilla}</td>
+              <th>Id data center</th>
+              <td>{servidor.id_data_center}</td>
             </tr>
           </tbody>
         </table>

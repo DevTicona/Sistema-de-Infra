@@ -1,0 +1,38 @@
+.container {
+  padding: 20px;
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.despliegue-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.despliegue-table th, .despliegue-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.rw-table-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.rw-button {
+  padding: 5px 10px;
+  text-decoration: none;
+  color: white;
+}
+
+.rw-button-small {
+  font-size: 14px;
+}
+
+.rw-button-blue {
+  background-color: #007bff;
+}

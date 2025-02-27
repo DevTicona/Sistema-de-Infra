@@ -18,8 +18,8 @@ export const schema = gql`
   }
 
   type Query {
-    entidads: [Entidad!]! @requireAuth
-    entidad(id: Int!): Entidad @requireAuth
+    entidads: [Entidad!]! @skipAuth
+    entidad(id: Int!): Entidad @skipAuth
   }
 
   input CreateEntidadInput {

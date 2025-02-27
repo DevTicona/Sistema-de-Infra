@@ -1,8 +1,9 @@
 import { Link, routes, navigate } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
+
 import { toast } from '@redwoodjs/web/toast'
 
-import { jsonDisplay, timeTag } from 'src/lib/formatters'
+import { formatEnum, jsonDisplay, timeTag } from 'src/lib/formatters'
 
 const DELETE_DESPLIEGUE_MUTATION = gql`
   mutation DeleteDespliegueMutation($id: Int!) {
@@ -48,12 +49,12 @@ const Despliegue = ({ despliegue }) => {
               <td>{despliegue.id_componente}</td>
             </tr>
             <tr>
-              <th>Id contenedor logico</th>
-              <td>{despliegue.id_contenedor_logico}</td>
+              <th>Id servidor</th>
+              <td>{despliegue.id_servidor}</td>
             </tr>
             <tr>
-              <th>Sigla</th>
-              <td>{despliegue.sigla}</td>
+              <th>Agrupador</th>
+              <td>{despliegue.agrupador}</td>
             </tr>
             <tr>
               <th>Nombre</th>
@@ -69,7 +70,7 @@ const Despliegue = ({ despliegue }) => {
             </tr>
             <tr>
               <th>Estado</th>
-              <td>{despliegue.estado}</td>
+              <td>{formatEnum(despliegue.estado)}</td>
             </tr>
             <tr>
               <th>Respaldo</th>

@@ -12,8 +12,12 @@ export const sistema = ({ id }) => {
 
 export const createSistema = ({ input }) => {
   const respaldoData = {
-    version: input.version,
+    tipo_respaldo: input.tipo_respaldo,
+    detalle_respaldo: input.detalle_respaldo,
+    fecha_solicitud: input.fecha_solicitud,
+    responsable_admin: input.responsable_admin,
   }
+
   return db.sistemas.create({
     data: {
       id_padre: input.id_padre,
@@ -32,8 +36,12 @@ export const createSistema = ({ input }) => {
 
 export const updateSistema = ({ id, input }) => {
   const respaldoData = {
-    version: input.version,
+    tipo_respaldo: input.tipo_respaldo,
+    detalle_respaldo: input.detalle_respaldo,
+    fecha_solicitud: input.fecha_solicitud,
+    responsable_admin: input.responsable_admin,
   }
+
   return db.sistemas.update({
     data: {
       id_padre: input.id_padre,

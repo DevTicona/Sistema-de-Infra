@@ -4,7 +4,7 @@ import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
 
 import { QUERY } from 'src/components/Despliegue/DesplieguesCell'
-import { jsonTruncate, timeTag, truncate } from 'src/lib/formatters'
+import { formatEnum, jsonTruncate, timeTag, truncate } from 'src/lib/formatters'
 
 const DELETE_DESPLIEGUE_MUTATION = gql`
   mutation DeleteDespliegueMutation($id: Int!) {
@@ -42,8 +42,8 @@ const DesplieguesList = ({ despliegues }) => {
           <tr>
             <th>Id</th>
             <th>Id componente</th>
-            <th>Id contenedor logico</th>
-            <th>Sigla</th>
+            <th>Id servidor</th>
+            <th>Agrupador</th>
             <th>Nombre</th>
             <th>Descripcion</th>
             <th>Tipo</th>
@@ -61,12 +61,12 @@ const DesplieguesList = ({ despliegues }) => {
             <tr key={despliegue.id}>
               <td>{truncate(despliegue.id)}</td>
               <td>{truncate(despliegue.id_componente)}</td>
-              <td>{truncate(despliegue.id_contenedor_logico)}</td>
-              <td>{truncate(despliegue.sigla)}</td>
+              <td>{truncate(despliegue.id_servidor)}</td>
+              <td>{truncate(despliegue.agrupador)}</td>
               <td>{truncate(despliegue.nombre)}</td>
               <td>{truncate(despliegue.descripcion)}</td>
               <td>{truncate(despliegue.tipo)}</td>
-              <td>{truncate(despliegue.estado)}</td>
+              <td>{formatEnum(despliegue.estado)}</td>
               <td>{jsonTruncate(despliegue.respaldo)}</td>
               <td>{timeTag(despliegue.fecha_creacion)}</td>
               <td>{truncate(despliegue.usuario_creacion)}</td>

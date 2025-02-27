@@ -10,7 +10,6 @@ import {
   People,
   Dashboard,
   Cloud,
-  Layers,
   Security,
 } from '@mui/icons-material'
 import {
@@ -41,27 +40,16 @@ const HomeLayout = ({ children }) => {
   const trigger = useScrollTrigger({ threshold: 100 })
   const { isAuthenticated, currentUser, logOut, hasRole } = useAuth()
 
-  console.log('useAuth data:', { isAuthenticated, currentUser, hasRole })
-  console.log('isAdmin:', hasRole(['admin', 'editor']))
   const menuItems = [
     { name: 'Home', route: routes.home(), icon: <Dashboard /> },
-    { name: 'Entidades', route: routes.entidads(), icon: <Business /> },
+    { name: 'Data center', route: routes.datacenters(), icon: <Cloud /> },
+    { name: 'Servidores', route: routes.servidors(), icon: <Cloud /> },
+    { name: 'Despliegues', route: routes.despliegues(), icon: <Cloud /> },
     { name: 'Sistemas', route: routes.sistemas(), icon: <Code /> },
     { name: 'Componentes', route: routes.componentes(), icon: <Storage /> },
-    { name: 'Servidores', route: routes.servidors(), icon: <Cloud /> },
-    {
-      name: 'Contenedores',
-      route: routes.contenedorlogicos(),
-      icon: <Layers />,
-    },
-    { name: 'Despliegues', route: routes.despliegues(), icon: <People /> },
+    { name: 'Entidades', route: routes.entidads(), icon: <Business /> },
     { name: 'Usuarios', route: routes.usuarios(), icon: <People /> },
     { name: 'Roles', route: routes.rols(), icon: <Security /> },
-    {
-      name: 'Servidor Contenedor',
-      route: routes.servidorcontenedors(),
-      icon: <Security />,
-    },
     ...(isAuthenticated && hasRole(['admin'])
       ? [{ name: 'userRoles', route: routes.userRols(), icon: <Security /> }]
       : []),

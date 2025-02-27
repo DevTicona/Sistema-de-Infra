@@ -1,4 +1,5 @@
 import { navigate, routes } from '@redwoodjs/router'
+
 import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
 
@@ -20,7 +21,7 @@ export const QUERY = gql`
       usuario_creacion
       fecha_modificacion
       usuario_modificacion
-      id_cuchilla
+      id_data_center
     }
   }
 `
@@ -41,7 +42,7 @@ const UPDATE_SERVIDOR_MUTATION = gql`
       usuario_creacion
       fecha_modificacion
       usuario_modificacion
-      id_cuchilla
+      id_data_center
     }
   }
 `

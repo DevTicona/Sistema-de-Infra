@@ -35,8 +35,8 @@ export const schema = gql`
   }
 
   type Query {
-    componentes: [Componente!]! @requireAuth
-    componente(id: Int!): Componente @requireAuth
+    componentes: [Componente!]! @skipAuth
+    componente(id: Int!): Componente @skipAuth
   }
 
   input CreateComponenteInput {
@@ -65,9 +65,9 @@ export const schema = gql`
   }
 
   type Mutation {
-    createComponente(input: CreateComponenteInput!): Componente! @requireAuth
+    createComponente(input: CreateComponenteInput!): Componente! @skipAuth
     updateComponente(id: Int!, input: UpdateComponenteInput!): Componente!
-      @requireAuth
-    deleteComponente(id: Int!): Componente! @requireAuth
+      @skipAuth
+    deleteComponente(id: Int!): Componente! @skipAuth
   }
 `

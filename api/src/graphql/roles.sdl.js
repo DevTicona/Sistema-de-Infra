@@ -6,8 +6,8 @@ export const schema = gql`
   }
 
   type Query {
-    roles: [Role!]! @requireAuth
-    role(id: Int!): Role @requireAuth
+    roles: [Role!]! @skipAuth
+    role(id: Int!): Role @skipAuth
   }
 
   input CreateRoleInput {

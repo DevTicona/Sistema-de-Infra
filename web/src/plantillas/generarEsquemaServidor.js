@@ -1,4 +1,4 @@
-import PLANTILLAS_RESPALDO from './plantillasRespaldo.js'
+import PLANTILLAS_RESPALDO from './plantillasMetadata.js'
 
 const generarCamposServidor = (servidorTemplate) => {
   let campos = ''

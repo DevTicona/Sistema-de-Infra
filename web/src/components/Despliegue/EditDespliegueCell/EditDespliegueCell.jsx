@@ -10,8 +10,8 @@ export const QUERY = gql`
     despliegue: despliegue(id: $id) {
       id
       id_componente
-      id_contenedor_logico
-      sigla
+      id_servidor
+      agrupador
       nombre
       descripcion
       tipo
@@ -30,8 +30,8 @@ const UPDATE_DESPLIEGUE_MUTATION = gql`
     updateDespliegue(id: $id, input: $input) {
       id
       id_componente
-      id_contenedor_logico
-      sigla
+      id_servidor
+      agrupador
       nombre
       descripcion
       tipo

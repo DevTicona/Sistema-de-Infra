@@ -1,0 +1,41 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.left-container {
+  flex: 1;
+  padding: 20px;
+}
+
+.right-container {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.chasis-button, .navigate-button {
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.navigate-button {
+  margin-top: 20px;
+}

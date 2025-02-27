@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import {
   Form,
@@ -23,7 +23,8 @@ const OBTENER_SISTEMAS = gql`
     }
   }
 `
-// Consulta GraphQL para obtener los sistemas
+
+// Consulta GraphQL para obtener las entidades
 const OBTENER_ENTIDADES = gql`
   query ObtenerEntidades {
     entidads {
@@ -35,29 +36,95 @@ const OBTENER_ENTIDADES = gql`
 
 const RespaldoField = ({ defaultValue }) => {
   const [respaldoData, setRespaldoData] = useState(
-    defaultValue || { version: '' }
+    Array.isArray(defaultValue)
+      ? defaultValue
+      : [
+          {
+            tipo_respaldo: '',
+            detalle_respaldo: '',
+            fecha_solicitud: '',
+            responsable_admin: '',
+          },
+        ]
   )
 
-  const handleChange = (event) => {
-    setRespaldoData({
+  const handleChange = (event, index) => {
+    const { name, value } = event.target
+    const updatedData = [...respaldoData]
+    updatedData[index] = {
+      ...updatedData[index],
+      [name]: value,
+    }
+    setRespaldoData(updatedData)
+  }
+
+  const handleAddRespaldo = () => {
+    setRespaldoData([
       ...respaldoData,
-      [event.target.name]: event.target.value,
-    })
+      {
+        tipo_respaldo: '',
+        detalle_respaldo: '',
+        fecha_solicitud: '',
+        responsable_admin: '',
+      },
+    ])
   }
 
   return (
     <div>
-      <Label className="rw-label">Versión del sistema</Label>
-      <TextField
-        name="version"
-        value={respaldoData.version || ''}
-        onChange={handleChange}
-        className="rw-input"
-      />
+      <Label className="rw-label">Respaldo del sistema</Label>
+      {respaldoData.map((respaldo, index) => (
+        <div key={index} className="respaldo-row">
+          <div className="rw-input-group">
+            <Label className="rw-label">Tipo de Respaldo</Label>
+            <TextField
+              name="tipo_respaldo"
+              value={respaldo.tipo_respaldo || ''}
+              onChange={(e) => handleChange(e, index)}
+              className="rw-input"
+            />
+          </div>
+
+          <div className="rw-input-group">
+            <Label className="rw-label">Detalle del Respaldo</Label>
+            <TextField
+              name="detalle_respaldo"
+              value={respaldo.detalle_respaldo || ''}
+              onChange={(e) => handleChange(e, index)}
+              className="rw-input"
+            />
+          </div>
+
+          <div className="rw-input-group">
+            <Label className="rw-label">Fecha de Solicitud</Label>
+            <TextField
+              name="fecha_solicitud"
+              value={respaldo.fecha_solicitud || ''}
+              onChange={(e) => handleChange(e, index)}
+              className="rw-input"
+            />
+          </div>
+
+          <div className="rw-input-group">
+            <Label className="rw-label">Responsable Administrativo</Label>
+            <TextField
+              name="responsable_admin"
+              value={respaldo.responsable_admin || ''}
+              onChange={(e) => handleChange(e, index)}
+              className="rw-input"
+            />
+          </div>
+        </div>
+      ))}
+
+      <button type="button" onClick={handleAddRespaldo} className="rw-button">
+        Agregar Respaldo
+      </button>
+
       <input
         type="hidden"
-        name="respaldo"
-        value={JSON.stringify(respaldoData)} // Convertir los datos del respaldo a JSON
+        name="respaldo_creacion"
+        value={JSON.stringify(respaldoData)}
       />
     </div>
   )
@@ -68,16 +135,25 @@ const SistemaForm = (props) => {
   const { data: sistemasData } = useQuery(OBTENER_SISTEMAS)
   const { data: entidadesData } = useQuery(OBTENER_ENTIDADES)
 
+  // Estado para los datos del sistema a editar
+  const [formData, setFormData] = useState(props.sistema || {})
+
+  useEffect(() => {
+    if (props.sistema) {
+      setFormData(props.sistema) // Asegúrate de que el estado se actualice con los datos del sistema
+    }
+  }, [props.sistema]) // Se actualiza cuando props.sistema cambia
+
   const onSubmit = (data) => {
     const formData = {
       ...data,
       id_padre: parseInt(data.id_padre, 10),
       id_entidad: parseInt(data.id_entidad, 10),
       respaldo_creacion: data.respaldo_creacion
-        ? JSON.parse(data.respaldo_creacion)
-        : {},
+        ? JSON.parse(data.respaldo_creacion) // Convierte el JSON a objeto
+        : [],
       usuario_modificacion: currentUser?.id, // Asigna el ID del usuario logueado
-      usuario_creacion: currentUser?.id, // Asigna el ID si es creación o mantenimiento
+      usuario_creacion: 1, // Asigna el ID si es creación o mantenimiento
     }
     props.onSave(formData, props?.sistema?.id)
   }
@@ -103,7 +179,7 @@ const SistemaForm = (props) => {
 
         <SelectField
           name="id_padre"
-          defaultValue={props.sistema?.id_padre || ''}
+          defaultValue={formData?.id_padre || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
         >
@@ -121,7 +197,7 @@ const SistemaForm = (props) => {
 
         <FieldError name="id_padre" className="rw-field-error" />
 
-        {/* Otros campos del formulario */}
+        {/* Selección de la entidad */}
         <Label
           name="id_entidad"
           className="rw-label"
@@ -131,7 +207,7 @@ const SistemaForm = (props) => {
         </Label>
         <SelectField
           name="id_entidad"
-          defaultValue={props.sistema?.id_entidad || ''}
+          defaultValue={formData?.id_entidad || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
@@ -149,22 +225,21 @@ const SistemaForm = (props) => {
         </SelectField>
         <FieldError name="id_entidad" className="rw-field-error" />
 
+        {/* Campos adicionales del formulario */}
         <Label
           name="codigo"
           className="rw-label"
           errorClassName="rw-label rw-label-error"
         >
-          Codigo
+          Código
         </Label>
-
         <TextField
           name="codigo"
-          defaultValue={props.sistema?.codigo}
+          defaultValue={formData?.codigo || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="codigo" className="rw-field-error" />
 
         <Label
@@ -174,15 +249,13 @@ const SistemaForm = (props) => {
         >
           Sigla
         </Label>
-
         <TextField
           name="sigla"
-          defaultValue={props.sistema?.sigla}
+          defaultValue={formData?.sigla || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="sigla" className="rw-field-error" />
 
         <Label
@@ -192,15 +265,13 @@ const SistemaForm = (props) => {
         >
           Nombre
         </Label>
-
         <TextField
           name="nombre"
-          defaultValue={props.sistema?.nombre}
+          defaultValue={formData?.nombre || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="nombre" className="rw-field-error" />
 
         <Label
@@ -208,17 +279,15 @@ const SistemaForm = (props) => {
           className="rw-label"
           errorClassName="rw-label rw-label-error"
         >
-          Descripcion
+          Descripción
         </Label>
-
         <TextField
           name="descripcion"
-          defaultValue={props.sistema?.descripcion}
+          defaultValue={formData?.descripcion || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="descripcion" className="rw-field-error" />
 
         <Label
@@ -230,7 +299,7 @@ const SistemaForm = (props) => {
         </Label>
         <SelectField
           name="estado"
-          defaultValue={props.servidor?.estado}
+          defaultValue={formData?.estado || ''}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
@@ -238,15 +307,12 @@ const SistemaForm = (props) => {
           <option value="ACTIVO">Activo</option>
           <option value="INACTIVO">Inactivo</option>
         </SelectField>
+        <FieldError name="estado" className="rw-field-error" />
 
-        {/* Profile JSON Input */}
-        <RespaldoField defaultValue={props.sistema?.respaldo_creacion} />
+        <RespaldoField defaultValue={formData?.respaldo_creacion || []} />
 
-        {/* Botón de guardar */}
         <div className="rw-button-group">
-          <Submit disabled={props.loading} className="rw-button rw-button-blue">
-            Guardar
-          </Submit>
+          <Submit className="rw-button rw-button-blue">Guardar</Submit>
         </div>
       </Form>
     </div>

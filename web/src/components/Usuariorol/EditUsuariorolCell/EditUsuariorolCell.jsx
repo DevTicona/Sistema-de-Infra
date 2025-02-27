@@ -1,4 +1,5 @@
 import { navigate, routes } from '@redwoodjs/router'
+
 import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
 
@@ -10,7 +11,7 @@ export const QUERY = gql`
       id
       id_usuario
       id_rol
-      id_contenedor_logico
+      id_despliegue
       id_sistema
       descripcion
       tipo
@@ -30,7 +31,7 @@ const UPDATE_USUARIOROL_MUTATION = gql`
       id
       id_usuario
       id_rol
-      id_contenedor_logico
+      id_despliegue
       id_sistema
       descripcion
       tipo

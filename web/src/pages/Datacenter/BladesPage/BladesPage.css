@@ -1,0 +1,34 @@
+/* src/styles/BladesPage.css */
+
+/* Ajustamos el contenedor de la grilla */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Esto hace que los botones se alineen en filas y columnas */
+  gap: 10px; /* Espaciado entre los botones */
+  margin-top: 20px;
+}
+
+/* Estilo para el botón de cada blade */
+.blade-button {
+  width: 100%; /* El botón ocupará todo el espacio de su celda */
+  padding: 20px;
+  background-color:rgb(55, 52, 218); /* Color de fondo del botón */
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.blade-button:hover {
+  background-color: #45a049; /* Color cuando se pasa el ratón por encima */
+}
+
+/* Estilo para las tarjetas */
+.card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

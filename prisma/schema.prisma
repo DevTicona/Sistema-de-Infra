@@ -7,35 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model rol {
-  id       Int        @id @default(autoincrement())
-  name     String     @unique
-  user_rol user_rol[]
-}
-
-model user {
-  id                  Int        @id @default(autoincrement())
-  nombre              String?
-  email               String     @unique
-  hashedPassword      String     @default("")
-  salt                String     @default("")
-  resetToken          String?
-  resetTokenExpiresAt DateTime?
-  createdAt           DateTime   @default(now())
-  updatedAt           DateTime
-  user_rol            user_rol[]
-}
-
-model user_rol {
-  id     Int  @id @default(autoincrement())
-  userId Int
-  roleId Int
-  rol    rol  @relation(fields: [roleId], references: [id])
-  user   user @relation(fields: [userId], references: [id])
-
-  @@unique([userId, roleId], map: "user_rol_unique")
-}
-
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model componentes {
   id                   Int          @id(map: "componente_pk") @default(autoincrement())
@@ -54,40 +25,23 @@ model componentes {
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model contenedor_logico {
-  id                   Int                   @id(map: "contenedor_logico_pk") @default(autoincrement())
-  codigo               String                @db.VarChar(10)
-  nombre               String                @db.VarChar(50)
-  descripcion          String
-  tipo                 String                @db.VarChar(15)
-  estado               estado
-  respaldo             Json?
-  fecha_creacion       DateTime              @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
-  usuario_creacion     Int                   @map("_usuario_creacion")
-  fecha_modificacion   DateTime?             @map("_fecha_modificacion") @db.Timestamptz(6)
-  usuario_modificacion Int?                  @map("_usuario_modificacion")
-  despliegue           despliegue[]
-  servidor_contenedor  servidor_contenedor[]
-  usuario_roles        usuario_roles[]
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model despliegue {
-  id                   Int               @id(map: "despliegue_pk") @default(autoincrement())
+  id                   Int             @id(map: "despliegue_pk") @default(autoincrement())
   id_componente        Int?
-  id_contenedor_logico Int
-  sigla                String            @db.VarChar(15)
-  nombre               String            @db.VarChar(50)
+  id_servidor          Int
+  agrupador            String          @db.VarChar(15)
+  nombre               String          @db.VarChar(50)
   descripcion          String
-  tipo                 String            @db.VarChar(15)
+  tipo                 String          @db.VarChar(15)
   estado               estado
   respaldo             Json?
-  fecha_creacion       DateTime          @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
-  usuario_creacion     Int               @map("_usuario_creacion")
-  fecha_modificacion   DateTime?         @map("_fecha_modificacion") @db.Timestamptz(6)
-  usuario_modificacion Int?              @map("_usuario_modificacion")
-  componentes          componentes?      @relation(fields: [id_componente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_componente_id")
-  contenedor_logico    contenedor_logico @relation(fields: [id_contenedor_logico], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_contenedor_logico_2_id")
+  fecha_creacion       DateTime        @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int             @map("_usuario_creacion")
+  fecha_modificacion   DateTime?       @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?            @map("_usuario_modificacion")
+  componentes          componentes?    @relation(fields: [id_componente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_componente_id")
+  servidores           servidores      @relation(fields: [id_servidor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_servidor_id")
+  usuario_roles        usuario_roles[]
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -114,46 +68,28 @@ model roles {
   usuario_creacion     Int             @map("_usuario_creacion")
   fecha_modificacion   DateTime?       @map("_fecha_modificacion") @db.Timestamptz(6)
   usuario_modificacion Int?            @map("_usuario_modificacion")
+  privilegios          String?         @db.VarChar(15)
   usuario_roles        usuario_roles[]
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model servidor_contenedor {
-  id                   Int                @id(map: "servidor_contenedor_pk") @default(autoincrement())
-  id_servidor          Int?
-  id_contenedor_logico Int?
-  sigla                String             @db.VarChar(15)
-  nombre               String             @db.VarChar(50)
-  descripcion          String
-  tipo                 String             @db.VarChar(15)
-  estado               estado
-  respaldo             Json?
-  fecha_creacion       DateTime           @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
-  usuario_creacion     Int                @map("_usuario_creacion")
-  fecha_modificacion   DateTime?          @map("_fecha_modificacion") @db.Timestamptz(6)
-  usuario_modificacion Int?               @map("_usuario_modificacion")
-  contenedor_logico    contenedor_logico? @relation(fields: [id_contenedor_logico], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_contenedor_logico_id")
-  servidores           servidores?        @relation(fields: [id_servidor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_servidor_id")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model servidores {
-  id                   Int                   @id(map: "servidor_pk") @default(autoincrement())
+  id                   Int           @id(map: "servidor_pk") @default(autoincrement())
   nro_cluster          Int
   vmid                 Int
-  nombre               String                @db.VarChar(35)
-  nodo                 String                @db.VarChar(20)
-  ip                   String                @db.Inet
-  tipo                 String                @db.VarChar(15)
+  nombre               String        @db.VarChar(35)
+  nodo                 String        @db.VarChar(20)
+  ip                   String        @db.Inet
+  tipo                 String        @db.VarChar(15)
   estado               estado
   metadata             Json?
-  fecha_creacion       DateTime              @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
-  usuario_creacion     Int                   @map("_usuario_creacion")
-  fecha_modificacion   DateTime?             @map("_fecha_modificacion") @db.Timestamptz(6)
-  usuario_modificacion Int?                  @map("_usuario_modificacion")
-  id_cuchilla          Int?
-  servidor_contenedor  servidor_contenedor[]
-  cuchillas            cuchillas?            @relation(fields: [id_cuchilla], references: [id], map: "fk_servidores_cuchillas")
+  fecha_creacion       DateTime      @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int           @map("_usuario_creacion")
+  fecha_modificacion   DateTime?     @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?          @map("_usuario_modificacion")
+  id_data_center       Int?
+  despliegue           despliegue[]
+  data_centers         data_centers? @relation(fields: [id_data_center], references: [id], map: "fk_servidores_data_center")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -180,23 +116,23 @@ model sistemas {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model usuario_roles {
-  id                   Int               @id(map: "usuario_roles_pk") @default(autoincrement())
+  id                   Int        @id(map: "usuario_roles_pk") @default(autoincrement())
   id_usuario           Int?
   id_rol               Int
-  id_contenedor_logico Int
+  id_despliegue        Int
   id_sistema           Int
   descripcion          String
-  tipo                 String            @db.VarChar(15)
+  tipo                 String     @db.VarChar(15)
   estado               estado
   respaldo             Json?
-  fecha_creacion       DateTime          @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
-  usuario_creacion     Int               @map("_usuario_creacion")
-  fecha_modificacion   DateTime?         @map("_fecha_modificacion") @db.Timestamptz(6)
-  usuario_modificacion Int?              @map("_usuario_modificacion")
-  contenedor_logico    contenedor_logico @relation(fields: [id_contenedor_logico], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_contenedor_logico_3_id")
-  roles                roles             @relation(fields: [id_rol], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_rol_id")
-  sistemas             sistemas          @relation(fields: [id_sistema], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sistema_2_id")
-  usuarios             usuarios?         @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_id")
+  fecha_creacion       DateTime   @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int        @map("_usuario_creacion")
+  fecha_modificacion   DateTime?  @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?       @map("_usuario_modificacion")
+  despliegue           despliegue @relation(fields: [id_despliegue], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_despliegue_id")
+  roles                roles      @relation(fields: [id_rol], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_rol_id")
+  sistemas             sistemas   @relation(fields: [id_sistema], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sistema_2_id")
+  usuarios             usuarios?  @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_id")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -215,47 +151,51 @@ model usuarios {
   usuario_roles        usuario_roles[]
 }
 
-model cuchillas {
-  id                   Int          @id(map: "servidores_blade_pk") @default(autoincrement())
-  id_rack              Int
+model data_centers {
+  id                   Int          @id(map: "data_centers_pk") @default(autoincrement())
   nombre               String       @db.VarChar(100)
-  posicion_slot        Int?
+  ubicacion            String?      @db.VarChar(200)
+  capacidad            Int?
   estado               estado       @default(ACTIVO)
-  metadata             Json?
   fecha_creacion       DateTime     @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
   usuario_creacion     Int          @map("_usuario_creacion")
   fecha_modificacion   DateTime?    @map("_fecha_modificacion") @db.Timestamptz(6)
   usuario_modificacion Int?         @map("_usuario_modificacion")
-  racks                racks        @relation(fields: [id_rack], references: [id], onDelete: Cascade, map: "fk_blade_rack")
   servidores           servidores[]
 }
 
-model data_centers {
-  id                   Int       @id(map: "data_centers_pk") @default(autoincrement())
-  nombre               String    @db.VarChar(100)
-  ubicacion            String?   @db.VarChar(200)
-  capacidad            Int?
-  estado               estado    @default(ACTIVO)
-  fecha_creacion       DateTime  @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
-  usuario_creacion     Int       @map("_usuario_creacion")
-  fecha_modificacion   DateTime? @map("_fecha_modificacion") @db.Timestamptz(6)
-  usuario_modificacion Int?      @map("_usuario_modificacion")
-  racks                racks[]
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model x_contenedor_logico {
+  id                    Int                     @id(map: "contenedor_logico_pk") @default(autoincrement())
+  codigo                String                  @db.VarChar(10)
+  nombre                String                  @db.VarChar(50)
+  descripcion           String
+  tipo                  String                  @db.VarChar(15)
+  estado                estado
+  respaldo              Json?
+  fecha_creacion        DateTime                @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion      Int                     @map("_usuario_creacion")
+  fecha_modificacion    DateTime?               @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion  Int?                    @map("_usuario_modificacion")
+  x_servidor_contenedor x_servidor_contenedor[]
 }
 
-model racks {
-  id                   Int          @id(map: "racks_pk") @default(autoincrement())
-  id_data_center       Int
-  nombre               String       @db.VarChar(100)
-  ubicacion            String?      @db.VarChar(200)
-  capacidad_en_u       Int?
-  estado               estado       @default(ACTIVO)
-  fecha_creacion       DateTime     @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
-  usuario_creacion     Int          @map("_usuario_creacion")
-  fecha_modificacion   DateTime?    @map("_fecha_modificacion") @db.Timestamptz(6)
-  usuario_modificacion Int?         @map("_usuario_modificacion")
-  cuchillas            cuchillas[]
-  data_centers         data_centers @relation(fields: [id_data_center], references: [id], onDelete: Cascade, map: "fk_racks_data_centers")
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model x_servidor_contenedor {
+  id                   Int                  @id(map: "servidor_contenedor_pk") @default(autoincrement())
+  id_servidor          Int?
+  id_contenedor_logico Int?
+  sigla                String               @db.VarChar(15)
+  nombre               String               @db.VarChar(50)
+  descripcion          String
+  tipo                 String               @db.VarChar(15)
+  estado               estado
+  respaldo             Json?
+  fecha_creacion       DateTime             @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
+  usuario_creacion     Int                  @map("_usuario_creacion")
+  fecha_modificacion   DateTime?            @map("_fecha_modificacion") @db.Timestamptz(6)
+  usuario_modificacion Int?                 @map("_usuario_modificacion")
+  x_contenedor_logico  x_contenedor_logico? @relation(fields: [id_contenedor_logico], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_contenedor_logico_id")
 }
 
 enum categoria {

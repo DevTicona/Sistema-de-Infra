@@ -34,7 +34,7 @@ describe('sistemas', () => {
         nombre: 'String',
         descripcion: 'String',
         estado: 'ACTIVO',
-        usuario_creacion: 289370,
+        usuario_creacion: 1226924,
       },
     })
 
@@ -44,7 +44,7 @@ describe('sistemas', () => {
     expect(result.nombre).toEqual('String')
     expect(result.descripcion).toEqual('String')
     expect(result.estado).toEqual('ACTIVO')
-    expect(result.usuario_creacion).toEqual(289370)
+    expect(result.usuario_creacion).toEqual(1226924)
   })
 
   scenario('updates a sistema', async (scenario) => {

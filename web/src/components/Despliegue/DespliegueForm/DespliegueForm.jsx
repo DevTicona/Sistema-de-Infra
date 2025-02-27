@@ -1,81 +1,25 @@
-import { useState } from 'react'
-
 import {
   Form,
   FormError,
   FieldError,
   Label,
+  NumberField,
   TextField,
-  SelectField,
+  RadioField,
+  TextAreaField,
+  DatetimeLocalField,
   Submit,
 } from '@redwoodjs/forms'
-import { gql } from '@redwoodjs/graphql-client'
-import { useQuery } from '@redwoodjs/web'
 
-import { useAuth } from 'src/auth'
-
-// Consulta GraphQL para obtener los sistemas
-const OBTENER_COMPONENTES = gql`
-  query ObtenerComponentes {
-    componentes {
-      id
-      nombre
-    }
+const formatDatetime = (value) => {
+  if (value) {
+    return value.replace(/:\d{2}\.\d{3}\w/, '')
   }
-`
-// Consulta GraphQL para obtener los sistemas
-const OBTENER_CONTENEDOR_LOGICO = gql`
-  query ObtenerContenedores {
-    contenedorlogicos {
-      id
-      nombre
-    }
-  }
-`
-
-const RespaldoField = ({ defaultValue }) => {
-  const [respaldoData, setRespaldoData] = useState(
-    defaultValue || { version: '' }
-  )
-
-  const handleChange = (event) => {
-    setRespaldoData({
-      ...respaldoData,
-      [event.target.name]: event.target.value,
-    })
-  }
-
-  return (
-    <div>
-      <Label className="rw-label">Versión del sistema</Label>
-      <TextField
-        name="version"
-        value={respaldoData.version || ''}
-        onChange={handleChange}
-        className="rw-input"
-      />
-      <input
-        type="hidden"
-        name="respaldo"
-        value={JSON.stringify(respaldoData)} // Convertir los datos del respaldo a JSON
-      />
-    </div>
-  )
 }
+
 const DespliegueForm = (props) => {
-  const { currentUser } = useAuth() // Obtén el usuario logueado
-  const { data: componentesData } = useQuery(OBTENER_COMPONENTES)
-  const { data: cotenedoresData } = useQuery(OBTENER_CONTENEDOR_LOGICO)
   const onSubmit = (data) => {
-    const formData = {
-      ...data,
-      id_componente: parseInt(data.id_componente, 10),
-      id_contenedor_logico: parseInt(data.id_contenedor_logico, 10),
-      respaldo: data.respaldo ? JSON.parse(data.respaldo) : {},
-      usuario_modificacion: currentUser?.id, // Asigna el ID del usuario logueado
-      usuario_creacion: currentUser?.id, // Asigna el ID si es creación o mantenimiento
-    }
-    props.onSave(formData, props?.despliegue?.id)
+    props.onSave(data, props?.despliegue?.id)
   }
 
   return (
@@ -96,73 +40,50 @@ const DespliegueForm = (props) => {
           Id componente
         </Label>
 
-        <SelectField
+        <NumberField
           name="id_componente"
-          defaultValue={props.despliegue?.id_componente || ''}
+          defaultValue={props.despliegue?.id_componente}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        >
-          <option value="">Seleccione un componente</option>
-          {componentesData?.componentes?.length > 0 ? (
-            componentesData.componentes.map((componente) => (
-              <option key={componente.id} value={componente.id}>
-                {componente.nombre}
-              </option>
-            ))
-          ) : (
-            <option disabled>No hay componentes disponibles</option>
-          )}
-        </SelectField>
+        />
 
         <FieldError name="id_componente" className="rw-field-error" />
 
         <Label
-          name="id_contenedor_logico"
+          name="id_servidor"
           className="rw-label"
           errorClassName="rw-label rw-label-error"
         >
-          Contenedor logico
+          Id servidor
         </Label>
 
-        <SelectField
-          name="id_contenedor_logico"
-          defaultValue={props.despliegue?.id_contenedor_logico || ''}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        >
-          <option value="">Seleccione un contenedor logico</option>
-          {cotenedoresData?.contenedorlogicos?.length > 0 ? (
-            cotenedoresData.contenedorlogicos.map((contenedorlogico) => (
-              <option key={contenedorlogico.id} value={contenedorlogico.id}>
-                {contenedorlogico.nombre}
-              </option>
-            ))
-          ) : (
-            <option disabled>No hay Contenedores logicos disponibles</option>
-          )}
-        </SelectField>
-
-        <FieldError name="id_contenedor_logico" className="rw-field-error" />
-
-        <Label
-          name="sigla"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Sigla
-        </Label>
-
-        <TextField
-          name="sigla"
-          defaultValue={props.despliegue?.sigla}
+        <NumberField
+          name="id_servidor"
+          defaultValue={props.despliegue?.id_servidor}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
 
-        <FieldError name="sigla" className="rw-field-error" />
+        <FieldError name="id_servidor" className="rw-field-error" />
+
+        <Label
+          name="agrupador"
+          className="rw-label"
+          errorClassName="rw-label rw-label-error"
+        >
+          Agrupador
+        </Label>
+
+        <TextField
+          name="agrupador"
+          defaultValue={props.despliegue?.agrupador}
+          className="rw-input"
+          errorClassName="rw-input rw-input-error"
+          validation={{ required: true }}
+        />
+
+        <FieldError name="agrupador" className="rw-field-error" />
 
         <Label
           name="nombre"
@@ -225,18 +146,104 @@ const DespliegueForm = (props) => {
         >
           Estado
         </Label>
-        <SelectField
-          name="estado"
-          defaultValue={props.servidor?.estado}
+
+        <div className="rw-check-radio-items">
+          <RadioField
+            id="despliegue-estado-0"
+            name="estado"
+            defaultValue="ACTIVO"
+            defaultChecked={props.despliegue?.estado?.includes('ACTIVO')}
+            className="rw-input"
+            errorClassName="rw-input rw-input-error"
+          />
+
+          <div>Activo</div>
+        </div>
+
+        <div className="rw-check-radio-items">
+          <RadioField
+            id="despliegue-estado-1"
+            name="estado"
+            defaultValue="INACTIVO"
+            defaultChecked={props.despliegue?.estado?.includes('INACTIVO')}
+            className="rw-input"
+            errorClassName="rw-input rw-input-error"
+          />
+
+          <div>Inactivo</div>
+        </div>
+
+        <FieldError name="estado" className="rw-field-error" />
+
+        <Label
+          name="respaldo"
+          className="rw-label"
+          errorClassName="rw-label rw-label-error"
+        >
+          Respaldo
+        </Label>
+
+        <TextAreaField
+          name="respaldo"
+          defaultValue={JSON.stringify(props.despliegue?.respaldo)}
+          className="rw-input"
+          errorClassName="rw-input rw-input-error"
+          validation={{ valueAsJSON: true }}
+        />
+
+        <FieldError name="respaldo" className="rw-field-error" />
+
+        <Label
+          name="usuario_creacion"
+          className="rw-label"
+          errorClassName="rw-label rw-label-error"
+        >
+          Usuario creacion
+        </Label>
+
+        <NumberField
+          name="usuario_creacion"
+          defaultValue={props.despliegue?.usuario_creacion}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
+        />
+
+        <FieldError name="usuario_creacion" className="rw-field-error" />
+
+        <Label
+          name="fecha_modificacion"
+          className="rw-label"
+          errorClassName="rw-label rw-label-error"
         >
-          <option value="ACTIVO">Activo</option>
-          <option value="INACTIVO">Inactivo</option>
-        </SelectField>
-        {/* Profile JSON Input */}
-        <RespaldoField defaultValue={props.despliegue?.respaldo} />
+          Fecha modificacion
+        </Label>
+
+        <DatetimeLocalField
+          name="fecha_modificacion"
+          defaultValue={formatDatetime(props.despliegue?.fecha_modificacion)}
+          className="rw-input"
+          errorClassName="rw-input rw-input-error"
+        />
+
+        <FieldError name="fecha_modificacion" className="rw-field-error" />
+
+        <Label
+          name="usuario_modificacion"
+          className="rw-label"
+          errorClassName="rw-label rw-label-error"
+        >
+          Usuario modificacion
+        </Label>
+
+        <NumberField
+          name="usuario_modificacion"
+          defaultValue={props.despliegue?.usuario_modificacion}
+          className="rw-input"
+          errorClassName="rw-input rw-input-error"
+        />
+
+        <FieldError name="usuario_modificacion" className="rw-field-error" />
 
         <div className="rw-button-group">
           <Submit disabled={props.loading} className="rw-button rw-button-blue">

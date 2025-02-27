@@ -11,7 +11,10 @@
     ]
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@fontsource/roboto": "^5.1.1",
+    "@mui/material": "^6.4.6",
     "@mui/x-data-grid": "^7.26.0",
     "@redwoodjs/auth-dbauth-web": "8.5.0",
     "@redwoodjs/forms": "8.5.0",

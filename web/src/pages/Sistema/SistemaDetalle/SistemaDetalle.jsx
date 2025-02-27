@@ -16,14 +16,6 @@ const SISTEMA_DETALLE_QUERY = gql`
         nombre
         despliegue {
           nombre
-          contenedor_logico {
-            nombre
-            servidor_contenedor {
-              servidores {
-                nombre
-              }
-            }
-          }
         }
       }
       usuario_roles {
