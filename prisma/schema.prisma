@@ -68,7 +68,7 @@ model roles {
   usuario_creacion     Int             @map("_usuario_creacion")
   fecha_modificacion   DateTime?       @map("_fecha_modificacion") @db.Timestamptz(6)
   usuario_modificacion Int?            @map("_usuario_modificacion")
-  privilegios          String?         @db.VarChar(15)
+  privilegios          Json?           @db.Json
   usuario_roles        usuario_roles[]
 }
 
@@ -97,9 +97,9 @@ model sistemas {
   id                   Int             @id(map: "sistema_pk") @default(autoincrement())
   id_padre             Int?
   id_entidad           Int
-  codigo               String          @db.VarChar(10)
-  sigla                String          @db.VarChar(15)
-  nombre               String          @db.VarChar(50)
+  codigo               String          @db.VarChar(20)
+  sigla                String          @db.VarChar(25)
+  nombre               String          @db.VarChar(100)
   descripcion          String
   estado               estado
   respaldo_creacion    Json?

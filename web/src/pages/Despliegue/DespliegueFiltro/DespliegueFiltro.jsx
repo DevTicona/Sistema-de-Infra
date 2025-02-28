@@ -1,8 +1,21 @@
-import { useParams, Link, routes } from '@redwoodjs/router'
-import { useQuery } from '@redwoodjs/web'
-import './DespliegueFiltro.css'
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
+} from '@mui/material'
 
-const GET_DESPLIEGUES = gql`
+import { useParams, routes, Link } from '@redwoodjs/router'
+import { useQuery, gql } from '@redwoodjs/web'
+
+import { useStyles } from './styles' // Asegúrate de que este archivo esté correctamente importado
+
+const GET_DESPLIEGES = gql`
   query GetDespliegues {
     despliegues {
       id
@@ -11,101 +24,167 @@ const GET_DESPLIEGUES = gql`
       estado
       fecha_creacion
       id_servidor
+      usuario_roles {
+        usuarios {
+          id
+          nombre_usuario
+        }
+        roles {
+          id
+          nombre
+        }
+      }
+    }
+    servidors {
+      id
+      tipo
+      nombre
     }
   }
 `
 
 const formatFecha = (fecha) => {
   const date = new Date(fecha)
-  const day = date.getDate()
-  const month = date.getMonth() + 1 // Los meses en JavaScript empiezan desde 0
-  const year = date.getFullYear()
-  const hours = date.getHours()
-  const minutes = date.getMinutes()
-  const seconds = date.getSeconds()
-
-  // Formato: DD/MM/YYYY HH:MM:SS
-  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
+  return date.toLocaleString()
 }
 
 const DespliegueFiltro = () => {
-  const { id } = useParams() // Obtener el id del servidor desde la URL
+  const { dataCenterId, chasisId, bladeId, servidorId } = useParams()
+  const { data, loading, error } = useQuery(GET_DESPLIEGES)
+  const styles = useStyles
 
-  // Usamos useQuery para obtener todos los despliegues
-  const { data, loading, error } = useQuery(GET_DESPLIEGUES, {
-    variables: { id_servidor: parseInt(id) },
-  })
+  if (loading)
+    return (
+      <Typography style={styles.typography}>Cargando despliegues...</Typography>
+    )
+  if (error)
+    return (
+      <Typography color="error" style={styles.typography}>
+        Error al cargar los despliegues: {error.message}
+      </Typography>
+    )
 
-  if (loading) {
-    return <div>Cargando despliegues...</div>
-  }
-
-  if (error) {
-    return <div>Error al cargar los despliegues: {error.message}</div>
-  }
-
-  // Filtrar los despliegues que pertenecen al servidor actual
+  // Filtrar despliegues según el id del servidor
   const desplieguesFiltrados = data.despliegues.filter(
-    (despliegue) => despliegue.id_servidor === parseInt(id)
+    (despliegue) => despliegue.id_servidor === parseInt(servidorId)
   )
 
-  return (
-    <div className="container">
-      <h1 className="title">Despliegues Asociados al Servidor {id}</h1>
+  // Encontrar el servidor correspondiente
+  const servidor = data.servidors.find(
+    (servidor) => servidor.id === parseInt(servidorId)
+  )
 
+  // Determinar si el servidor es Virtual o Físico
+  const isVirtual = servidor?.tipo === 'Virtual'
+
+  return (
+    <TableContainer component={Paper} style={styles.tableContainer}>
+      <Typography variant="h7" style={styles.title}>
+        {isVirtual
+          ? `Data center ${dataCenterId} -- Chasis ${chasisId} -- Blade ${bladeId} -- Servidor: ${servidor.nombre}`
+          : `Data center ${dataCenterId} -- Servidor: ${servidor.nombre}`}
+      </Typography>
       {desplieguesFiltrados.length === 0 ? (
-        <p>No hay despliegues asociados al servidor {id}.</p>
+        <Typography style={styles.typography}>
+          No hay despliegues asociados al servidor {servidorId}.
+        </Typography>
       ) : (
-        <table className="despliegue-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>agrupador</th>
-              <th>Nombre</th>
-              <th>Estado</th>
-              <th>Fecha de Creación</th>
-            </tr>
-          </thead>
-          <tbody>
-            {desplieguesFiltrados.map((despliegue) => (
-              <tr key={despliegue.id}>
-                <td>
-                  <Link
-                    to={routes.despliegue({ id: despliegue.id })}
-                    title={'Ver detalle del despliegue ' + despliegue.id}
-                    className="rw-button rw-button-small rw-button-green"
-                  >
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell style={styles.tableHeadCell}>ID</TableCell>
+              <TableCell style={styles.tableHeadCell}>Agrupador</TableCell>
+              <TableCell style={styles.tableHeadCell}>Nombre</TableCell>
+              <TableCell style={styles.tableHeadCell}>Estado</TableCell>
+              <TableCell style={styles.tableHeadCell}>
+                Fecha de Creación
+              </TableCell>
+              <TableCell style={styles.tableHeadCell}>Usuario</TableCell>
+              <TableCell style={styles.tableHeadCell}>Rol</TableCell>
+              <TableCell style={styles.tableHeadCell}>Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {desplieguesFiltrados.map((despliegue) => {
+              // Se asume que usuario_roles es un arreglo. Si no hay asignación se muestra "N/A"
+              const usuario =
+                despliegue.usuario_roles &&
+                despliegue.usuario_roles.length > 0 &&
+                despliegue.usuario_roles[0].usuarios
+                  ? despliegue.usuario_roles[0].usuarios.nombre_usuario
+                  : 'N/A'
+              const rol =
+                despliegue.usuario_roles &&
+                despliegue.usuario_roles.length > 0 &&
+                despliegue.usuario_roles[0].roles
+                  ? despliegue.usuario_roles[0].roles.nombre
+                  : 'N/A'
+
+              return (
+                <TableRow
+                  key={despliegue.id}
+                  hover
+                  sx={{ cursor: 'pointer' }}
+                  component={Link}
+                  to={routes.componenteSelector({ id: despliegue.id })}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <TableCell style={styles.tableCell}>
                     {despliegue.id}
-                  </Link>
-                </td>
-                <td>{despliegue.agrupador}</td>
-                <td>{despliegue.nombre}</td>
-                <td>{despliegue.estado}</td>
-                <td>{formatFecha(despliegue.fecha_creacion)}</td>
-                <td>
-                  <nav className="rw-table-actions">
+                  </TableCell>
+                  <TableCell style={styles.tableCell}>
+                    {despliegue.agrupador}
+                  </TableCell>
+                  <TableCell style={styles.tableCell}>
+                    {despliegue.nombre}
+                  </TableCell>
+                  <TableCell style={styles.tableCell}>
+                    {despliegue.estado}
+                  </TableCell>
+                  <TableCell style={styles.tableCell}>
+                    {formatFecha(despliegue.fecha_creacion)}
+                  </TableCell>
+                  <TableCell style={styles.tableCell}>{usuario}</TableCell>
+                  <TableCell style={styles.tableCell}>{rol}</TableCell>
+                  <TableCell sx={styles.tableCell}>
                     <Link
                       to={routes.despliegue({ id: despliegue.id })}
-                      title={'Ver detalle del despliegue ' + despliegue.id}
-                      className="rw-button rw-button-small rw-button-blue"
+                      title={`Show despliegue ${despliegue.id} detail`}
+                      style={{ textDecoration: 'none' }}
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      Ver
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        size="small"
+                        sx={styles.button}
+                      >
+                        Show
+                      </Button>
                     </Link>
                     <Link
                       to={routes.editDespliegue({ id: despliegue.id })}
-                      title={'Editar despliegue ' + despliegue.id}
-                      className="rw-button rw-button-small rw-button-blue"
+                      title={`Edit despliegue ${despliegue.id}`}
+                      style={{ textDecoration: 'none' }}
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      Editar
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        size="small"
+                        sx={styles.button}
+                      >
+                        Edit
+                      </Button>
                     </Link>
-                  </nav>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
       )}
-    </div>
+    </TableContainer>
   )
 }
 

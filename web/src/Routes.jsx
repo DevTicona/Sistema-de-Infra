@@ -1,6 +1,7 @@
 import { Set, Router, Route } from '@redwoodjs/router'
 
 import ScaffoldLayout from 'src/layouts/ScaffoldLayout'
+import ComponenteSelector from 'src/pages/Componente/ComponenteSelector/ComponenteSelector'
 import BladesPage from 'src/pages/Datacenter/BladesPage/BladesPage'
 import ChasisPage from 'src/pages/Datacenter/ChasisPage/ChasisPage'
 import servidoresFisicos from 'src/pages/Datacenter/ServidoresFisicos/ServidoresFisicos'
@@ -70,7 +71,7 @@ const Routes = () => {
           <Route path="/despliegues/{id:Int}/edit" page={DespliegueEditDesplieguePage} name="editDespliegue" />
           <Route path="/despliegues/{id:Int}" page={DespliegueDesplieguePage} name="despliegue" />
           <Route path="/despliegues" page={DespliegueDesplieguesPage} name="despliegues" />
-          <Route path="/{id:Int}/despliegueFiltro" page={DespliegueFiltro} name="despliegueFiltro" />
+          <Route path="/datacenters/{dataCenterId}/chasis/{chasisId}/blades/{bladeId}/servidoresPage/{servidorId:Int}/despliegueFiltro" page={DespliegueFiltro} name="despliegueFiltro" />
         </Set>
         <Set wrap={ScaffoldLayout} title="Entidads" titleTo="entidads" buttonLabel="New Entidad" buttonTo="newEntidad">
           <Route path="/entidads/new" page={EntidadNewEntidadPage} name="newEntidad" />
@@ -83,6 +84,8 @@ const Routes = () => {
           <Route path="/componentes/{id:Int}/edit" page={ComponenteEditComponentePage} name="editComponente" />
           <Route path="/componentes/{id:Int}" page={ComponenteComponentePage} name="componente" />
           <Route path="/componentes" page={ComponenteComponentesPage} name="componentes" />
+
+          <Route path="/{id:Int}/componenteSelector" page={ComponenteSelector} name="componenteSelector" />
         </Set>
         <Set wrap={ScaffoldLayout} title="Usuariorols" titleTo="usuariorols" buttonLabel="New Usuariorol" buttonTo="newUsuariorol">
           <Route path="/usuariorols/new" page={UsuariorolNewUsuariorolPage} name="newUsuariorol" />

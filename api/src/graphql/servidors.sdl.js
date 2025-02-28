@@ -44,6 +44,10 @@ export const schema = gql`
 
     blade: String
     chasis: String
+    marca: String
+    procesador: String
+    sistema_operativo: String
+    memoria_ram: String
   }
 
   input UpdateServidorInput {
@@ -60,6 +64,11 @@ export const schema = gql`
     fecha_modificacion: DateTime
     usuario_modificacion: Int
     id_data_center: Int
+
+    marca: String
+    procesador: String
+    sistema_operativo: String
+    memoria_ram: String
     blade: String
     chasis: String
   }

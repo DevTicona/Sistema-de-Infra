@@ -14,7 +14,12 @@ export const createServidor = ({ input }) => {
   const metadataData = {
     blade: input.blade,
     chasis: input.chasis,
+    marca: input.marca,
+    procesador: input.procesador,
+    sistema_operativo: input.sistema_operativo,
+    memoria_ram: input.memoria_ram,
   }
+
   return db.servidores.create({
     data: {
       nro_cluster: input.nro_cluster,
@@ -36,7 +41,12 @@ export const updateServidor = ({ id, input }) => {
   const metadataData = {
     blade: input.blade,
     chasis: input.chasis,
+    marca: input.marca,
+    procesador: input.procesador,
+    sistema_operativo: input.sistema_operativo,
+    memoria_ram: input.memoria_ram,
   }
+
   return db.servidores.update({
     data: {
       nro_cluster: input.nro_cluster,

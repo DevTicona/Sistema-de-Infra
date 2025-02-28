@@ -16,6 +16,7 @@ export const createRol = ({ input }) => {
       nombre: input.nombre,
       tipo: input.tipo,
       estado: input.estado,
+      privilegios: input.privilegios,
       fecha_creacion: new Date(), // Si existe
       usuario_creacion: input.usuario_creacion,
     },
@@ -28,6 +29,7 @@ export const updateRol = ({ id, input }) => {
       nombre: input.nombre,
       tipo: input.tipo,
       estado: input.estado,
+      privilegios: input.privilegios,
       fecha_modificacion: new Date(),
       usuario_modificacion: input.usuario_modificacion,
     },

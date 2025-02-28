@@ -4,6 +4,7 @@ export const schema = gql`
     nombre: String!
     tipo: String!
     estado: estado!
+    privilegios: JSON
     fecha_creacion: DateTime!
     usuario_creacion: Int!
     fecha_modificacion: DateTime
@@ -17,14 +18,15 @@ export const schema = gql`
   }
 
   type Query {
-    rols: [Rol!]! @requireAuth
-    rol(id: Int!): Rol @requireAuth
+    rols: [Rol!]! @skipAuth
+    rol(id: Int!): Rol @skipAuth
   }
 
   input CreateRolInput {
     nombre: String!
     tipo: String!
     estado: estado!
+    privilegios: JSON
     usuario_creacion: Int!
     fecha_modificacion: DateTime
     usuario_modificacion: Int
@@ -34,6 +36,7 @@ export const schema = gql`
     nombre: String
     tipo: String
     estado: estado
+    privilegios: JSON
     fecha_creacion: DateTime
     usuario_creacion: Int
     fecha_modificacion: DateTime
@@ -41,8 +44,8 @@ export const schema = gql`
   }
 
   type Mutation {
-    createRol(input: CreateRolInput!): Rol! @requireAuth
-    updateRol(id: Int!, input: UpdateRolInput!): Rol! @requireAuth
-    deleteRol(id: Int!): Rol! @requireAuth
+    createRol(input: CreateRolInput!): Rol! @skipAuth
+    updateRol(id: Int!, input: UpdateRolInput!): Rol! @skipAuth
+    deleteRol(id: Int!): Rol! @skipAuth
   }
 `

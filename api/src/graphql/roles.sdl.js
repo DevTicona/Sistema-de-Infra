@@ -19,8 +19,8 @@ export const schema = gql`
   }
 
   type Mutation {
-    createRole(input: CreateRoleInput!): Role! @requireAuth
-    updateRole(id: Int!, input: UpdateRoleInput!): Role! @requireAuth
-    deleteRole(id: Int!): Role! @requireAuth
+    createRole(input: CreateRoleInput!): Role! @skipAuth
+    updateRole(id: Int!, input: UpdateRoleInput!): Role! @skipAuth
+    deleteRole(id: Int!): Role! @skipAuth
   }
 `

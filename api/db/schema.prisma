@@ -108,7 +108,7 @@ model Rol {
   usuario_creacion     Int          @map("_usuario_creacion")
   fecha_modificacion   DateTime?    @map("_fecha_modificacion") @db.Timestamptz(6)
   usuario_modificacion Int?         @map("_usuario_modificacion")
-  privilegios          String?      @db.VarChar(15)
+  privilegios          Json?        @db.Json
   usuario_roles        Usuariorol[]
 
   @@map("roles")
