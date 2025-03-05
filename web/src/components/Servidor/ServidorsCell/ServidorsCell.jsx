@@ -19,6 +19,17 @@ export const QUERY = gql`
       fecha_modificacion
       usuario_modificacion
       id_data_center
+      data_centers {
+        id
+        nombre
+      }
+      despliegue {
+        id
+        componentes {
+          id
+          nombre
+        }
+      }
     }
   }
 `

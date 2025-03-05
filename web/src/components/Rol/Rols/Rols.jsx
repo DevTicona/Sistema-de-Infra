@@ -3,7 +3,7 @@ import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
 
 import { QUERY } from 'src/components/Rol/RolsCell'
-import { formatEnum, timeTag, truncate } from 'src/lib/formatters'
+import { formatEnum, jsonTruncate, timeTag, truncate } from 'src/lib/formatters'
 
 const DELETE_ROL_MUTATION = gql`
   mutation DeleteRolMutation($id: Int!) {
@@ -43,6 +43,7 @@ const RolsList = ({ rols }) => {
             <th>Nombre</th>
             <th>Tipo</th>
             <th>Estado</th>
+            <th>Privilegios</th>
             <th>Fecha creacion</th>
             <th>Usuario creacion</th>
             <th>Fecha modificacion</th>
@@ -57,6 +58,8 @@ const RolsList = ({ rols }) => {
               <td>{truncate(rol.nombre)}</td>
               <td>{truncate(rol.tipo)}</td>
               <td>{formatEnum(rol.estado)}</td>
+              <td>{jsonTruncate(rol.privilegios)}</td>
+
               <td>{timeTag(rol.fecha_creacion)}</td>
               <td>{truncate(rol.usuario_creacion)}</td>
               <td>{timeTag(rol.fecha_modificacion)}</td>

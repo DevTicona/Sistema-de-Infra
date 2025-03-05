@@ -41,6 +41,7 @@ const DatacentersList = ({ datacenters }) => {
               to={routes.editDatacenter({ id: datacenter.id })}
               title={`Editar datacenter ${datacenter.id}`}
               className="rw-button rw-button-blue"
+              onClick={(e) => e.stopPropagation()}
               style={{
                 width: '80px', // Ancho fijo más corto
                 padding: '0.3rem 0.5rem', // Reduce el espacio interno

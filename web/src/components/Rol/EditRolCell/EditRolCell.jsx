@@ -11,6 +11,7 @@ export const QUERY = gql`
       nombre
       tipo
       estado
+      privilegios
       fecha_creacion
       usuario_creacion
       fecha_modificacion
@@ -26,6 +27,7 @@ const UPDATE_ROL_MUTATION = gql`
       nombre
       tipo
       estado
+      privilegios
       fecha_creacion
       usuario_creacion
       fecha_modificacion

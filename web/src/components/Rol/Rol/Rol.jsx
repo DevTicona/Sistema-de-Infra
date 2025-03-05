@@ -56,6 +56,10 @@ const Rol = ({ rol }) => {
               <td>{formatEnum(rol.estado)}</td>
             </tr>
             <tr>
+              <th>Privilegios</th>
+              <td>{formatEnum(rol.privilegios)}</td>
+            </tr>
+            <tr>
               <th>Fecha creacion</th>
               <td>{timeTag(rol.fecha_creacion)}</td>
             </tr>

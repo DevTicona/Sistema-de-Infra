@@ -16,15 +16,8 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
-  TablePagination,
   IconButton,
   Tooltip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Typography,
   TextField,
   InputAdornment,
 } from '@mui/material'
@@ -90,15 +83,6 @@ const SistemasList = ({ sistemas }) => {
         ? -1
         : 1
   })
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage)
-  }
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10))
-    setPage(0)
-  }
 
   const handleDeleteClick = (id) => {
     setSelectedId(id)

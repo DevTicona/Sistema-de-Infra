@@ -1,10 +1,9 @@
 import { Link, routes } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
-
 import { toast } from '@redwoodjs/web/toast'
 
 import { QUERY } from 'src/components/Despliegue/DesplieguesCell'
-import { formatEnum, jsonTruncate, timeTag, truncate } from 'src/lib/formatters'
+import { formatEnum, timeTag, truncate } from 'src/lib/formatters'
 
 const DELETE_DESPLIEGUE_MUTATION = gql`
   mutation DeleteDespliegueMutation($id: Int!) {
@@ -22,9 +21,6 @@ const DesplieguesList = ({ despliegues }) => {
     onError: (error) => {
       toast.error(error.message)
     },
-    // This refetches the query on the list page. Read more about other ways to
-    // update the cache over here:
-    // https://www.apollographql.com/docs/react/data/mutations/#making-all-other-cache-updates
     refetchQueries: [{ query: QUERY }],
     awaitRefetchQueries: true,
   })
@@ -41,18 +37,16 @@ const DesplieguesList = ({ despliegues }) => {
         <thead>
           <tr>
             <th>Id</th>
-            <th>Id componente</th>
-            <th>Id servidor</th>
             <th>Agrupador</th>
-            <th>Nombre</th>
             <th>Descripcion</th>
             <th>Tipo</th>
             <th>Estado</th>
-            <th>Respaldo</th>
             <th>Fecha creacion</th>
-            <th>Usuario creacion</th>
-            <th>Fecha modificacion</th>
-            <th>Usuario modificacion</th>
+            <th>Servidor</th>
+            <th>sistema</th>
+            <th>componente</th>
+            <th>Usuario</th>
+            <th>Rol</th>
             <th>&nbsp;</th>
           </tr>
         </thead>
@@ -60,18 +54,50 @@ const DesplieguesList = ({ despliegues }) => {
           {despliegues.map((despliegue) => (
             <tr key={despliegue.id}>
               <td>{truncate(despliegue.id)}</td>
-              <td>{truncate(despliegue.id_componente)}</td>
-              <td>{truncate(despliegue.id_servidor)}</td>
               <td>{truncate(despliegue.agrupador)}</td>
-              <td>{truncate(despliegue.nombre)}</td>
               <td>{truncate(despliegue.descripcion)}</td>
               <td>{truncate(despliegue.tipo)}</td>
               <td>{formatEnum(despliegue.estado)}</td>
-              <td>{jsonTruncate(despliegue.respaldo)}</td>
               <td>{timeTag(despliegue.fecha_creacion)}</td>
-              <td>{truncate(despliegue.usuario_creacion)}</td>
-              <td>{timeTag(despliegue.fecha_modificacion)}</td>
-              <td>{truncate(despliegue.usuario_modificacion)}</td>
+              <td>
+                {despliegue.servidores && despliegue.servidores.id ? (
+                  <Link to={routes.servidor({ id: despliegue.servidores.id })}>
+                    {truncate(despliegue.servidores.nombre)}
+                  </Link>
+                ) : (
+                  'No servidor'
+                )}
+              </td>
+              <td>
+                {despliegue.componentes &&
+                despliegue.componentes.sistemas &&
+                despliegue.componentes.sistemas.id ? (
+                  <Link
+                    to={routes.sistema({
+                      id: despliegue.componentes.sistemas.id,
+                    })}
+                  >
+                    {truncate(despliegue.componentes.sistemas.nombre)}
+                  </Link>
+                ) : (
+                  'No sistema'
+                )}
+              </td>
+              <td>
+                {despliegue.componentes
+                  ? truncate(despliegue.componentes.nombre)
+                  : 'No componente'}
+              </td>
+              <td>
+                {despliegue.usuario_roles.usuarios
+                  ? truncate(despliegue.usuario_roles.usuarios.nombre_usuario)
+                  : 'No usuario'}
+              </td>
+              <td>
+                {despliegue.usuario_roles.usuarios
+                  ? truncate(despliegue.usuario_roles.roles.nombre)
+                  : 'No Rol'}
+              </td>
               <td>
                 <nav className="rw-table-actions">
                   <Link

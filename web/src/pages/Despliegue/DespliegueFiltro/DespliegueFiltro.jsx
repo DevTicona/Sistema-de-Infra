@@ -24,6 +24,15 @@ const GET_DESPLIEGES = gql`
       estado
       fecha_creacion
       id_servidor
+      componentes {
+        id
+        nombre
+        sistemas {
+          id
+          nombre
+        }
+      }
+
       usuario_roles {
         usuarios {
           id
@@ -99,6 +108,10 @@ const DespliegueFiltro = () => {
               <TableCell style={styles.tableHeadCell}>
                 Fecha de Creación
               </TableCell>
+              <TableCell style={styles.tableHeadCell}>Componente</TableCell>
+              <TableCell style={styles.tableHeadCell}>
+                Sistema Componente
+              </TableCell>
               <TableCell style={styles.tableHeadCell}>Usuario</TableCell>
               <TableCell style={styles.tableHeadCell}>Rol</TableCell>
               <TableCell style={styles.tableHeadCell}>Acciones</TableCell>
@@ -107,6 +120,7 @@ const DespliegueFiltro = () => {
           <TableBody>
             {desplieguesFiltrados.map((despliegue) => {
               // Se asume que usuario_roles es un arreglo. Si no hay asignación se muestra "N/A"
+
               const usuario =
                 despliegue.usuario_roles &&
                 despliegue.usuario_roles.length > 0 &&
@@ -143,6 +157,10 @@ const DespliegueFiltro = () => {
                   </TableCell>
                   <TableCell style={styles.tableCell}>
                     {formatFecha(despliegue.fecha_creacion)}
+                  </TableCell>
+                  <TableCell>{despliegue.componentes.nombre}</TableCell>
+                  <TableCell>
+                    {despliegue.componentes.sistemas.nombre}
                   </TableCell>
                   <TableCell style={styles.tableCell}>{usuario}</TableCell>
                   <TableCell style={styles.tableCell}>{rol}</TableCell>

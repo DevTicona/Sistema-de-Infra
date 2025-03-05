@@ -1,9 +1,3 @@
-/*
-  Warnings:
-
-  - A unique constraint covering the columns `[userId,roleId]` on the table `user_rol` will be added. If there are existing duplicate values, this will fail.
-
-*/
 -- CreateEnum
 CREATE TYPE "categoria" AS ENUM ('Backend', 'Frontend', 'Database', 'NFS');
 
@@ -12,6 +6,38 @@ CREATE TYPE "entorno" AS ENUM ('Demo', 'PreProd', 'Prod', 'Test');
 
 -- CreateEnum
 CREATE TYPE "estado" AS ENUM ('ACTIVO', 'INACTIVO');
+
+-- CreateTable
+CREATE TABLE "rol" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "rol_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "user" (
+    "id" SERIAL NOT NULL,
+    "nombre" TEXT,
+    "email" TEXT NOT NULL,
+    "hashedPassword" TEXT NOT NULL DEFAULT '',
+    "salt" TEXT NOT NULL DEFAULT '',
+    "resetToken" TEXT,
+    "resetTokenExpiresAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "user_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "user_rol" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "roleId" INTEGER NOT NULL,
+
+    CONSTRAINT "user_rol_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "componentes" (
@@ -31,28 +57,11 @@ CREATE TABLE "componentes" (
 );
 
 -- CreateTable
-CREATE TABLE "contenedor_logico" (
-    "id" SERIAL NOT NULL,
-    "codigo" VARCHAR(10) NOT NULL,
-    "nombre" VARCHAR(50) NOT NULL,
-    "descripcion" TEXT NOT NULL,
-    "tipo" VARCHAR(15) NOT NULL,
-    "estado" "estado" NOT NULL,
-    "respaldo" JSONB,
-    "_fecha_creacion" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "_usuario_creacion" INTEGER NOT NULL,
-    "_fecha_modificacion" TIMESTAMPTZ(6),
-    "_usuario_modificacion" INTEGER,
-
-    CONSTRAINT "contenedor_logico_pk" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "despliegue" (
+CREATE TABLE "despliegues" (
     "id" SERIAL NOT NULL,
     "id_componente" INTEGER,
-    "id_contenedor_logico" INTEGER NOT NULL,
-    "sigla" VARCHAR(15) NOT NULL,
+    "id_servidor" INTEGER NOT NULL,
+    "agrupador" VARCHAR(15) NOT NULL,
     "nombre" VARCHAR(50) NOT NULL,
     "descripcion" TEXT NOT NULL,
     "tipo" VARCHAR(15) NOT NULL,
@@ -91,27 +100,9 @@ CREATE TABLE "roles" (
     "_usuario_creacion" INTEGER NOT NULL,
     "_fecha_modificacion" TIMESTAMPTZ(6),
     "_usuario_modificacion" INTEGER,
+    "privilegios" JSON,
 
     CONSTRAINT "roles_pk" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "servidor_contenedor" (
-    "id" SERIAL NOT NULL,
-    "id_servidor" INTEGER,
-    "id_contenedor_logico" INTEGER,
-    "sigla" VARCHAR(15) NOT NULL,
-    "nombre" VARCHAR(50) NOT NULL,
-    "descripcion" TEXT NOT NULL,
-    "tipo" VARCHAR(15) NOT NULL,
-    "estado" "estado" NOT NULL,
-    "respaldo" JSONB,
-    "_fecha_creacion" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "_usuario_creacion" INTEGER NOT NULL,
-    "_fecha_modificacion" TIMESTAMPTZ(6),
-    "_usuario_modificacion" INTEGER,
-
-    CONSTRAINT "servidor_contenedor_pk" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -129,6 +120,7 @@ CREATE TABLE "servidores" (
     "_usuario_creacion" INTEGER NOT NULL,
     "_fecha_modificacion" TIMESTAMPTZ(6),
     "_usuario_modificacion" INTEGER,
+    "id_data_center" INTEGER,
 
     CONSTRAINT "servidor_pk" PRIMARY KEY ("id")
 );
@@ -157,7 +149,7 @@ CREATE TABLE "usuario_roles" (
     "id" SERIAL NOT NULL,
     "id_usuario" INTEGER,
     "id_rol" INTEGER NOT NULL,
-    "id_contenedor_logico" INTEGER NOT NULL,
+    "id_despliegue" INTEGER NOT NULL,
     "id_sistema" INTEGER NOT NULL,
     "descripcion" TEXT NOT NULL,
     "tipo" VARCHAR(15) NOT NULL,
@@ -188,23 +180,47 @@ CREATE TABLE "usuarios" (
     CONSTRAINT "usuario_pk" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "data_centers" (
+    "id" SERIAL NOT NULL,
+    "nombre" VARCHAR(100) NOT NULL,
+    "ubicacion" VARCHAR(200),
+    "capacidad" INTEGER,
+    "estado" "estado" NOT NULL DEFAULT 'ACTIVO',
+    "_fecha_creacion" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "_usuario_creacion" INTEGER NOT NULL,
+    "_fecha_modificacion" TIMESTAMPTZ(6),
+    "_usuario_modificacion" INTEGER,
+
+    CONSTRAINT "data_centers_pk" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "rol_name_key" ON "rol"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
+
 -- CreateIndex
 CREATE UNIQUE INDEX "user_rol_unique" ON "user_rol"("userId", "roleId");
+
+-- AddForeignKey
+ALTER TABLE "user_rol" ADD CONSTRAINT "user_rol_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "rol"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "user_rol" ADD CONSTRAINT "user_rol_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "componentes" ADD CONSTRAINT "fk_sistema_id" FOREIGN KEY ("id_sistema") REFERENCES "sistemas"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "despliegue" ADD CONSTRAINT "fk_componente_id" FOREIGN KEY ("id_componente") REFERENCES "componentes"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "despliegues" ADD CONSTRAINT "fk_componente_id" FOREIGN KEY ("id_componente") REFERENCES "componentes"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "despliegue" ADD CONSTRAINT "fk_contenedor_logico_2_id" FOREIGN KEY ("id_contenedor_logico") REFERENCES "contenedor_logico"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "despliegues" ADD CONSTRAINT "fk_servidor_id" FOREIGN KEY ("id_servidor") REFERENCES "servidores"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "servidor_contenedor" ADD CONSTRAINT "fk_contenedor_logico_id" FOREIGN KEY ("id_contenedor_logico") REFERENCES "contenedor_logico"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "servidor_contenedor" ADD CONSTRAINT "fk_servidor_id" FOREIGN KEY ("id_servidor") REFERENCES "servidores"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "servidores" ADD CONSTRAINT "fk_servidores_data_center" FOREIGN KEY ("id_data_center") REFERENCES "data_centers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "sistemas" ADD CONSTRAINT "fk_entidad_id" FOREIGN KEY ("id_entidad") REFERENCES "entidades"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -213,7 +229,7 @@ ALTER TABLE "sistemas" ADD CONSTRAINT "fk_entidad_id" FOREIGN KEY ("id_entidad")
 ALTER TABLE "sistemas" ADD CONSTRAINT "fk_sistema_padre_id" FOREIGN KEY ("id_padre") REFERENCES "sistemas"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "usuario_roles" ADD CONSTRAINT "fk_contenedor_logico_3_id" FOREIGN KEY ("id_contenedor_logico") REFERENCES "contenedor_logico"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "usuario_roles" ADD CONSTRAINT "fk_despliegue_id" FOREIGN KEY ("id_despliegue") REFERENCES "despliegues"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "usuario_roles" ADD CONSTRAINT "fk_rol_id" FOREIGN KEY ("id_rol") REFERENCES "roles"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;

@@ -7,6 +7,18 @@ export const servidors = () => {
 export const servidor = ({ id }) => {
   return db.servidores.findUnique({
     where: { id },
+    include: {
+      data_centers: true,
+      despliegue: {
+        include: {
+          componentes: {
+            include: {
+              sistemas: true,
+            },
+          },
+        },
+      },
+    },
   })
 }
 

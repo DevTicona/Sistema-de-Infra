@@ -1,9 +1,8 @@
 import { Link, routes, navigate } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
-
 import { toast } from '@redwoodjs/web/toast'
 
-import { formatEnum, jsonDisplay, timeTag } from 'src/lib/formatters'
+import { formatEnum, jsonDisplay, timeTag, truncate } from 'src/lib/formatters'
 
 const DELETE_SERVIDOR_MUTATION = gql`
   mutation DeleteServidorMutation($id: Int!) {
@@ -39,62 +38,39 @@ const Servidor = ({ servidor }) => {
           </h2>
         </header>
         <table className="rw-table">
-          <tbody>
+          <thead>
             <tr>
               <th>Id</th>
-              <td>{servidor.id}</td>
-            </tr>
-            <tr>
               <th>Nro cluster</th>
-              <td>{servidor.nro_cluster}</td>
-            </tr>
-            <tr>
               <th>Vmid</th>
-              <td>{servidor.vmid}</td>
-            </tr>
-            <tr>
               <th>Nombre</th>
-              <td>{servidor.nombre}</td>
-            </tr>
-            <tr>
               <th>Nodo</th>
-              <td>{servidor.nodo}</td>
-            </tr>
-            <tr>
               <th>Ip</th>
-              <td>{servidor.ip}</td>
-            </tr>
-            <tr>
               <th>Tipo</th>
-              <td>{servidor.tipo}</td>
-            </tr>
-            <tr>
               <th>Estado</th>
-              <td>{formatEnum(servidor.estado)}</td>
-            </tr>
-            <tr>
               <th>Metadata</th>
-              <td>{jsonDisplay(servidor.metadata)}</td>
-            </tr>
-            <tr>
               <th>Fecha creacion</th>
-              <td>{timeTag(servidor.fecha_creacion)}</td>
-            </tr>
-            <tr>
               <th>Usuario creacion</th>
-              <td>{servidor.usuario_creacion}</td>
-            </tr>
-            <tr>
               <th>Fecha modificacion</th>
-              <td>{timeTag(servidor.fecha_modificacion)}</td>
-            </tr>
-            <tr>
               <th>Usuario modificacion</th>
-              <td>{servidor.usuario_modificacion}</td>
+              <th>&nbsp;</th>
             </tr>
+          </thead>
+          <tbody>
             <tr>
-              <th>Id data center</th>
-              <td>{servidor.id_data_center}</td>
+              <td>{servidor.id}</td>
+              <td>{servidor.nro_cluster}</td>
+              <td>{servidor.vmid}</td>
+              <td>{servidor.nombre}</td>
+              <td>{servidor.nodo}</td>
+              <td>{servidor.ip}</td>
+              <td>{servidor.tipo}</td>
+              <td>{formatEnum(servidor.estado)}</td>
+              <td>{jsonDisplay(servidor.metadata)}</td>
+              <td>{timeTag(servidor.fecha_creacion)}</td>
+              <td>{servidor.usuario_creacion}</td>
+              <td>{timeTag(servidor.fecha_modificacion)}</td>
+              <td>{servidor.usuario_modificacion}</td>
             </tr>
           </tbody>
         </table>
@@ -114,6 +90,39 @@ const Servidor = ({ servidor }) => {
           Delete
         </button>
       </nav>
+      <div className="rw-segment">
+        <header className="rw-segment-header">
+          <h2 className="rw-heading rw-heading-secondary">
+            Servidor {servidor.id} Detail
+          </h2>
+        </header>
+        <table className="rw-table">
+          <thead>
+            <tr>
+              <th>Data Center</th>
+              <th>Despliegue Asociado</th>
+              <th>Componente Asociado</th>
+              <th>Sistema Asociado</th>
+              <th>&nbsp;</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{servidor.data_centers?.nombre || 'N/A'}</td>
+              <td>
+                {' '}
+                {servidor.despliegue
+                  ? truncate(servidor.despliegue.agrupador)
+                  : 'No despliegue'}
+              </td>
+              <td>{servidor.despliegue?.componentes?.nombre || 'N/A'}</td>
+              <td>
+                {servidor.despliegue?.componentes?.sistemas?.nombre || 'N/A'}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </>
   )
 }
