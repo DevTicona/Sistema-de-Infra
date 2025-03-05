@@ -1,6 +1,6 @@
 # 📦 Sistema de Inventariado de la UIT
 
-Bienvenido al **Sistema de Inventariado de la UIT**, una aplicación full-stack desarrollada con **RedwoodJS** que permite la gestión eficiente de activos tecnológicos de la Unidad de Infraestructura Tecnológica. La aplicación se compone de:
+El **Sistema de Inventariado de la UIT**, es una aplicación full-stack desarrollada con **RedwoodJS** que permite la gestión eficiente de activos tecnológicos de la Unidad de Infraestructura Tecnológica. La aplicación se compone de:
 
 - **Frontend**: Desarrollado en **React** y estilizado con **Material UI** para ofrecer una interfaz moderna, intuitiva y responsiva.
 - **Backend**: Implementado con **GraphQL** para la comunicación entre cliente y servidor, y **Prisma ORM** para la gestión de la base de datos PostgreSQL.
@@ -50,6 +50,10 @@ openssl rand -base64 32
 ```
 
 ### 4. Base de Datos y Prisma
+
+Modelo ER de la Base de Datos 
+![modelo-ER](https://github.com/user-attachments/assets/921e6f0a-74d0-40a1-9f7e-58878faf4965)
+
 El sistema utiliza PostgreSQL como sistema de gestión de bases de datos y Prisma ORM para interactuar con ella. El modelo principal se encuentra definido en api/db/schema.prisma.
 
 Ejecuta la migración para conectar con la base de datos:
