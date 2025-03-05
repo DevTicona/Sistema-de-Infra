@@ -35,7 +35,7 @@ yarn install
 Crea un archivo .env en la raíz del proyecto para configurar la conexión a la base de datos y otras variables de entorno. Por ejemplo:
 
 ```bash
-DATABASE_URL="postgresql://postgres:12345@localhost:5432/bd_infra?schema=public"
+DATABASE_URL="postgresql://usuario:tu_contraseña@localhost:5432/base_de_datos?schema=public"
 SESSION_SECRET=2dJGLTrXkwh4wgaeW65oNwvlnCJNkaOJj5Kk4jPUJDU=
 ```
 
@@ -52,7 +52,9 @@ openssl rand -base64 32
 ### 4. Base de Datos y Prisma
 
 Modelo ER de la Base de Datos 
-![modelo-ER](https://github.com/user-attachments/assets/921e6f0a-74d0-40a1-9f7e-58878faf4965)
+
+<img src="https://github.com/user-attachments/assets/921e6f0a-74d0-40a1-9f7e-58878faf4965" width="1000">
+
 
 El sistema utiliza PostgreSQL como sistema de gestión de bases de datos y Prisma ORM para interactuar con ella. El modelo principal se encuentra definido en api/db/schema.prisma.
 
