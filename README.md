@@ -39,7 +39,8 @@ DATABASE_URL="postgresql://postgres:12345@localhost:5432/bd_infra?schema=public"
 SESSION_SECRET=2dJGLTrXkwh4wgaeW65oNwvlnCJNkaOJj5Kk4jPUJDU=
 ```
 
-DATABASE_URL: Ajusta la URL de conexión según la configuración de tu servidor PostgreSQL.
+DATABASE_URL: Ajusta la URL de conexión según la configuración de tu servidor PostgreSQL
+
 SESSION_SECRET: Clave secreta utilizada para gestionar sesiones de forma segura.
 
 Debes generar una nueva clave con el siguiente comando:
@@ -67,3 +68,25 @@ Con las dependencias instaladas y el archivo .env configurado, inicia el entorno
 yarn redwood dev
 ```
 El sistema estará disponible en http://localhost:8910
+
+## Estructura del Proyecto
+```bash
+├── api
+│   ├── db
+│   │   └── schema.prisma    # Modelos de base de datos
+│   └── src
+│       ├── graphql          # Esquema GraphQL
+│       └── services         # Lógica de negocio
+│
+├── web
+│   ├── public               # Assets estáticos
+│   └── src
+│       ├── components       # Componentes React
+│       ├── layouts          # Diseños principales
+│       └── pages            # Vistas principales
+│
+└── scripts                  # Utilidades
+│       
+│
+└── .env                     # Configuración de conexion a la base de datos
+```
