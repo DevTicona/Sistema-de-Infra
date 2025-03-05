@@ -1,52 +1,69 @@
-# 📦 Sistema de Inventariado de la UIT  
+# 📦 Sistema de Inventariado de la UIT
 
-Bienvenido al **Sistema de Inventariado de la UIT**, una aplicación desarrollada con **RedwoodJS** para la gestión eficiente de activos tecnológicos dentro de la Unidad de Infraestructura Tecnológica.  
+Bienvenido al **Sistema de Inventariado de la UIT**, una aplicación full-stack desarrollada con **RedwoodJS** que permite la gestión eficiente de activos tecnológicos de la Unidad de Infraestructura Tecnológica. La aplicación se compone de:
 
-> **Requisitos previos**  
->  
-> - Node.js (=20.x) y [Yarn](https://yarnpkg.com/)  
-> - PostgreSQL instalado y configurado  
-> - Git instalado  
-
-## 🔹 Instalación  
-
-Primero, instala las dependencias:  
-
-yarn install
-
-yaml
-Copiar
-Editar
-
-Luego, inicia el servidor de desarrollo:  
-
-yarn redwood dev
-
-El sistema estará disponible en [http://localhost:8910](http://localhost:8910).  
-
-> **CLI de RedwoodJS**  
->  
-> Redwood proporciona una CLI potente que te ayudará durante todo el desarrollo. Para ver todos los comandos disponibles, usa:  
->  
-> ```
-> yarn redwood --help
-> ```
->  
-> Para más detalles, consulta la [documentación de la CLI](https://redwoodjs.com/docs/cli-commands).  
+- **Frontend**: Desarrollado en **React** y estilizado con **Material UI** para ofrecer una interfaz moderna, intuitiva y responsiva.
+- **Backend**: Implementado con **GraphQL** para la comunicación entre cliente y servidor, y **Prisma ORM** para la gestión de la base de datos PostgreSQL.
 
 ---
 
-## 🗄 Base de Datos y Prisma  
+## Requisitos Previos
 
-El sistema utiliza **PostgreSQL** como base de datos y **Prisma ORM** para su gestión. A continuación, revisa el modelo principal del esquema:  
+Antes de comenzar, asegúrate de tener instalado y configurado lo siguiente:
 
-```prisma
-model Activo {
-  id          Int      @id @default(autoincrement())
-  nombre      String
-  descripcion String
-  categoria   String
-  fechaIngreso DateTime @default(now())
-}
-Ejecuta la migración de la base de datos:
+- **Node.js** (versión 20.x)
+- **Yarn** (version 4.x)
+- **PostgreSQL**: Debes tenerlo instalado y configurado en tu entorno.
+- **Git**: Para clonar el repositorio.
+
+---
+
+## 🔹 Instalación y Configuración
+
+### 1. Clonar el Repositorio
+
+Clona el repositorio en tu máquina local usando Git:
+
+git clone https://github.com/DevTicona/Sistema-de-Infra.git
+
+### 2. Instalar Dependencias
+Accede al directorio del proyecto y ejecuta el siguiente comando para instalar todas las dependencias necesarias:
+```bash
+yarn install
+```
+### 3. Configurar Variables de Entorno
+Crea un archivo .env en la raíz del proyecto para configurar la conexión a la base de datos y otras variables de entorno. Por ejemplo:
+
+```bash
+DATABASE_URL="postgresql://postgres:12345@localhost:5432/bd_infra?schema=public"
+SESSION_SECRET=2dJGLTrXkwh4wgaeW65oNwvlnCJNkaOJj5Kk4jPUJDU=
+```
+
+DATABASE_URL: Ajusta la URL de conexión según la configuración de tu servidor PostgreSQL.
+SESSION_SECRET: Clave secreta utilizada para gestionar sesiones de forma segura.
+
+Debes generar una nueva clave con el siguiente comando:
+
+```bash
+openssl rand -base64 32
+```
+
+### 4. Base de Datos y Prisma
+El sistema utiliza PostgreSQL como sistema de gestión de bases de datos y Prisma ORM para interactuar con ella. El modelo principal se encuentra definido en api/db/schema.prisma.
+
+Ejecuta la migración para conectar con la base de datos:
+```bash
 yarn rw prisma migrate dev
+```
+Este comando creará y aplicará las migraciones necesarias para mantener la integridad del esquema de la base de datos.
+
+Luego, genera el cliente de Prisma:
+```bash
+yarn prisma generate
+```
+### 5. Iniciar el Servidor de Desarrollo
+Con las dependencias instaladas y el archivo .env configurado, inicia el entorno de desarrollo:
+```bash
+yarn redwood dev
+```
+El sistema estará disponible en http://localhost:8910
