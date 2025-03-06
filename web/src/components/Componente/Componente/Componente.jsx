@@ -1,6 +1,5 @@
 import { Link, routes, navigate } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
-
 import { toast } from '@redwoodjs/web/toast'
 
 import { timeTag } from 'src/lib/formatters'
@@ -45,8 +44,8 @@ const Componente = ({ componente }) => {
               <td>{componente.id}</td>
             </tr>
             <tr>
-              <th>Id sistema</th>
-              <td>{componente.id_sistema}</td>
+              <th>Sistema Asociado</th>
+              <td>{componente.sistemas.nombre}</td>
             </tr>
             <tr>
               <th>Nombre</th>

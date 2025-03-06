@@ -1,9 +1,8 @@
 import { Link, routes, navigate } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
-
 import { toast } from '@redwoodjs/web/toast'
 
-import { formatEnum, jsonDisplay, timeTag } from 'src/lib/formatters'
+import { formatEnum, timeTag } from 'src/lib/formatters'
 
 const DELETE_USUARIOROL_MUTATION = gql`
   mutation DeleteUsuariorolMutation($id: Int!) {
@@ -60,21 +59,10 @@ const Usuariorol = ({ usuariorol }) => {
               <th>Id sistema</th>
               <td>{usuariorol.id_sistema}</td>
             </tr>
-            <tr>
-              <th>Descripcion</th>
-              <td>{usuariorol.descripcion}</td>
-            </tr>
-            <tr>
-              <th>Tipo</th>
-              <td>{usuariorol.tipo}</td>
-            </tr>
+
             <tr>
               <th>Estado</th>
               <td>{formatEnum(usuariorol.estado)}</td>
-            </tr>
-            <tr>
-              <th>Respaldo</th>
-              <td>{jsonDisplay(usuariorol.respaldo)}</td>
             </tr>
             <tr>
               <th>Fecha creacion</th>

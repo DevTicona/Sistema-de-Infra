@@ -8,10 +8,8 @@ export const QUERY = gql`
       id_servidor
       agrupador
       nombre
-      descripcion
       tipo
       estado
-      respaldo
       fecha_creacion
       usuario_creacion
       fecha_modificacion

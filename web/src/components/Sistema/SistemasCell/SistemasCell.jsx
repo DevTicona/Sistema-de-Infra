@@ -18,6 +18,20 @@ export const QUERY = gql`
       usuario_creacion
       fecha_modificacion
       usuario_modificacion
+      entidades {
+        id
+        nombre
+      }
+      usuario_roles {
+        usuarios {
+          id
+          nombre_usuario
+        }
+        roles {
+          id
+          nombre
+        }
+      }
     }
   }
 `

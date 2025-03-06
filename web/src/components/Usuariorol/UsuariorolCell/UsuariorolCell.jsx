@@ -8,14 +8,27 @@ export const QUERY = gql`
       id_rol
       id_despliegue
       id_sistema
-      descripcion
-      tipo
       estado
-      respaldo
       fecha_creacion
       usuario_creacion
       fecha_modificacion
       usuario_modificacion
+      usuarios {
+        id
+        nombre_usuario
+      }
+      roles {
+        id
+        nombre
+      }
+      sistemas {
+        id
+        nombre
+      }
+      despliegue {
+        id
+        nombre
+      }
     }
   }
 `

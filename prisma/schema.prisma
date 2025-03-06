@@ -31,10 +31,8 @@ model despliegue {
   id_servidor          Int
   agrupador            String          @db.VarChar(15)
   nombre               String          @db.VarChar(50)
-  descripcion          String
   tipo                 String          @db.VarChar(15)
   estado               estado
-  respaldo             Json?
   fecha_creacion       DateTime        @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
   usuario_creacion     Int             @map("_usuario_creacion")
   fecha_modificacion   DateTime?       @map("_fecha_modificacion") @db.Timestamptz(6)
@@ -121,10 +119,7 @@ model usuario_roles {
   id_rol               Int
   id_despliegue        Int
   id_sistema           Int
-  descripcion          String
-  tipo                 String     @db.VarChar(15)
   estado               estado
-  respaldo             Json?
   fecha_creacion       DateTime   @default(now()) @map("_fecha_creacion") @db.Timestamptz(6)
   usuario_creacion     Int        @map("_usuario_creacion")
   fecha_modificacion   DateTime?  @map("_fecha_modificacion") @db.Timestamptz(6)

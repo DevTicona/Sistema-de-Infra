@@ -7,6 +7,7 @@ import ChasisPage from 'src/pages/Datacenter/ChasisPage/ChasisPage'
 import servidoresFisicos from 'src/pages/Datacenter/ServidoresFisicos/ServidoresFisicos'
 import ServidoresPage from 'src/pages/Datacenter/ServidoresPage/ServidoresPage'
 import DespliegueFiltro from 'src/pages/Despliegue/DespliegueFiltro/DespliegueFiltro'
+import DespliegueSelector from 'src/pages/Despliegue/DespliegueSelector/DespliegueSelector'
 import ServidorDetalle from 'src/pages/Servidor/ServidorDetalle/ServidorDetalle'
 import SistemaDetalle from 'src/pages/Sistema/SistemaDetalle/SistemaDetalle'
 
@@ -72,6 +73,8 @@ const Routes = () => {
           <Route path="/despliegues/{id:Int}" page={DespliegueDesplieguePage} name="despliegue" />
           <Route path="/despliegues" page={DespliegueDesplieguesPage} name="despliegues" />
           <Route path="/datacenters/{dataCenterId}/chasis/{chasisId}/blades/{bladeId}/servidoresPage/{servidorId:Int}/despliegueFiltro" page={DespliegueFiltro} name="despliegueFiltro" />
+
+          <Route path="/{id}/despliegueSelector" page={DespliegueSelector} name="despliegueSelector" />
         </Set>
         <Set wrap={ScaffoldLayout} title="Entidads" titleTo="entidads" buttonLabel="New Entidad" buttonTo="newEntidad">
           <Route path="/entidads/new" page={EntidadNewEntidadPage} name="newEntidad" />

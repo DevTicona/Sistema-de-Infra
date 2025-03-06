@@ -22,6 +22,7 @@ const GET_DESPLIEGES = gql`
       agrupador
       nombre
       estado
+      tipo
       fecha_creacion
       id_servidor
       componentes {
@@ -102,15 +103,16 @@ const DespliegueFiltro = () => {
           <TableHead>
             <TableRow>
               <TableCell style={styles.tableHeadCell}>ID</TableCell>
-              <TableCell style={styles.tableHeadCell}>Agrupador</TableCell>
-              <TableCell style={styles.tableHeadCell}>Nombre</TableCell>
-              <TableCell style={styles.tableHeadCell}>Estado</TableCell>
-              <TableCell style={styles.tableHeadCell}>
-                Fecha de Creación
-              </TableCell>
               <TableCell style={styles.tableHeadCell}>Componente</TableCell>
               <TableCell style={styles.tableHeadCell}>
-                Sistema Componente
+                Sistema Asociado Al componente
+              </TableCell>
+              <TableCell style={styles.tableHeadCell}>Agrupador</TableCell>
+
+              <TableCell style={styles.tableHeadCell}>Estado</TableCell>
+              <TableCell style={styles.tableHeadCell}>Tipo</TableCell>
+              <TableCell style={styles.tableHeadCell}>
+                Fecha de Creación
               </TableCell>
               <TableCell style={styles.tableHeadCell}>Usuario</TableCell>
               <TableCell style={styles.tableHeadCell}>Rol</TableCell>
@@ -146,22 +148,24 @@ const DespliegueFiltro = () => {
                   <TableCell style={styles.tableCell}>
                     {despliegue.id}
                   </TableCell>
-                  <TableCell style={styles.tableCell}>
-                    {despliegue.agrupador}
-                  </TableCell>
-                  <TableCell style={styles.tableCell}>
-                    {despliegue.nombre}
-                  </TableCell>
-                  <TableCell style={styles.tableCell}>
-                    {despliegue.estado}
-                  </TableCell>
-                  <TableCell style={styles.tableCell}>
-                    {formatFecha(despliegue.fecha_creacion)}
-                  </TableCell>
                   <TableCell>{despliegue.componentes.nombre}</TableCell>
                   <TableCell>
                     {despliegue.componentes.sistemas.nombre}
                   </TableCell>
+                  <TableCell style={styles.tableCell}>
+                    {despliegue.agrupador}
+                  </TableCell>
+
+                  <TableCell style={styles.tableCell}>
+                    {despliegue.estado}
+                  </TableCell>
+                  <TableCell style={styles.tableCell}>
+                    {despliegue.tipo}
+                  </TableCell>
+                  <TableCell style={styles.tableCell}>
+                    {formatFecha(despliegue.fecha_creacion)}
+                  </TableCell>
+
                   <TableCell style={styles.tableCell}>{usuario}</TableCell>
                   <TableCell style={styles.tableCell}>{rol}</TableCell>
                   <TableCell sx={styles.tableCell}>

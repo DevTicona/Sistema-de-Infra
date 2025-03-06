@@ -62,7 +62,15 @@ const ServidorsList = ({ servidors }) => {
               <td>{truncate(servidor.id)}</td>
               <td>{truncate(servidor.nro_cluster)}</td>
               <td>{truncate(servidor.vmid)}</td>
-              <td>{truncate(servidor.nombre)}</td>
+              <td>
+                <Link
+                  to={routes.despliegueSelector({
+                    id: servidor.id,
+                  })}
+                >
+                  {truncate(servidor.nombre)}
+                </Link>
+              </td>
               <td>{truncate(servidor.nodo)}</td>
               <td>{truncate(servidor.ip)}</td>
               <td>{truncate(servidor.tipo)}</td>

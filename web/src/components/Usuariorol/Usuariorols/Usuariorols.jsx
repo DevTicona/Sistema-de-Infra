@@ -1,10 +1,9 @@
 import { Link, routes } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
-
 import { toast } from '@redwoodjs/web/toast'
 
 import { QUERY } from 'src/components/Usuariorol/UsuariorolsCell'
-import { formatEnum, jsonTruncate, timeTag, truncate } from 'src/lib/formatters'
+import { formatEnum, timeTag, truncate } from 'src/lib/formatters'
 
 const DELETE_USUARIOROL_MUTATION = gql`
   mutation DeleteUsuariorolMutation($id: Int!) {
@@ -41,14 +40,11 @@ const UsuariorolsList = ({ usuariorols }) => {
         <thead>
           <tr>
             <th>Id</th>
-            <th>Id usuario</th>
-            <th>Id rol</th>
-            <th>Id despliegue</th>
-            <th>Id sistema</th>
-            <th>Descripcion</th>
-            <th>Tipo</th>
+            <th>Usuario</th>
+            <th>Rol</th>
+            <th>Despliegue</th>
+            <th>Sistema</th>
             <th>Estado</th>
-            <th>Respaldo</th>
             <th>Fecha creacion</th>
             <th>Usuario creacion</th>
             <th>Fecha modificacion</th>
@@ -60,14 +56,11 @@ const UsuariorolsList = ({ usuariorols }) => {
           {usuariorols.map((usuariorol) => (
             <tr key={usuariorol.id}>
               <td>{truncate(usuariorol.id)}</td>
-              <td>{truncate(usuariorol.id_usuario)}</td>
-              <td>{truncate(usuariorol.id_rol)}</td>
-              <td>{truncate(usuariorol.id_despliegue)}</td>
-              <td>{truncate(usuariorol.id_sistema)}</td>
-              <td>{truncate(usuariorol.descripcion)}</td>
-              <td>{truncate(usuariorol.tipo)}</td>
+              <td>{truncate(usuariorol.usuarios.nombre_usuario)}</td>
+              <td>{truncate(usuariorol.roles.nombre)}</td>
+              <td>{truncate(usuariorol.despliegue.nombre)}</td>
+              <td>{truncate(usuariorol.sistemas.nombre)}</td>
               <td>{formatEnum(usuariorol.estado)}</td>
-              <td>{jsonTruncate(usuariorol.respaldo)}</td>
               <td>{timeTag(usuariorol.fecha_creacion)}</td>
               <td>{truncate(usuariorol.usuario_creacion)}</td>
               <td>{timeTag(usuariorol.fecha_modificacion)}</td>

@@ -38,13 +38,13 @@ const DesplieguesList = ({ despliegues }) => {
           <tr>
             <th>Id</th>
             <th>Agrupador</th>
-            <th>Descripcion</th>
+            <th>Nombre</th>
             <th>Tipo</th>
             <th>Estado</th>
             <th>Fecha creacion</th>
             <th>Servidor</th>
-            <th>sistema</th>
-            <th>componente</th>
+            <th>Sistema</th>
+            <th>Componente</th>
             <th>Usuario</th>
             <th>Rol</th>
             <th>&nbsp;</th>
@@ -55,7 +55,7 @@ const DesplieguesList = ({ despliegues }) => {
             <tr key={despliegue.id}>
               <td>{truncate(despliegue.id)}</td>
               <td>{truncate(despliegue.agrupador)}</td>
-              <td>{truncate(despliegue.descripcion)}</td>
+              <td>{truncate(despliegue.nombre)}</td>
               <td>{truncate(despliegue.tipo)}</td>
               <td>{formatEnum(despliegue.estado)}</td>
               <td>{timeTag(despliegue.fecha_creacion)}</td>

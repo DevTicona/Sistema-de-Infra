@@ -6,7 +6,6 @@ import {
   NumberField,
   TextField,
   RadioField,
-  TextAreaField,
   DatetimeLocalField,
   Submit,
 } from '@redwoodjs/forms'
@@ -31,7 +30,6 @@ const DespliegueForm = (props) => {
           titleClassName="rw-form-error-title"
           listClassName="rw-form-error-list"
         />
-
         <Label
           name="id_componente"
           className="rw-label"
@@ -39,16 +37,13 @@ const DespliegueForm = (props) => {
         >
           Id componente
         </Label>
-
         <NumberField
           name="id_componente"
           defaultValue={props.despliegue?.id_componente}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
         />
-
         <FieldError name="id_componente" className="rw-field-error" />
-
         <Label
           name="id_servidor"
           className="rw-label"
@@ -56,7 +51,6 @@ const DespliegueForm = (props) => {
         >
           Id servidor
         </Label>
-
         <NumberField
           name="id_servidor"
           defaultValue={props.despliegue?.id_servidor}
@@ -64,9 +58,7 @@ const DespliegueForm = (props) => {
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="id_servidor" className="rw-field-error" />
-
         <Label
           name="agrupador"
           className="rw-label"
@@ -74,7 +66,6 @@ const DespliegueForm = (props) => {
         >
           Agrupador
         </Label>
-
         <TextField
           name="agrupador"
           defaultValue={props.despliegue?.agrupador}
@@ -82,9 +73,7 @@ const DespliegueForm = (props) => {
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="agrupador" className="rw-field-error" />
-
         <Label
           name="nombre"
           className="rw-label"
@@ -92,7 +81,6 @@ const DespliegueForm = (props) => {
         >
           Nombre
         </Label>
-
         <TextField
           name="nombre"
           defaultValue={props.despliegue?.nombre}
@@ -100,27 +88,7 @@ const DespliegueForm = (props) => {
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="nombre" className="rw-field-error" />
-
-        <Label
-          name="descripcion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Descripcion
-        </Label>
-
-        <TextField
-          name="descripcion"
-          defaultValue={props.despliegue?.descripcion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="descripcion" className="rw-field-error" />
-
         <Label
           name="tipo"
           className="rw-label"
@@ -128,7 +96,6 @@ const DespliegueForm = (props) => {
         >
           Tipo
         </Label>
-
         <TextField
           name="tipo"
           defaultValue={props.despliegue?.tipo}
@@ -136,9 +103,7 @@ const DespliegueForm = (props) => {
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="tipo" className="rw-field-error" />
-
         <Label
           name="estado"
           className="rw-label"
@@ -146,7 +111,6 @@ const DespliegueForm = (props) => {
         >
           Estado
         </Label>
-
         <div className="rw-check-radio-items">
           <RadioField
             id="despliegue-estado-0"
@@ -159,7 +123,6 @@ const DespliegueForm = (props) => {
 
           <div>Activo</div>
         </div>
-
         <div className="rw-check-radio-items">
           <RadioField
             id="despliegue-estado-1"
@@ -172,27 +135,7 @@ const DespliegueForm = (props) => {
 
           <div>Inactivo</div>
         </div>
-
         <FieldError name="estado" className="rw-field-error" />
-
-        <Label
-          name="respaldo"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Respaldo
-        </Label>
-
-        <TextAreaField
-          name="respaldo"
-          defaultValue={JSON.stringify(props.despliegue?.respaldo)}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ valueAsJSON: true }}
-        />
-
-        <FieldError name="respaldo" className="rw-field-error" />
-
         <Label
           name="usuario_creacion"
           className="rw-label"
@@ -200,7 +143,6 @@ const DespliegueForm = (props) => {
         >
           Usuario creacion
         </Label>
-
         <NumberField
           name="usuario_creacion"
           defaultValue={props.despliegue?.usuario_creacion}
@@ -208,9 +150,7 @@ const DespliegueForm = (props) => {
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
         />
-
         <FieldError name="usuario_creacion" className="rw-field-error" />
-
         <Label
           name="fecha_modificacion"
           className="rw-label"
@@ -218,16 +158,13 @@ const DespliegueForm = (props) => {
         >
           Fecha modificacion
         </Label>
-
         <DatetimeLocalField
           name="fecha_modificacion"
           defaultValue={formatDatetime(props.despliegue?.fecha_modificacion)}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
         />
-
         <FieldError name="fecha_modificacion" className="rw-field-error" />
-
         <Label
           name="usuario_modificacion"
           className="rw-label"
@@ -235,16 +172,13 @@ const DespliegueForm = (props) => {
         >
           Usuario modificacion
         </Label>
-
         <NumberField
           name="usuario_modificacion"
           defaultValue={props.despliegue?.usuario_modificacion}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
         />
-
         <FieldError name="usuario_modificacion" className="rw-field-error" />
-
         <div className="rw-button-group">
           <Submit disabled={props.loading} className="rw-button rw-button-blue">
             Save

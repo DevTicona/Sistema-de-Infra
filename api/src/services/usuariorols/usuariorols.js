@@ -12,13 +12,31 @@ export const usuariorol = ({ id }) => {
 
 export const createUsuariorol = ({ input }) => {
   return db.usuario_roles.create({
-    data: input,
+    data: {
+      id_usuario: input.id_usuario,
+      id_rol: input.id_rol,
+      id_despliegue: input.id_despliegue,
+      id_sistema: input.id_sistema,
+
+      estado: input.estado,
+      fecha_creacion: new Date(), // Si existe
+      usuario_creacion: input.usuario_creacion,
+    },
   })
 }
 
 export const updateUsuariorol = ({ id, input }) => {
   return db.usuario_roles.update({
-    data: input,
+    data: {
+      id_usuario: input.id_usuario,
+      id_rol: input.id_rol,
+      id_despliegue: input.id_despliegue,
+      id_sistema: input.id_sistema,
+
+      estado: input.estado,
+      fecha_creacion: new Date(), // Si existe
+      usuario_creacion: input.usuario_creacion,
+    },
     where: { id },
   })
 }

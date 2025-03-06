@@ -20,14 +20,50 @@ import {
   Tooltip,
   TextField,
   InputAdornment,
+  Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
 } from '@mui/material'
 
 import { Link, routes } from '@redwoodjs/router'
-import { useMutation } from '@redwoodjs/web'
+import { useMutation, useQuery } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
 
-import { QUERY } from 'src/components/Sistema/SistemasCell'
-import { formatEnum, jsonTruncate, timeTag, truncate } from 'src/lib/formatters'
+const QUERY = gql`
+  query SistemasQuery {
+    sistemas {
+      id
+      id_padre
+      id_entidad
+      codigo
+      sigla
+      nombre
+      descripcion
+      estado
+      respaldo_creacion
+      fecha_creacion
+      usuario_creacion
+      fecha_modificacion
+      usuario_modificacion
+      usuario_roles {
+        id
+        usuarios {
+          nombre_usuario
+        }
+        roles {
+          nombre
+        }
+      }
+      entidades {
+        id
+        nombre
+      }
+    }
+  }
+`
 
 const DELETE_SISTEMA_MUTATION = gql`
   mutation DeleteSistemaMutation($id: Int!) {
@@ -36,7 +72,6 @@ const DELETE_SISTEMA_MUTATION = gql`
     }
   }
 `
-
 const SistemasList = ({ sistemas }) => {
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -68,38 +103,51 @@ const SistemasList = ({ sistemas }) => {
     const searchTermLower = searchTerm.toLowerCase()
     return (
       sistema.sigla.toLowerCase().includes(searchTermLower) ||
-      sistema.nombre.toLowerCase().includes(searchTermLower)
+      sistema.nombre.toLowerCase().includes(searchTermLower) ||
+      sistema.codigo.toLowerCase().includes(searchTermLower)
     )
   })
 
   const sortedData = [...filteredData].sort((a, b) => {
     const aValue = a[orderBy]
     const bValue = b[orderBy]
-    return order === 'asc'
-      ? aValue < bValue
-        ? -1
-        : 1
-      : bValue < aValue
-        ? -1
-        : 1
-  })
 
-  const handleDeleteClick = (id) => {
-    setSelectedId(id)
-    setDeleteDialogOpen(true)
-  }
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      return order === 'asc'
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue)
+    }
+    return order === 'asc' ? aValue - bValue : bValue - aValue
+  })
 
   const handleDeleteConfirm = () => {
     deleteSistema({ variables: { id: selectedId } })
   }
 
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value)
-    setPage(0) // Reset to first page when searching
-  }
-
   return (
     <Box sx={{ width: '100%' }}>
+      {/* Diálogo de confirmación para eliminar */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
+        <DialogTitle>Confirmar Eliminación</DialogTitle>
+        <DialogContent>
+          ¿Estás seguro de querer eliminar este sistema?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancelar</Button>
+          <Button
+            onClick={handleDeleteConfirm}
+            color="error"
+            variant="contained"
+          >
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Barra de búsqueda */}
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
         <Paper
           elevation={3}
@@ -114,8 +162,8 @@ const SistemasList = ({ sistemas }) => {
           <TextField
             fullWidth
             value={searchTerm}
-            onChange={handleSearchChange}
-            placeholder="Buscar por sigla o nombre..."
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Buscar por sigla, nombre o código..."
             variant="standard"
             InputProps={{
               startAdornment: (
@@ -130,6 +178,7 @@ const SistemasList = ({ sistemas }) => {
         </Paper>
       </Box>
 
+      {/* Tabla principal */}
       <Paper
         sx={{
           width: '100%',
@@ -144,21 +193,17 @@ const SistemasList = ({ sistemas }) => {
               <TableRow>
                 {[
                   'ID',
-                  'ID Padre',
-                  'ID Entidad',
                   'Código',
                   'Sigla',
                   'Nombre',
-                  'Descripción',
+                  'Entidad',
                   'Estado',
-                  'Respaldo Creación',
+                  'Responsables',
                   'Fecha Creación',
-                  'Usuario Creación',
-                  'Fecha Modificación',
-                  'Usuario Modificación',
-                ].map((header, index) => (
+                  'Acciones',
+                ].map((header) => (
                   <TableCell
-                    key={index}
+                    key={header}
                     sx={{
                       fontWeight: 'bold',
                       backgroundColor: '#1976d2',
@@ -176,41 +221,47 @@ const SistemasList = ({ sistemas }) => {
                     </TableSortLabel>
                   </TableCell>
                 ))}
-                <TableCell
-                  sx={{
-                    fontWeight: 'bold',
-                    backgroundColor: '#1976d2',
-                    color: 'white',
-                  }}
-                  align="center"
-                >
-                  Acciones
-                </TableCell>
               </TableRow>
             </TableHead>
+
             <TableBody>
               {sortedData
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((sistema) => (
                   <TableRow key={sistema.id} hover>
-                    <TableCell>{truncate(sistema.id)}</TableCell>
-                    <TableCell>{truncate(sistema.id_padre)}</TableCell>
-                    <TableCell>{truncate(sistema.id_entidad)}</TableCell>
-                    <TableCell>{truncate(sistema.codigo)}</TableCell>
-                    <TableCell>{truncate(sistema.sigla)}</TableCell>
-                    <TableCell>{truncate(sistema.nombre)}</TableCell>
-                    <TableCell>{truncate(sistema.descripcion)}</TableCell>
-                    <TableCell>{formatEnum(sistema.estado)}</TableCell>
+                    <TableCell>{sistema.id}</TableCell>
+                    <TableCell>{sistema.codigo}</TableCell>
+                    <TableCell>{sistema.sigla}</TableCell>
+                    <TableCell>{sistema.nombre}</TableCell>
                     <TableCell>
-                      {jsonTruncate(sistema.respaldo_creacion)}
+                      {sistema.entidades?.nombre || 'Sin entidad'}
                     </TableCell>
-                    <TableCell>{timeTag(sistema.fecha_creacion)}</TableCell>
-                    <TableCell>{truncate(sistema.usuario_creacion)}</TableCell>
-                    <TableCell>{timeTag(sistema.fecha_modificacion)}</TableCell>
                     <TableCell>
-                      {truncate(sistema.usuario_modificacion)}
+                      <Chip
+                        label={sistema.estado}
+                        color={
+                          sistema.estado === 'ACTIVO' ? 'success' : 'error'
+                        }
+                        size="small"
+                      />
                     </TableCell>
-                    <TableCell align="center">
+                    <TableCell>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                        {sistema.usuario_roles?.map((ur) => (
+                          <Chip
+                            key={ur.id}
+                            label={`${ur.usuarios?.nombre_usuario} (${ur.roles?.nombre})`}
+                            size="small"
+                            variant="outlined"
+                          />
+                        ))}
+                        {!sistema.usuario_roles?.length && 'Sin responsables'}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      {new Date(sistema.fecha_creacion).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
                       <Box sx={{ display: 'flex', gap: 1 }}>
                         <Tooltip title="Ver Detalles">
                           <IconButton
@@ -230,7 +281,10 @@ const SistemasList = ({ sistemas }) => {
                         </Tooltip>
                         <Tooltip title="Eliminar">
                           <IconButton
-                            onClick={() => handleDeleteClick(sistema.id)}
+                            onClick={() => {
+                              setSelectedId(sistema.id)
+                              setDeleteDialogOpen(true)
+                            }}
                           >
                             <DeleteIcon fontSize="small" color="error" />
                           </IconButton>

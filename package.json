@@ -12,7 +12,10 @@
     "@redwoodjs/cli-data-migrate": "8.5.0",
     "@redwoodjs/core": "8.5.0",
     "@redwoodjs/project-config": "8.5.0",
-    "prisma": "^6.3.1"
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.3",
+    "prisma": "^6.3.1",
+    "tailwindcss": "^4.0.10"
   },
   "eslintConfig": {
     "extends": "@redwoodjs/eslint-config",
@@ -38,6 +41,7 @@
     "date-fns": "^4.1.0",
     "jspdf": "^3.0.0",
     "react-json-view": "^1.21.3",
+    "react-select": "^5.10.1",
     "recharts": "^2.15.1",
     "xlsx": "^0.18.5"
   }

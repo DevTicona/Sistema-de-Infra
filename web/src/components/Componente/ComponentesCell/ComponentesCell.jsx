@@ -16,6 +16,10 @@ export const QUERY = gql`
       usuario_creacion
       fecha_modificacion
       usuario_modificacion
+      sistemas {
+        id
+        nombre
+      }
     }
   }
 `
