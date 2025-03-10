@@ -1,5 +1,6 @@
 import { Set, Router, Route } from '@redwoodjs/router'
 
+import AccesoriosLayout from 'src/layouts/AccesoriosLayout'
 import ScaffoldLayout from 'src/layouts/ScaffoldLayout'
 import ComponenteSelector from 'src/pages/Componente/ComponenteSelector/ComponenteSelector'
 import BladesPage from 'src/pages/Datacenter/BladesPage/BladesPage'
@@ -47,14 +48,14 @@ const Routes = () => {
           <Route path="/usuarios/{id:Int}" page={UsuarioUsuarioPage} name="usuario" />
           <Route path="/usuarios" page={UsuarioUsuariosPage} name="usuarios" />
         </Set>
-        <Set wrap={ScaffoldLayout} title="Sistemas" titleTo="sistemas" buttonLabel="New Sistema" buttonTo="newSistema">
+        <Set wrap={AccesoriosLayout} title="Sistemas" titleTo="sistemas" buttonLabel="New Sistema" buttonTo="newSistema">
           <Route path="/sistemas/new" page={SistemaNewSistemaPage} name="newSistema" />
           <Route path="/sistemas/{id:Int}/edit" page={SistemaEditSistemaPage} name="editSistema" />
           <Route path="/sistemas/{id:Int}" page={SistemaSistemaPage} name="sistema" />
           <Route path="/sistemas" page={SistemaSistemasPage} name="sistemas" />
           <Route path="/sistemas/{id}/SistemaDetalle" page={SistemaDetalle} name="sistemaDetalle" />
         </Set>
-        <Set wrap={ScaffoldLayout} title="Servidors" titleTo="servidors" buttonLabel="New Servidor" buttonTo="newServidor">
+        <Set wrap={AccesoriosLayout} title="Servidors" titleTo="servidors" buttonLabel="Nuevo Servidor" buttonTo="newServidor">
           <Route path="/servidors/new" page={ServidorNewServidorPage} name="newServidor" />
           <Route path="/servidors/{id:Int}/edit" page={ServidorEditServidorPage} name="editServidor" />
           <Route path="/servidors/{id:Int}" page={ServidorServidorPage} name="servidor" />
@@ -67,7 +68,7 @@ const Routes = () => {
           <Route path="/rols/{id:Int}" page={RolRolPage} name="rol" />
           <Route path="/rols" page={RolRolsPage} name="rols" />
         </Set>
-        <Set wrap={ScaffoldLayout} title="Despliegues" titleTo="despliegues" buttonLabel="New Despliegue" buttonTo="newDespliegue">
+        <Set wrap={AccesoriosLayout} title="Despliegues" titleTo="despliegues" buttonLabel="New Despliegue" buttonTo="newDespliegue">
           <Route path="/despliegues/new" page={DespliegueNewDesplieguePage} name="newDespliegue" />
           <Route path="/despliegues/{id:Int}/edit" page={DespliegueEditDesplieguePage} name="editDespliegue" />
           <Route path="/despliegues/{id:Int}" page={DespliegueDesplieguePage} name="despliegue" />
@@ -82,7 +83,7 @@ const Routes = () => {
           <Route path="/entidads/{id:Int}" page={EntidadEntidadPage} name="entidad" />
           <Route path="/entidads" page={EntidadEntidadsPage} name="entidads" />
         </Set>
-        <Set wrap={ScaffoldLayout} title="Componentes" titleTo="componentes" buttonLabel="New Componente" buttonTo="newComponente">
+        <Set wrap={AccesoriosLayout} title="Componentes" titleTo="componentes" buttonLabel="New Componente" buttonTo="newComponente">
           <Route path="/componentes/new" page={ComponenteNewComponentePage} name="newComponente" />
           <Route path="/componentes/{id:Int}/edit" page={ComponenteEditComponentePage} name="editComponente" />
           <Route path="/componentes/{id:Int}" page={ComponenteComponentePage} name="componente" />

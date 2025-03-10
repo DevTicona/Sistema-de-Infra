@@ -1,3 +1,5 @@
+import React from 'react'
+
 import {
   People,
   Code,
@@ -5,6 +7,10 @@ import {
   Description,
   Delete,
   Edit,
+  Person,
+  Info,
+  Backup,
+  VerifiedUser,
 } from '@mui/icons-material'
 import {
   Card,
@@ -21,6 +27,9 @@ import {
   ListItem,
   ListItemText,
   Divider,
+  Box,
+  Paper,
+  Avatar,
 } from '@mui/material'
 
 import { Link, routes, navigate } from '@redwoodjs/router'
@@ -46,16 +55,22 @@ const formatDate = (dateString) => {
   })
 }
 
-const formatStatus = (status) => {
-  const statusMap = {
-    ACTIVO: { color: '#4CAF50', text: 'Activo' },
-    INACTIVO: { color: '#F44336', text: 'Inactivo' },
+const formatJSON = (data) => {
+  if (!data) return 'No disponible'
+  try {
+    const parsed = typeof data === 'string' ? JSON.parse(data) : data
+    return Object.entries(parsed).map(([key, value]) => (
+      <div
+        key={key}
+        style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}
+      >
+        <span style={{ fontWeight: 500, color: '#3f51b5' }}>{key}:</span>
+        <span>{value || '-'}</span>
+      </div>
+    ))
+  } catch {
+    return 'Formato inválido'
   }
-  return (
-    <span style={{ color: statusMap[status]?.color || '#666' }}>
-      {statusMap[status]?.text || status}
-    </span>
-  )
 }
 
 const Sistema = ({ sistema }) => {
@@ -87,22 +102,36 @@ const Sistema = ({ sistema }) => {
           marginBottom: '2rem',
         }}
       >
-        <Typography
-          variant="h4"
-          component="h1"
-          style={{ fontWeight: 700, color: '#2c3e50' }}
-        >
-          {sistema.nombre}
-          <Chip
-            label={sistema.estado}
-            style={{
-              marginLeft: '1rem',
-              backgroundColor:
-                sistema.estado === 'ACTIVO' ? '#e8f5e9' : '#ffebee',
-              color: sistema.estado === 'ACTIVO' ? '#2e7d32' : '#c62828',
+        <Box display="flex" alignItems="center" gap={2}>
+          <Avatar
+            sx={{
+              width: 56,
+              height: 56,
+              bgcolor: '#3f51b5',
+              fontSize: '1.5rem',
             }}
-          />
-        </Typography>
+          >
+            {sistema.nombre?.[0]?.toUpperCase() || 'S'}
+          </Avatar>
+          <div>
+            <Typography
+              variant="h4"
+              component="h1"
+              style={{ fontWeight: 700, color: '#2c3e50' }}
+            >
+              {sistema.nombre}
+            </Typography>
+            <Chip
+              label={sistema.estado}
+              style={{
+                marginTop: '0.5rem',
+                backgroundColor:
+                  sistema.estado === 'ACTIVO' ? '#e8f5e9' : '#ffebee',
+                color: sistema.estado === 'ACTIVO' ? '#2e7d32' : '#c62828',
+              }}
+            />
+          </div>
+        </Box>
         <div>
           <Button
             variant="contained"
@@ -125,9 +154,8 @@ const Sistema = ({ sistema }) => {
         </div>
       </div>
 
-      {/* Sección principal */}
       <Grid container spacing={3}>
-        {/* Columna izquierda - Detalles principales */}
+        {/* Columna Izquierda - Información del Sistema */}
         <Grid item xs={12} md={6}>
           <Card elevation={3} style={{ borderRadius: 16 }}>
             <CardContent>
@@ -143,62 +171,104 @@ const Sistema = ({ sistema }) => {
                 <Description style={{ marginRight: 8 }} /> Información del
                 Sistema
               </Typography>
-
               <Divider style={{ margin: '1rem 0' }} />
 
               <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Código
-                  </Typography>
-                  <Typography variant="body1">{sistema.codigo}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Sigla
-                  </Typography>
-                  <Typography variant="body1">{sistema.sigla}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Descripción
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    style={{ whiteSpace: 'pre-line' }}
-                  >
-                    {sistema.descripcion || 'Sin descripción'}
-                  </Typography>
-                </Grid>
-              </Grid>
+                <DetailItem
+                  label="ID Sistema"
+                  value={sistema.id}
+                  icon={<Info fontSize="small" />}
+                />
 
-              <Divider style={{ margin: '1.5rem 0' }} />
+                <DetailItem
+                  label="Código"
+                  value={sistema.codigo}
+                  icon={<Backup fontSize="small" />}
+                />
 
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Fecha Creación
-                  </Typography>
-                  <Typography variant="body2">
-                    {formatDate(sistema.fecha_creacion)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Última Modificación
-                  </Typography>
-                  <Typography variant="body2">
-                    {sistema.fecha_modificacion
+                <DetailItem
+                  label="Sigla"
+                  value={sistema.sigla}
+                  icon={<VerifiedUser fontSize="small" />}
+                />
+
+                <DetailItem
+                  label="Sistema Padre"
+                  value={sistema.id_padre || 'Ninguno'}
+                />
+
+                <DetailItem
+                  label="Entidad"
+                  value={
+                    sistema.entidades?.nombre || `ID ${sistema.id_entidad}`
+                  }
+                />
+
+                <DetailItem
+                  label="Descripción"
+                  value={sistema.descripcion || 'Sin descripción'}
+                  fullWidth
+                />
+
+                <DetailItem
+                  label="Creado por"
+                  value={sistema.usuario_creacion || 'Desconocido'}
+                  icon={<Person fontSize="small" />}
+                />
+
+                <DetailItem
+                  label="Modificado por"
+                  value={sistema.usuario_modificacion || 'No modificado'}
+                  icon={<Person fontSize="small" />}
+                />
+
+                <DetailItem
+                  label="Fecha Creación"
+                  value={formatDate(sistema.fecha_creacion)}
+                />
+
+                <DetailItem
+                  label="Última Modificación"
+                  value={
+                    sistema.fecha_modificacion
                       ? formatDate(sistema.fecha_modificacion)
-                      : 'Nunca modificado'}
-                  </Typography>
+                      : 'Nunca modificado'
+                  }
+                />
+
+                <Grid item xs={12}>
+                  <Paper
+                    variant="outlined"
+                    style={{ padding: '1rem', marginTop: '1rem' }}
+                  >
+                    <Typography
+                      variant="subtitle2"
+                      color="textSecondary"
+                      gutterBottom
+                    >
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <Description fontSize="small" /> Respaldo Creación
+                      </Box>
+                    </Typography>
+                    <Box
+                      sx={{
+                        backgroundColor: '#f8f9fa',
+                        borderRadius: '4px',
+                        padding: '1rem',
+                        maxHeight: '300px',
+                        overflowY: 'auto',
+                      }}
+                    >
+                      {formatJSON(sistema.respaldo_creacion)}
+                    </Box>
+                  </Paper>
                 </Grid>
               </Grid>
             </CardContent>
           </Card>
         </Grid>
 
-        {/* Columna derecha - Relaciones */}
+        {/* Columna Derecha - Responsables */}
         <Grid item xs={12} md={6}>
           <Card elevation={3} style={{ borderRadius: 16, height: '100%' }}>
             <CardContent>
@@ -218,39 +288,99 @@ const Sistema = ({ sistema }) => {
               {sistema.usuario_roles?.length > 0 ? (
                 <List dense>
                   {sistema.usuario_roles.map((rol) => (
-                    <ListItem key={rol.id} style={{ padding: '8px 0' }}>
+                    <ListItem
+                      key={rol.id}
+                      button
+                      component={Link}
+                      to={routes.usuario({ id: rol.usuarios?.id })}
+                      style={{
+                        padding: '12px',
+                        margin: '4px 0',
+                        borderRadius: '8px',
+                        transition: 'all 0.2s',
+                        '&:hover': {
+                          backgroundColor: '#f8f9fa',
+                        },
+                      }}
+                    >
+                      <Avatar
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          bgcolor: '#3f51b5',
+                          fontSize: '1rem',
+                          marginRight: 2,
+                        }}
+                      >
+                        {rol.usuarios?.nombre_usuario?.[0]?.toUpperCase() ||
+                          'U'}
+                      </Avatar>
+
                       <ListItemText
                         primary={
-                          <div
-                            style={{ display: 'flex', alignItems: 'center' }}
-                          >
-                            <span style={{ fontWeight: 500 }}>
-                              {rol.usuarios?.nombre_usuario}
-                            </span>
+                          <Box display="flex" alignItems="center" gap={1}>
+                            <Typography variant="subtitle1" fontWeight={500}>
+                              {rol.usuarios?.nombre_usuario ||
+                                'Usuario desconocido'}
+                            </Typography>
                             <Chip
                               label={rol.roles?.nombre}
                               size="small"
-                              style={{
-                                marginLeft: 8,
+                              sx={{
                                 backgroundColor: '#e3f2fd',
                                 color: '#1e88e5',
+                                fontWeight: 600,
                               }}
                             />
-                          </div>
+                          </Box>
                         }
-                        secondary={`Estado: ${formatStatus(rol.estado)} | Asignado el ${formatDate(rol.fecha_creacion)}`}
+                        secondary={
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 2,
+                              mt: 1,
+                            }}
+                          >
+                            <Chip
+                              label={rol.estado}
+                              size="small"
+                              sx={{
+                                backgroundColor:
+                                  rol.estado === 'ACTIVO'
+                                    ? '#e8f5e9'
+                                    : '#ffebee',
+                                color:
+                                  rol.estado === 'ACTIVO'
+                                    ? '#2e7d32'
+                                    : '#c62828',
+                              }}
+                            />
+                            <Typography variant="caption" color="textSecondary">
+                              Asignado el: {formatDate(rol.fecha_creacion)}
+                            </Typography>
+                          </Box>
+                        }
                       />
                     </ListItem>
                   ))}
                 </List>
               ) : (
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  style={{ textAlign: 'center' }}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    py: 4,
+                    gap: 2,
+                  }}
                 >
-                  No hay responsables asignados
-                </Typography>
+                  <People sx={{ fontSize: 40, color: '#e0e0e0' }} />
+                  <Typography variant="body2" color="textSecondary">
+                    No hay responsables asignados
+                  </Typography>
+                </Box>
               )}
             </CardContent>
           </Card>
@@ -305,7 +435,26 @@ const Sistema = ({ sistema }) => {
                             color="textSecondary"
                             style={{ marginTop: 4 }}
                           >
-                            Estado: {formatStatus(componente.estado)}
+                            Estado:{' '}
+                            {componente.estado === 'ACTIVO' ? (
+                              <Chip
+                                label="Activo"
+                                size="small"
+                                style={{
+                                  backgroundColor: '#e8f5e9',
+                                  color: '#2e7d32',
+                                }}
+                              />
+                            ) : (
+                              <Chip
+                                label="Inactivo"
+                                size="small"
+                                style={{
+                                  backgroundColor: '#ffebee',
+                                  color: '#c62828',
+                                }}
+                              />
+                            )}
                           </Typography>
                         </CardContent>
                       </Card>
@@ -326,35 +475,39 @@ const Sistema = ({ sistema }) => {
         </Grid>
       </Grid>
 
-      {/* Diálogo de confirmación */}
+      {/* Diálogo de Confirmación */}
       <Dialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
       >
-        <DialogTitle style={{ color: '#c62828' }}>
-          Confirmar Eliminación
+        <DialogTitle sx={{ color: '#c62828', bgcolor: '#fff3e0' }}>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Delete color="error" /> Confirmar Eliminación
+          </Box>
         </DialogTitle>
         <DialogContent>
-          <Typography>
-            ¿Estás seguro de eliminar permanentemente el sistema "
-            {sistema.nombre}"?
-          </Typography>
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            style={{ marginTop: 8 }}
-          >
-            Esta acción no se puede deshacer y afectará a todos los componentes
-            asociados.
-          </Typography>
+          <Box sx={{ pt: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              ¿Eliminar permanentemente el sistema "{sistema.nombre}"?
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              Esta acción eliminará todos los registros asociados, incluyendo:
+            </Typography>
+            <ul style={{ color: '#c62828', margin: '8px 0 0 20px' }}>
+              <li>Componentes asociados</li>
+              <li>Historial de actividades</li>
+              <li>Configuraciones relacionadas</li>
+            </ul>
+          </Box>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ bgcolor: '#fff3e0' }}>
           <Button onClick={() => setDeleteDialogOpen(false)}>Cancelar</Button>
           <Button
             onClick={handleDeleteConfirm}
             variant="contained"
             color="error"
             startIcon={<Delete />}
+            sx={{ boxShadow: 'none' }}
           >
             Confirmar Eliminación
           </Button>
@@ -363,5 +516,34 @@ const Sistema = ({ sistema }) => {
     </div>
   )
 }
+
+// Componente DetailItem
+const DetailItem = ({ label, value, icon, fullWidth = false }) => (
+  <Grid item xs={12} sm={fullWidth ? 12 : 6}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 0.5,
+        p: 1.5,
+        bgcolor: '#f8f9fa',
+        borderRadius: 1,
+      }}
+    >
+      <Box display="flex" alignItems="center" gap={1}>
+        {icon}
+        <Typography variant="subtitle2" color="textSecondary">
+          {label}
+        </Typography>
+      </Box>
+      <Typography
+        variant="body1"
+        sx={{ wordBreak: 'break-word', color: '#2c3e50' }}
+      >
+        {value || '-'}
+      </Typography>
+    </Box>
+  </Grid>
+)
 
 export default Sistema

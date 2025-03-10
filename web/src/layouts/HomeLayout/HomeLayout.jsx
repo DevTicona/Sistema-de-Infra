@@ -197,12 +197,12 @@ const HomeLayout = ({ children }) => {
         </Box>
       </Drawer>
 
-      <Container maxWidth="xl" sx={{ py: 4, flex: 1 }}>
+      <Container maxWidth="xl" sx={{ p: 1, flex: 1 }}>
         <Box
           sx={{
             minHeight: '70vh',
-            p: 4,
-            borderRadius: 4,
+            p: 1,
+            borderRadius: 2,
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.05)',
             background: 'white',
             border: '1px solid rgba(0, 0, 0, 0.05)',

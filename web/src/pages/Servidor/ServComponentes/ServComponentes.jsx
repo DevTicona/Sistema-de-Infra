@@ -13,7 +13,7 @@ import { Link, routes } from '@redwoodjs/router'
 import { useParams } from '@redwoodjs/router' // Importa useParams
 import { useQuery } from '@redwoodjs/web'
 
-import { QUERY } from 'src/components/Servidor/ServidorCell'
+import { QUERY } from 'src/components/Servidor/ServidorsCell'
 
 import { useStyles } from './styles' // Asegúrate de que este archivo esté correctamente importado
 
@@ -56,12 +56,10 @@ const ServComponentes = () => {
             <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
               <TableCell>ID</TableCell>
               <TableCell>Componente</TableCell>
-              <TableCell>Entorno</TableCell>
-              <TableCell>Categoria</TableCell>
               <TableCell>Sistema asociado al componente</TableCell>
               <TableCell>Agrupador</TableCell>
               <TableCell>Tipo</TableCell>
-              <TableCell>Estado Despliegue</TableCell>
+              <TableCell>Estado</TableCell>
               <TableCell>Fecha de Creación</TableCell>
             </TableRow>
           </TableHead>
@@ -78,8 +76,6 @@ const ServComponentes = () => {
                     {despliegue?.componentes?.nombre || 'N/A'}
                   </Link>
                 </TableCell>
-                <TableCell>{despliegue.componentes.entorno}</TableCell>
-                <TableCell>{despliegue.componentes.categoria}</TableCell>
                 <TableCell>
                   <Link
                     to={routes.sistema({

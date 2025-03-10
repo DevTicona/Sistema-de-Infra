@@ -1,4 +1,3 @@
-// Modificación a AccesoriosLayout.jsx
 import { useMemo, useEffect, useState } from 'react'
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
@@ -26,31 +25,30 @@ import debounce from 'lodash/debounce'
 import { Link, routes } from '@redwoodjs/router'
 import { Toaster } from '@redwoodjs/web/toast'
 
+// Contextos de búsqueda y refresco
 import { ColumnConfigProvider } from 'src/context/ColumnConfigContext'
 import ColumnSelector from 'src/context/ColumnSelector'
 import { useRefresh } from 'src/context/RefreshContext'
 import { useSearch } from 'src/context/SearchContext'
-import { useReportGenerator } from 'src/hooks/useReportGenerator' // Importar el hook
-
+import { generateCSVReport } from 'src/lib/generateCSVReport'
+import { generateExcelReport } from 'src/lib/generateExcelReport'
+import { generatePDFReport } from 'src/lib/generatePDFReport'
 const AccesoriosLayout = ({
   title,
   titleTo,
   buttonLabel,
   buttonTo,
   children,
-  datos,
-  columnsToDisplay,
+  Datos, // Aquí pasas los datos de los servidores desde Servidors.jsx
+  columnsToDisplay, // Pasa las columnas configurables
 }) => {
-  // Usar el hook personalizado
-  const { generateReport } = useReportGenerator()
-
   // Búsqueda y refresco
   const { search, handleSearchChange } = useSearch()
   const debouncedSearch = useMemo(
     () =>
       debounce((value) => {
         handleSearchChange(value)
-      }, 50),
+      }, 300),
     [handleSearchChange]
   )
   useEffect(() => {
@@ -89,34 +87,32 @@ const AccesoriosLayout = ({
   const open = Boolean(anchorEl)
 
   // Función para manejar la descarga según el tipo
-  // Modifica la función handleDownload
   const handleDownload = (type) => {
-    handleCloseDownloadMenu()
-
-    // Obtiene las columnas directamente del ServidorsList
-    // Como ahora sabemos la estructura de ServidorsList, podemos obtener esto
-    // Necesitamos acceder a las columnas visibles actuales
-    const currentTableColumns = columnsToDisplay || []
-
-    // Aseguramos que tenemos un array de columnas válido
-    if (!Array.isArray(currentTableColumns)) {
-      console.error(
-        'Error: columnsToDisplay no es un array:',
-        currentTableColumns
-      )
+    // Log para ver qué contiene columnsToDisplay
+    console.log('Tipo de columnsToDisplay:', typeof columnsToDisplay)
+    console.log('Valor de columnsToDisplay:', columnsToDisplay)
+    // Asegúrate de que columnsToDisplay es un array válido
+    if (!Array.isArray(columnsToDisplay)) {
+      console.error('Error: columnsToDisplay no es un array:', columnsToDisplay)
       alert(
         'Hubo un error al generar el reporte. Verifica la configuración de las columnas.'
       )
       return
     }
-
-    // Genera el reporte usando los datos pasados y las columnas configuradas
-    const success = generateReport(type, datos, currentTableColumns, title)
-
-    if (!success) {
-      alert(
-        'Hubo un error al generar el reporte. Verifica la configuración de las columnas.'
-      )
+    switch (type) {
+      case 'pdf':
+        console.log('columnsToDisplay before passing to PDF:', columnsToDisplay)
+        generatePDFReport(Datos, columnsToDisplay, title)
+        break
+      case 'excel':
+        generateExcelReport(Datos, columnsToDisplay)
+        break
+      case 'csv':
+        generateCSVReport(Datos)
+        break
+      default:
+        alert('Formato no soportado')
+        break
     }
   }
   return (

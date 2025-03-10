@@ -29,14 +29,11 @@ const MetadataField = ({ defaultValue, tipo }) => {
     defaultValue || (tipo ? PLANTILLAS_METADATA[tipo] || {} : {})
   )
 
-  // Update metadata template when tipo changes
   useEffect(() => {
     if (tipo) {
-      // Keep existing values for fields that exist in both templates
       const newTemplate = PLANTILLAS_METADATA[tipo] || {}
       const mergedData = { ...newTemplate }
 
-      // Preserve existing values when switching templates if the field exists in both
       Object.keys(newTemplate).forEach((key) => {
         if (defaultValue && defaultValue[key]) {
           mergedData[key] = defaultValue[key]
@@ -51,7 +48,6 @@ const MetadataField = ({ defaultValue, tipo }) => {
     const { name, value } = event.target
     setMetadataData((prevData) => {
       const updatedData = { ...prevData, [name]: value }
-      console.log('Actualizando metadataData:', updatedData)
       return updatedData
     })
   }
@@ -94,17 +90,19 @@ const MetadataField = ({ defaultValue, tipo }) => {
 
 const ServidorForm = (props) => {
   const { currentUser } = useAuth()
-  const [tipoServidor, setTipoServidor] = useState(props.servidor?.tipo || '')
   const { data: datacentersData } = useQuery(OBTENER_DATACENTERS)
 
+  // Estado para el tipo de servidor
+  const [tipoServidor, setTipoServidor] = useState(props.servidor?.tipo || '')
+
   // Estado para los datos del sistema a editar
-  const [formData, setFormData] = useState(props.sistema || {})
+  const [formData, setFormData] = useState(props.servidor || {})
 
   useEffect(() => {
-    if (props.sistema) {
-      setFormData(props.sistema) // Asegúrate de que el estado se actualice con los datos del sistema
+    if (props.servidor) {
+      setFormData(props.servidor) // Asegúrate de que el estado se actualice con los datos del servidor
     }
-  }, [props.sistema]) // Se actualiza cuando props.sistema cambia
+  }, [props.servidor])
 
   const onSubmit = (data) => {
     const metadataInput = document.querySelector('input[name="metadata"]')
@@ -121,11 +119,15 @@ const ServidorForm = (props) => {
     if (formData.id_data_center) {
       formData.id_data_center = parseInt(formData.id_data_center, 10)
     }
+
     props.onSave(formData, props?.servidor?.id)
   }
 
   const handleTipoChange = (event) => {
-    setTipoServidor(event.target.value)
+    if (!props.servidor?.id) {
+      // Solo cambiar el tipo si es un nuevo servidor
+      setTipoServidor(event.target.value)
+    }
   }
 
   // Map the server type to metadata template type
@@ -159,7 +161,7 @@ const ServidorForm = (props) => {
         </Label>
         <NumberField
           name="nro_cluster"
-          defaultValue={props.servidor?.nro_cluster}
+          defaultValue={formData?.nro_cluster}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
@@ -175,7 +177,7 @@ const ServidorForm = (props) => {
         </Label>
         <NumberField
           name="vmid"
-          defaultValue={props.servidor?.vmid}
+          defaultValue={formData?.vmid}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
@@ -191,7 +193,7 @@ const ServidorForm = (props) => {
         </Label>
         <TextField
           name="nombre"
-          defaultValue={props.servidor?.nombre}
+          defaultValue={formData?.nombre}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
@@ -207,7 +209,7 @@ const ServidorForm = (props) => {
         </Label>
         <TextField
           name="nodo"
-          defaultValue={props.servidor?.nodo}
+          defaultValue={formData?.nodo}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
@@ -223,7 +225,7 @@ const ServidorForm = (props) => {
         </Label>
         <TextField
           name="ip"
-          defaultValue={props.servidor?.ip}
+          defaultValue={formData?.ip}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           validation={{ required: true }}
@@ -239,10 +241,11 @@ const ServidorForm = (props) => {
         </Label>
         <SelectField
           name="tipo"
-          defaultValue={props.servidor?.tipo}
+          value={formData?.tipo || tipoServidor}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
           onChange={handleTipoChange}
+          disabled={!!props.servidor?.id} // Deshabilitar si es un servidor ya creado
           required
         >
           <option value="">Seleccione un tipo</option>
@@ -260,7 +263,7 @@ const ServidorForm = (props) => {
         </Label>
         <SelectField
           name="estado"
-          defaultValue={props.servidor?.estado || 'ACTIVO'}
+          defaultValue={formData?.estado || 'ACTIVO'}
           className="rw-input"
           errorClassName="rw-input rw-input-error"
         >
@@ -273,8 +276,8 @@ const ServidorForm = (props) => {
         <FieldError name="estado" className="rw-field-error" />
 
         <MetadataField
-          defaultValue={props.servidor?.metadata}
-          tipo={getMetadataTemplate(tipoServidor)}
+          defaultValue={formData?.metadata}
+          tipo={getMetadataTemplate(formData?.tipo || tipoServidor)}
         />
         <FieldError name="metadata" className="rw-field-error" />
 
@@ -303,8 +306,6 @@ const ServidorForm = (props) => {
           )}
         </SelectField>
         <FieldError name="id_data_center" className="rw-field-error" />
-
-        <FieldError name="id_padre" className="rw-field-error" />
 
         <div className="rw-button-group">
           <Submit disabled={props.loading} className="rw-button rw-button-blue">

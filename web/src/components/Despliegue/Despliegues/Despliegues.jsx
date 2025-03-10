@@ -3,8 +3,8 @@ import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
 
 import { QUERY } from 'src/components/Despliegue/DesplieguesCell'
+import { useSearch } from 'src/context/SearchContext'
 import { formatEnum, timeTag, truncate } from 'src/lib/formatters'
-
 const DELETE_DESPLIEGUE_MUTATION = gql`
   mutation DeleteDespliegueMutation($id: Int!) {
     deleteDespliegue(id: $id) {
@@ -14,6 +14,8 @@ const DELETE_DESPLIEGUE_MUTATION = gql`
 `
 
 const DesplieguesList = ({ despliegues }) => {
+  const { search } = useSearch() // Obtén el valor de búsqueda desde el contexto
+
   const [deleteDespliegue] = useMutation(DELETE_DESPLIEGUE_MUTATION, {
     onCompleted: () => {
       toast.success('Despliegue deleted')
@@ -31,6 +33,20 @@ const DesplieguesList = ({ despliegues }) => {
     }
   }
 
+  const filteredDespliegues = despliegues.filter(
+    (despliegue) =>
+      // Filtra por "nombre", "nodo", "ip" y "tipo"
+      despliegue.agrupador
+        ?.toLowerCase()
+        .includes(search?.toLowerCase() || '') ||
+      despliegue.tipo?.toLowerCase().includes(search?.toLowerCase() || '') ||
+      despliegue.componentes.nombre
+        ?.toLowerCase()
+        .includes(search?.toLowerCase() || '') ||
+      despliegue.servidores.nombre
+        ?.toLowerCase()
+        .includes(search?.toLowerCase() || '')
+  )
   return (
     <div className="rw-segment rw-table-wrapper-responsive">
       <table className="rw-table">
@@ -43,7 +59,6 @@ const DesplieguesList = ({ despliegues }) => {
             <th>Estado</th>
             <th>Fecha creacion</th>
             <th>Servidor</th>
-            <th>Sistema</th>
             <th>Componente</th>
             <th>Usuario</th>
             <th>Rol</th>
@@ -51,7 +66,7 @@ const DesplieguesList = ({ despliegues }) => {
           </tr>
         </thead>
         <tbody>
-          {despliegues.map((despliegue) => (
+          {filteredDespliegues.map((despliegue) => (
             <tr key={despliegue.id}>
               <td>{truncate(despliegue.id)}</td>
               <td>{truncate(despliegue.agrupador)}</td>
@@ -69,24 +84,17 @@ const DesplieguesList = ({ despliegues }) => {
                 )}
               </td>
               <td>
-                {despliegue.componentes &&
-                despliegue.componentes.sistemas &&
-                despliegue.componentes.sistemas.id ? (
+                {despliegue.componentes ? (
                   <Link
                     to={routes.sistema({
-                      id: despliegue.componentes.sistemas.id,
+                      id: despliegue.componentes.id,
                     })}
                   >
-                    {truncate(despliegue.componentes.sistemas.nombre)}
+                    {truncate(despliegue.componentes.nombre)}
                   </Link>
                 ) : (
-                  'No sistema'
+                  'No componente'
                 )}
-              </td>
-              <td>
-                {despliegue.componentes
-                  ? truncate(despliegue.componentes.nombre)
-                  : 'No componente'}
               </td>
               <td>
                 {despliegue.usuario_roles.usuarios

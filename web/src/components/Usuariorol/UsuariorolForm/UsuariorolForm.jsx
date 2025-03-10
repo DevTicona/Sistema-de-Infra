@@ -23,7 +23,7 @@ const OBTENER_USUARIOS = gql`
 `
 
 const OBTENER_ROLES = gql`
-  query obtenerRoles {
+  query obtenerRols {
     rols {
       id
       nombre

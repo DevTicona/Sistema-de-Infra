@@ -4,7 +4,6 @@ import {
   Visibility as VisibilityIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-  Search as SearchIcon,
 } from '@mui/icons-material'
 import {
   Box,
@@ -18,8 +17,6 @@ import {
   TableSortLabel,
   IconButton,
   Tooltip,
-  TextField,
-  InputAdornment,
   Chip,
   Dialog,
   DialogTitle,
@@ -29,9 +26,10 @@ import {
 } from '@mui/material'
 
 import { Link, routes } from '@redwoodjs/router'
-import { useMutation, useQuery } from '@redwoodjs/web'
+import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
 
+import { useSearch } from 'src/context/SearchContext'
 const QUERY = gql`
   query SistemasQuery {
     sistemas {
@@ -73,13 +71,14 @@ const DELETE_SISTEMA_MUTATION = gql`
   }
 `
 const SistemasList = ({ sistemas }) => {
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [page] = useState(0)
+  const [rowsPerPage] = useState(10)
   const [orderBy, setOrderBy] = useState('id')
   const [order, setOrder] = useState('asc')
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
-  const [searchTerm, setSearchTerm] = useState('')
+
+  const { search } = useSearch() // Obtén el valor de búsqueda desde el contexto
 
   const [deleteSistema] = useMutation(DELETE_SISTEMA_MUTATION, {
     onCompleted: () => {
@@ -99,16 +98,7 @@ const SistemasList = ({ sistemas }) => {
     setOrderBy(property)
   }
 
-  const filteredData = sistemas.filter((sistema) => {
-    const searchTermLower = searchTerm.toLowerCase()
-    return (
-      sistema.sigla.toLowerCase().includes(searchTermLower) ||
-      sistema.nombre.toLowerCase().includes(searchTermLower) ||
-      sistema.codigo.toLowerCase().includes(searchTermLower)
-    )
-  })
-
-  const sortedData = [...filteredData].sort((a, b) => {
+  const sortedData = [...sistemas].sort((a, b) => {
     const aValue = a[orderBy]
     const bValue = b[orderBy]
 
@@ -123,6 +113,14 @@ const SistemasList = ({ sistemas }) => {
   const handleDeleteConfirm = () => {
     deleteSistema({ variables: { id: selectedId } })
   }
+
+  const filteredSistemas = sortedData.filter(
+    (sistema) =>
+      // Filtra por "nombre", "nodo", "ip" y "tipo"
+      sistema.nombre?.toLowerCase().includes(search?.toLowerCase() || '') ||
+      sistema.codigo?.toLowerCase().includes(search?.toLowerCase() || '') ||
+      sistema.sigla?.toLowerCase().includes(search?.toLowerCase() || '')
+  )
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -158,24 +156,7 @@ const SistemasList = ({ sistemas }) => {
             width: 400,
             borderRadius: '8px',
           }}
-        >
-          <TextField
-            fullWidth
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar por sigla, nombre o código..."
-            variant="standard"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon color="action" />
-                </InputAdornment>
-              ),
-              disableUnderline: true,
-              sx: { px: 2, py: 1 },
-            }}
-          />
-        </Paper>
+        ></Paper>
       </Box>
 
       {/* Tabla principal */}
@@ -225,7 +206,7 @@ const SistemasList = ({ sistemas }) => {
             </TableHead>
 
             <TableBody>
-              {sortedData
+              {filteredSistemas
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((sistema) => (
                   <TableRow key={sistema.id} hover>

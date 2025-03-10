@@ -44,9 +44,9 @@ export const schema = gql`
   }
 
   type Mutation {
-    createDatacenter(input: CreateDatacenterInput!): Datacenter! @requireAuth
+    createDatacenter(input: CreateDatacenterInput!): Datacenter! @skipAuth
     updateDatacenter(id: Int!, input: UpdateDatacenterInput!): Datacenter!
-      @requireAuth
-    deleteDatacenter(id: Int!): Datacenter! @requireAuth
+      @skipAuth
+    deleteDatacenter(id: Int!): Datacenter! @skipAuth
   }
 `
