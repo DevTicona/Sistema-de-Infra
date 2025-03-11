@@ -8,7 +8,9 @@ import { QUERY } from 'src/components/Servidor/ServidorsCell'
 import { ColumnConfigContext } from 'src/context/ColumnConfigContext'
 import { useRefresh } from 'src/context/RefreshContext'
 import { useSearch } from 'src/context/SearchContext'
+import { TableDataContext } from 'src/context/TableDataContext'
 import { formatEnum, jsonTruncate, truncate } from 'src/lib/formatters'
+
 const GET_USUARIOS_QUERY = gql`
   query UsuariosQuery {
     usuarios {
@@ -25,6 +27,7 @@ const DELETE_SERVIDOR_MUTATION = gql`
     }
   }
 `
+
 const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString('es-ES', {
     year: 'numeric',
@@ -34,11 +37,14 @@ const formatDate = (dateString) => {
     minute: '2-digit',
   })
 }
+
 const ServidorsList = ({ servidors }) => {
+  const { setTableData, setTableConfig } = useContext(TableDataContext)
   const { search } = useSearch()
   const { refresh } = useRefresh()
   const { refetch } = useQuery(QUERY)
   const { data: usuariosData } = useQuery(GET_USUARIOS_QUERY)
+
   const usuariosMap = usuariosData?.usuarios.reduce((map, usuario) => {
     map[usuario.id] = usuario.nombre_usuario
     return map
@@ -46,7 +52,6 @@ const ServidorsList = ({ servidors }) => {
 
   const [servidoresData, setServidoresData] = useState(servidors)
 
-  // Sincroniza el estado local con las props iniciales
   useEffect(() => {
     setServidoresData(servidors)
   }, [servidors])
@@ -54,7 +59,7 @@ const ServidorsList = ({ servidors }) => {
   const [deleteServidor] = useMutation(DELETE_SERVIDOR_MUTATION, {
     onCompleted: async () => {
       toast.success('Servidor eliminado')
-      await refetch() // Actualiza la tabla después de eliminar
+      await refetch()
     },
     onError: (error) => {
       toast.error(error.message)
@@ -67,10 +72,8 @@ const ServidorsList = ({ servidors }) => {
     }
   }
 
-  // Refresca los datos cuando `refresh` cambia
   useEffect(() => {
     if (refresh) {
-      console.log('Tabla refrescada')
       refetch().then(({ data }) => {
         if (data?.servidors) {
           setServidoresData(data.servidors)
@@ -79,22 +82,26 @@ const ServidorsList = ({ servidors }) => {
     }
   }, [refresh, refetch])
 
-  const filteredServidors = servidoresData?.filter(
-    (servidor) =>
-      (String(servidor.id)
-        ?.toLowerCase()
-        .includes(search?.toLowerCase() || '') &&
-        search) ||
-      servidor.nombre?.toLowerCase().includes(search?.toLowerCase() || '') ||
-      servidor.nodo?.toLowerCase().includes(search?.toLowerCase() || '') ||
-      servidor.ip?.toLowerCase().includes(search?.toLowerCase() || '') ||
-      servidor.tipo?.toLowerCase().includes(search?.toLowerCase() || '')
-  )
+  // Filtra los servidores según la búsqueda
+  const filteredServidors = useMemo(() => {
+    return servidoresData?.filter((servidor) => {
+      const lowerSearch = search?.toLowerCase() || ''
+      return (
+        String(servidor.id)?.toLowerCase().includes(lowerSearch) ||
+        servidor.nombre?.toLowerCase().includes(lowerSearch) ||
+        servidor.nodo?.toLowerCase().includes(lowerSearch) ||
+        servidor.ip?.toLowerCase().includes(lowerSearch) ||
+        servidor.tipo?.toLowerCase().includes(lowerSearch)
+      )
+    })
+  }, [search, servidoresData])
 
   const tableName = 'Servidors'
-  // Memoriza el arreglo de columnas para evitar que se recree en cada render
+  const [selectedServidores, setSelectedServidores] = useState([])
+
   const initialColumns = useMemo(
     () => [
+      { name: 'checkbox', label: '', visible: true, type: 'checkbox' },
       { name: 'id', label: 'Id', visible: true },
       { name: 'nro_cluster', label: 'Nro cluster', visible: true },
       { name: 'vmid', label: 'Vmid', visible: true },
@@ -105,7 +112,7 @@ const ServidorsList = ({ servidors }) => {
       { name: 'estado', label: 'Estado', visible: true },
       { name: 'metadata', label: 'Metadata', visible: false },
       { name: 'fecha_creacion', label: 'Fecha creacion', visible: true },
-      { name: 'usuario_creacion', label: 'Usuario creacion', visible: false },
+      { name: 'usuario_creacion', label: 'Usuario creacion', visible: true },
       {
         name: 'fecha_modificacion',
         label: 'Fecha modificacion',
@@ -124,21 +131,53 @@ const ServidorsList = ({ servidors }) => {
   const { setCurrentTableConfig, currentTable } =
     useContext(ColumnConfigContext)
 
-  // Inicializa la configuración solo si no existe o si el nombre de la tabla cambió
   useEffect(() => {
     if (!currentTable || currentTable.tableName !== tableName) {
       setCurrentTableConfig({ tableName, columns: initialColumns })
     }
   }, [setCurrentTableConfig, tableName, initialColumns, currentTable])
 
-  // Se toman las columnas que estén marcadas como visibles
   const columnsToDisplay =
     currentTable && currentTable.tableName === tableName
       ? currentTable.columns.filter((col) => col.visible)
       : initialColumns
 
+  useEffect(() => {
+    setTableData(filteredServidors)
+    setTableConfig({
+      tableName,
+      filas: selectedServidores,
+      columns: columnsToDisplay,
+      usuarios: usuariosMap,
+    })
+  }, [
+    filteredServidors,
+    selectedServidores,
+    columnsToDisplay,
+    setTableData,
+    setTableConfig,
+    tableName,
+    usuariosMap,
+  ])
+
   const renderCell = (servidor, colName) => {
     switch (colName) {
+      case 'checkbox':
+        return (
+          <input
+            type="checkbox"
+            checked={selectedServidores.includes(servidor.id)}
+            onChange={(e) => {
+              if (e.target.checked) {
+                setSelectedServidores([...selectedServidores, servidor.id])
+              } else {
+                setSelectedServidores(
+                  selectedServidores.filter((id) => id !== servidor.id)
+                )
+              }
+            }}
+          />
+        )
       case 'id':
         return truncate(servidor.id)
       case 'nro_cluster':
@@ -176,14 +215,35 @@ const ServidorsList = ({ servidors }) => {
     }
   }
 
+  const allSelected =
+    filteredServidors?.length > 0 &&
+    selectedServidores.length === filteredServidors?.length
+
   return (
     <div className="rw-segment rw-table-wrapper-responsive">
       <table className="rw-table">
         <thead>
           <tr>
-            {columnsToDisplay.map((col) => (
-              <th key={col.name}>{col.label}</th>
-            ))}
+            <th>
+              <input
+                type="checkbox"
+                checked={allSelected}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setSelectedServidores(
+                      filteredServidors.map((servidor) => servidor.id)
+                    )
+                  } else {
+                    setSelectedServidores([])
+                  }
+                }}
+              />
+            </th>
+            {columnsToDisplay
+              .filter((col) => col.name !== 'checkbox')
+              .map((col) => (
+                <th key={col.name}>{col.label}</th>
+              ))}
             <th>&nbsp;</th>
           </tr>
         </thead>

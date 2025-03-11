@@ -1,79 +1,143 @@
-// src/lib/generatePDFReport.js
-import jsPDF from 'jspdf'
-import 'jspdf-autotable'
+import pdfMake from 'pdfmake/build/pdfmake'
+import pdfFonts from 'pdfmake/build/vfs_fonts'
 
-export const generatePDFReport = (data, columns, title = 'Reporte') => {
-  if (!Array.isArray(data) || !Array.isArray(columns)) {
+// Asignar las fuentes virtuales a pdfMake
+pdfMake.vfs = pdfFonts.pdfMake ? pdfFonts.pdfMake.vfs : pdfFonts.vfs
+
+export const generatePDFReport = (filas, data, columns, usuarios, title) => {
+  const usuariosArray = Object.entries(usuarios).map(([id, nombre]) => ({
+    id: Number(id),
+    nombre,
+  }))
+
+  console.log(usuariosArray) // Verificar la estructuras
+  if (
+    !Array.isArray(filas) ||
+    !Array.isArray(data) ||
+    !Array.isArray(columns)
+  ) {
     console.error('Error: datos o columnas no son arrays válidos')
     return false
   }
 
   try {
-    // eslint-disable-next-line new-cap
-    const doc = new jsPDF('l', 'mm', 'a4') // landscape, milímetros, a4
+    // Filtrar columnas visibles
+    const visibleColumns = columns.filter((col) => col.visible && col.label)
 
-    // Configuración del documento
-    doc.setFont('helvetica')
-    doc.setFontSize(18)
+    // Crear el encabezado de la tabla con las etiquetas de las columnas
+    const tableHeaders = visibleColumns.map((col) => ({
+      text: col.label,
+      bold: true,
+      fontSize: 10,
+      fillColor: '#f8f9fa',
+    }))
 
-    // Título del documento
-    doc.text(title, 14, 20)
+    // Preparar las filas de datos solo con las filas seleccionadas
+    const tableRows = filas.map((id) => {
+      const servidor = data.find((item) => item.id === id)
+      if (!servidor) return []
 
-    // Fecha del reporte
-    doc.setFontSize(10)
-    doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, 14, 28)
-
-    // Preparar los datos para autoTable
-    const tableColumn = columns.map((col) => col.label)
-    const tableRows = []
-
-    // Procesar cada fila de datos
-    data.forEach((item) => {
-      const rowData = []
-      columns.forEach((column) => {
-        // Obtener el valor según la columna
-        let cellValue = item[column.name]
+      return visibleColumns.map((column) => {
+        let cellValue =
+          servidor[column.name] !== undefined ? servidor[column.name] : '-'
 
         // Formatear según el tipo de dato
-        if (column.name === 'metadata' && cellValue) {
-          cellValue = JSON.stringify(cellValue).substring(0, 30) + '...'
-        } else if (column.name.includes('fecha') && cellValue) {
+        if (column.name.includes('fecha') && cellValue !== '-') {
           cellValue = new Date(cellValue).toLocaleDateString('es-ES')
-        } else if (column.name === 'data_center' && item.data_centers) {
-          cellValue = item.data_centers.nombre
+        } else if (
+          column.name === 'usuario_creacion' &&
+          servidor.usuario_creacion
+        ) {
+          // Buscar el nombre del usuario que corresponde al ID
+          const usuario = usuariosArray.find(
+            (user) => user.id === servidor.usuario_creacion
+          )
+          cellValue = usuario ? usuario.nombre : 'N/E'
+        } else if (column.name === 'data_center' && servidor.data_centers) {
+          cellValue = servidor.data_centers.nombre
         }
-
-        // Si es nulo o indefinido, mostrar un guión
-        rowData.push(cellValue || '-')
+        return { text: String(cellValue), fontSize: 9 }
       })
-      tableRows.push(rowData)
     })
 
-    // Generar la tabla
-    doc.autoTable({
-      head: [tableColumn],
-      body: tableRows,
-      startY: 35,
+    // Calcular anchos de columna proporcionales o fijos
+    const columnWidths = visibleColumns.map((col) => {
+      if (col.name.includes('id') || col.name.includes('fecha')) {
+        return 'auto'
+      }
+      return '*'
+    })
+
+    // Definir el contenido del PDF
+    const documentDefinition = {
+      pageOrientation: 'landscape', // Cambiar a horizontal si hay muchas columnas
+      pageSize: 'A4',
+      pageMargins: [20, 40, 20, 40],
+      content: [
+        { text: title, fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+        {
+          text: `Fecha: ${new Date().toLocaleDateString('es-ES')}`,
+          fontSize: 10,
+          margin: [0, 0, 0, 20],
+        },
+
+        // Tabla
+        {
+          table: {
+            headerRows: 1,
+            widths: columnWidths,
+            body: [
+              tableHeaders, // Encabezados de la tabla
+              ...tableRows, // Filas de datos
+            ],
+          },
+          layout: {
+            hLineWidth: function (i, node) {
+              return i === 0 || i === node.table.body.length ? 1 : 1
+            },
+            vLineWidth: function () {
+              return 0
+            },
+            hLineColor: function (i) {
+              return i === 0 ? '#bdbdbd' : '#e0e0e0'
+            },
+            paddingLeft: function () {
+              return 8
+            },
+            paddingRight: function () {
+              return 8
+            },
+            paddingTop: function () {
+              return 8
+            },
+            paddingBottom: function () {
+              return 8
+            },
+          },
+        },
+      ],
+      defaultStyle: {
+        fontSize: 10,
+      },
       styles: {
-        fontSize: 8,
-        cellPadding: 2,
-        lineWidth: 0.1,
+        header: {
+          fontSize: 18,
+          bold: true,
+        },
+        tableHeader: {
+          bold: true,
+          fontSize: 10,
+        },
       },
-      headStyles: {
-        fillColor: [41, 128, 185],
-        textColor: 255,
-        fontStyle: 'bold',
-      },
-      alternateRowStyles: {
-        fillColor: [245, 245, 245],
-      },
-      margin: { left: 14, right: 14 },
-    })
+    }
 
-    // Guardar el PDF
-    doc.save(
-      `${title.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.pdf`
-    )
+    // Generar el PDF
+    pdfMake
+      .createPdf(documentDefinition)
+      .download(
+        `${title.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.pdf`
+      )
+
     return true
   } catch (error) {
     console.error('Error al generar PDF:', error)

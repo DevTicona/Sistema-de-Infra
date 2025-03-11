@@ -1,12 +1,13 @@
 import { FatalErrorBoundary, RedwoodProvider } from '@redwoodjs/web'
 import { RedwoodApolloProvider } from '@redwoodjs/web/apollo'
 
+import { FilterProvider } from 'src/context/FilterContext'
 import FatalErrorPage from 'src/pages/FatalErrorPage'
 
 import { AuthProvider, useAuth } from './auth'
-import { RefreshProvider } from './context/RefreshContext' // Importa el SearchProvider
-import { SearchProvider } from './context/SearchContext' // Importa el SearchProvider
-
+import { RefreshProvider } from './context/RefreshContext'
+import { SearchProvider } from './context/SearchContext'
+import { TableDataProvider } from './context/TableDataContext'
 import './index.css'
 import './scaffold.css'
 
@@ -16,7 +17,11 @@ const App = ({ children }) => (
       <AuthProvider>
         <RedwoodApolloProvider useAuth={useAuth}>
           <SearchProvider>
-            <RefreshProvider>{children}</RefreshProvider>
+            <FilterProvider>
+              <RefreshProvider>
+                <TableDataProvider>{children}</TableDataProvider>
+              </RefreshProvider>
+            </FilterProvider>
           </SearchProvider>
         </RedwoodApolloProvider>
       </AuthProvider>
