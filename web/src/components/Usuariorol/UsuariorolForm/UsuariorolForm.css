@@ -1,0 +1,141 @@
+
+/* Variables de diseño */
+:root {
+  --primary: #4F46E5;
+  --primary-hover: #4338CA;
+  --surface: #FFFFFF;
+  --background: #F8FAFC;
+  --border: #E2E8F0;
+  --text: #1E293B;
+  --text-light: #64748B;
+  --error: #DC2626;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --transition: all 0.2s ease;
+}
+
+/* Estructura principal */
+.usuariorol-form {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 2rem;
+  max-width: 800px;
+  margin: 1.5rem auto;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.input-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Estilos para react-select */
+.react-select__control {
+  border: 2px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  min-height: 40px !important;
+  transition: var(--transition) !important;
+}
+
+.react-select__control--is-focused {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1) !important;
+}
+
+.react-select__menu {
+  border-radius: var(--radius-md) !important;
+  border: 2px solid var(--border) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.react-select__option--is-focused {
+  background-color: var(--background) !important;
+}
+
+/* Campo estado */
+select.input-field {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231e293b'%3e%3cpath d='M12 15l-5-6h10l-5 6z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+}
+
+/* Botón de enviar */
+.submit-button {
+  width: 100%;
+  padding: 1rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.submit-button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Mensajes de error */
+.error-message {
+  color: var(--error);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(220, 38, 38, 0.05);
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.error-message::before {
+  content: '⚠';
+  font-size: 0.8em;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .usuariorol-form {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .react-select__control {
+    font-size: 0.9rem;
+  }
+}

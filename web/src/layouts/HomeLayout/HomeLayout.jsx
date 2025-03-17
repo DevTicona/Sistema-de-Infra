@@ -1,5 +1,4 @@
-import React, { useState } from 'react'
-
+import React, { useState } from 'react';
 import {
   Menu,
   Close,
@@ -11,7 +10,14 @@ import {
   Dashboard,
   Cloud,
   Security,
-} from '@mui/icons-material'
+  Assessment,
+  Dns,
+  Apps,
+  AccountTree,
+  GroupWork,
+  ExpandMore,
+  ExpandLess,
+} from '@mui/icons-material';
 import {
   AppBar,
   Toolbar,
@@ -28,43 +34,71 @@ import {
   useScrollTrigger,
   Zoom,
   Grid,
-} from '@mui/material'
-import { styled } from '@mui/material/styles'
-
-import { Link, routes } from '@redwoodjs/router'
-
-import { useAuth } from 'src/auth'
+  Collapse,
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { Link, routes } from '@redwoodjs/router';
+import { useAuth } from 'src/auth';
 
 const HomeLayout = ({ children }) => {
-  const [drawerOpen, setDrawerOpen] = useState(false)
-  const trigger = useScrollTrigger({ threshold: 100 })
-  const { isAuthenticated, currentUser, logOut, hasRole } = useAuth()
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [expandedSections, setExpandedSections] = useState({});
+  const trigger = useScrollTrigger({ threshold: 100 });
+  const { isAuthenticated, currentUser, logOut, hasRole } = useAuth();
 
-  const menuItems = [
-    { name: 'Home', route: routes.home(), icon: <Dashboard /> },
-    { name: 'Data center', route: routes.datacenters(), icon: <Cloud /> },
-    { name: 'Servidores', route: routes.servidors(), icon: <Cloud /> },
-    { name: 'Despliegues', route: routes.despliegues(), icon: <Cloud /> },
-    { name: 'Sistemas', route: routes.sistemas(), icon: <Code /> },
-    { name: 'Componentes', route: routes.componentes(), icon: <Storage /> },
-    { name: 'Entidades', route: routes.entidads(), icon: <Business /> },
-    { name: 'Usuarios', route: routes.usuarios(), icon: <People /> },
-    { name: 'Roles', route: routes.rols(), icon: <Security /> },
-    ...(isAuthenticated && hasRole(['admin'])
-      ? [{ name: 'userRoles', route: routes.userRols(), icon: <Security /> }]
-      : []),
+  const sections = [
     {
-      name: 'Usuario y Roles',
-      route: routes.usuariorols(),
-      icon: <Security />,
+      title: 'Gestión de Infraestructura',
+      icon: <Dns sx={{ color: '#1A337E', mr: 1 }} />,
+      items: [
+        { name: 'Data Center', route: routes.datacenters(), icon: <Cloud /> },
+        { name: 'Servidores', route: routes.servidors(), icon: <Storage /> },
+        { name: 'Despliegues', route: routes.despliegues(), icon: <GroupWork /> },
+        { name: 'Componentes', route: routes.componentes(), icon: <AccountTree /> },
+      ],
     },
-  ]
+    {
+      title: 'Gestión de Sistemas',
+      icon: <Apps sx={{ color: '#1A337E', mr: 1 }} />,
+      items: [
+        { name: 'Sistemas', route: routes.sistemas(), icon: <Code /> },
+        { name: 'Entidades', route: routes.entidads(), icon: <Business /> },
+      ],
+    },
+    {
+      title: 'Gestión de Usuarios',
+      icon: <People sx={{ color: '#1A337E', mr: 1 }} />,
+      items: [
+        { name: 'Usuarios', route: routes.usuarios(), icon: <People /> },
+        { name: 'Roles', route: routes.rols(), icon: <Security /> },
+        ...(isAuthenticated && hasRole(['admin'])
+          ? [{ name: 'User Roles', route: routes.userRols(), icon: <Security /> }]
+          : []),
+        { name: 'Usuario y Roles', route: routes.usuariorols(), icon: <Security /> },
+      ],
+    },
+    {
+      title: 'Reportes',
+      icon: <Assessment sx={{ color: '#1A337E', mr: 1 }} />,
+      items: [
+        { name: 'Reportes Generales', route: routes.reportes(), icon: <Assessment /> },
+      ],
+    },
+
+  ];
+
+  const toggleSection = (sectionTitle) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [sectionTitle]: !prev[sectionTitle],
+    }));
+  };
 
   const ProfessionalAppBar = styled(AppBar)(({ theme }) => ({
     background: theme.palette.primary.main,
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
     transition: 'all 0.3s ease',
-  }))
+  }));
 
   const StyledFab = styled(Fab)({
     position: 'fixed',
@@ -75,25 +109,16 @@ const HomeLayout = ({ children }) => {
       transform: 'translateY(-5px)',
       boxShadow: '0 8px 15px rgba(26, 51, 126, 0.3)',
     },
-  })
+  });
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }}>
       <ProfessionalAppBar position="sticky">
         <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <IconButton
-              color="inherit"
-              edge="start"
-              onClick={() => setDrawerOpen(true)}
-            >
+            <IconButton color="inherit" edge="start" onClick={() => setDrawerOpen(true)}>
               <Menu sx={{ fontSize: 32 }} />
             </IconButton>
-            {/*<img
-              src="/img/logoagetic.png"
-              alt="Logo AGETIC"
-              style={{ height: '80px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}
-            />*/}
           </Box>
 
           <Typography
@@ -142,10 +167,7 @@ const HomeLayout = ({ children }) => {
                 alt="Icono AGETIC"
                 style={{ height: '200px' }}
               />
-              <Typography
-                variant="body1"
-                sx={{ fontWeight: 'bold', color: '#1A337E' }}
-              >
+              <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#1A337E' }}>
                 UIT
               </Typography>
             </Box>
@@ -157,41 +179,95 @@ const HomeLayout = ({ children }) => {
           <Divider sx={{ borderColor: 'rgba(26, 51, 126, 0.1)', mb: 2 }} />
 
           <List>
-            {menuItems.map((item) => (
-              <ListItem
-                button
-                key={item.name}
-                component={Link}
-                to={item.route}
-                sx={{
-                  borderRadius: 2,
-                  mb: 1,
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    backgroundColor: '#E8F0FE',
-                    transform: 'translateX(5px)',
-                  },
-                }}
-              >
-                <ListItemText
-                  primary={
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      {React.cloneElement(item.icon, {
-                        sx: { color: '#1A337E' },
-                      })}
-                      <Typography
+            <ListItem
+              button
+              component={Link}
+              to={routes.home()}
+              sx={{
+                borderRadius: 2,
+                mb: 1,
+                backgroundColor: '#F0F4FF',
+                '&:hover': { transform: 'translateX(5px)' },
+              }}
+            >
+              <Dashboard sx={{ color: '#1A337E', mr: 2 }} />
+              <Typography sx={{ fontWeight: 600, color: '#1A337E' }}>Inicio</Typography>
+            </ListItem>
+
+            {sections.map((section) => (
+              <React.Fragment key={section.title}>
+                <Divider sx={{ my: 2, borderColor: 'rgba(26, 51, 126, 0.1)' }} />
+                <ListItem
+                  button
+                  onClick={() => toggleSection(section.title)}
+                  sx={{
+                    borderRadius: 2,
+                    mb: 1,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: '#E8F0FE',
+                      transform: 'translateX(5px)',
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                    {section.icon}
+                    <Typography
+                      sx={{
+                        ml: 2,
+                        fontWeight: 600,
+                        color: '#1A337E',
+                        flexGrow: 1,
+                      }}
+                    >
+                      {section.title}
+                    </Typography>
+                    {expandedSections[section.title] ? <ExpandLess /> : <ExpandMore />}
+                  </Box>
+                </ListItem>
+                <Collapse in={expandedSections[section.title]} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    {section.items.map((item) => (
+                      <ListItem
+                        button
+                        key={item.name}
+                        component={Link}
+                        to={item.route}
                         sx={{
-                          ml: 2,
-                          fontWeight: 600,
-                          color: '#1A337E',
+                          pl: 4,
+                          borderRadius: 2,
+                          mb: 1,
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            backgroundColor: '#E8F0FE',
+                            transform: 'translateX(5px)',
+                          },
                         }}
                       >
-                        {item.name}
-                      </Typography>
-                    </Box>
-                  }
-                />
-              </ListItem>
+                        <ListItemText
+                          primary={
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              {React.cloneElement(item.icon, {
+                                sx: { color: '#1A337E', fontSize: 20 },
+                              })}
+                              <Typography
+                                sx={{
+                                  ml: 2,
+                                  fontWeight: 500,
+                                  color: '#1A337E',
+                                  fontSize: '0.9rem',
+                                }}
+                              >
+                                {item.name}
+                              </Typography>
+                            </Box>
+                          }
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                </Collapse>
+              </React.Fragment>
             ))}
           </List>
         </Box>
@@ -200,7 +276,7 @@ const HomeLayout = ({ children }) => {
       <Container maxWidth="xl" sx={{ p: 1, flex: 1 }}>
         <Box
           sx={{
-            minHeight: '70vh',
+            minHeight: '90vh',
             p: 1,
             borderRadius: 2,
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.05)',
@@ -234,16 +310,11 @@ const HomeLayout = ({ children }) => {
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
               <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                Agencia de Gobierno Electrónico y Tecnologías de Información y
-                Comunicación
+                Agencia de Gobierno Electrónico y Tecnologías de Información y Comunicación
               </Typography>
             </Grid>
             <Grid item xs={6} md={4}>
-              <Typography
-                variant="subtitle1"
-                gutterBottom
-                sx={{ fontWeight: 'bold' }}
-              >
+              <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
                 Contacto Institucional
               </Typography>
               <Typography variant="body2" sx={{ mb: 1, opacity: 0.9 }}>
@@ -257,11 +328,7 @@ const HomeLayout = ({ children }) => {
               </Typography>
             </Grid>
             <Grid item xs={6} md={4}>
-              <Typography
-                variant="subtitle1"
-                gutterBottom
-                sx={{ fontWeight: 'bold' }}
-              >
+              <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
                 Enlaces importantes
               </Typography>
               <Typography variant="body2" sx={{ mb: 1, opacity: 0.9 }}>
@@ -277,12 +344,12 @@ const HomeLayout = ({ children }) => {
           </Grid>
           <Divider sx={{ my: 4, borderColor: 'rgba(255,255,255,0.1)' }} />
           <Typography variant="body2" align="center" sx={{ opacity: 0.8 }}>
-            © 2024 AGETIC - Estado Plurinacional de Bolivia
+            © 2025 AGETIC - Estado Plurinacional de Bolivia
           </Typography>
         </Container>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default HomeLayout
+export default HomeLayout;

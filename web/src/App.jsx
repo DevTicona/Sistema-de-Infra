@@ -10,9 +10,12 @@ import { SearchProvider } from './context/SearchContext'
 import { TableDataProvider } from './context/TableDataContext'
 import './index.css'
 import './scaffold.css'
-
+//import { ThemeProvider } from '@emotion/react'
+import { ThemeProvider } from './providers/ThemeProvider'
 const App = ({ children }) => (
+
   <FatalErrorBoundary page={FatalErrorPage}>
+    <ThemeProvider>
     <RedwoodProvider titleTemplate="%PageTitle | %AppTitle">
       <AuthProvider>
         <RedwoodApolloProvider useAuth={useAuth}>
@@ -26,7 +29,9 @@ const App = ({ children }) => (
         </RedwoodApolloProvider>
       </AuthProvider>
     </RedwoodProvider>
+    </ThemeProvider>
   </FatalErrorBoundary>
+
 )
 
 export default App

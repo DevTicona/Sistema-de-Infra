@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+.sistemas-container {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #f8f9ff 0%, #eef2ff 100%);
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.glass-table {
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.glass-table th {
+  backdrop-filter: blur(12px);
+}
+
+.action-btn {
+  transition: all 0.3s ease !important;
+  border-radius: 8px !important;
+  padding: 8px !important;
+}
+
+.action-btn.view {
+  color: #2196F3 !important;
+  background: rgba(33, 150, 243, 0.1) !important;
+}
+
+.action-btn.edit {
+  color: #4CAF50 !important;
+  background: rgba(76, 175, 80, 0.1) !important;
+}
+
+.action-btn.delete {
+  color: #f44336 !important;
+  background: rgba(244, 67, 54, 0.1) !important;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.dialog-question {
+  margin: 0;
+  color: #1A237E;
+  font-weight: 600;
+}
+
+.dialog-warning {
+  margin: 4px 0 0;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.dialog-cancel {
+  border-radius: 8px !important;
+  padding: 8px 24px !important;
+  border: 1px solid #ddd !important;
+  color: #666 !important;
+}
+
+.dialog-cancel:hover {
+  background: #f8f9fa !important;
+}
+
+@media (max-width: 768px) {
+  .sistemas-container {
+    padding: 16px !important;
+  }
+
+  .glass-table {
+    min-width: 800px;
+  }
+
+  .MuiTableContainer-root {
+    overflow-x: auto;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.MuiTableRow-root {
+  animation: fadeIn 0.4s ease forwards;
+}

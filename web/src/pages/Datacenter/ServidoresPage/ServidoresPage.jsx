@@ -1,18 +1,34 @@
-import {
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-} from '@mui/material'
+import { useContext, useEffect, useMemo, useState } from 'react'
+import { Link, routes, useParams } from '@redwoodjs/router'
+import { useMutation, useQuery } from '@redwoodjs/web'
+import { toast } from '@redwoodjs/web/toast'
+import { TablePagination, Checkbox, Table, TableBody,Box, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, IconButton } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { ColumnConfigContext } from 'src/context/ColumnConfigContext'
+import { useRefresh } from 'src/context/RefreshContext'
+import { useSearch } from 'src/context/SearchContext'
+import { TableDataContext } from 'src/context/TableDataContext'
+import { formatEnum, jsonTruncate, truncate } from 'src/lib/formatters'
 
-import { useParams, routes, Link } from '@redwoodjs/router'
-import { useQuery } from '@redwoodjs/web'
+// Consultas y mutaciones
+const GET_USUARIOS_QUERY = gql`
+  query UsuariosQuery {
+    usuarios {
+      id
+      nombre_usuario
+    }
+  }
+`
 
-import { useStyles } from './styles' // Mantén esta importación
+const DELETE_SERVIDOR_MUTATION = gql`
+  mutation DeleteServidorMutation($id: Int!) {
+    deleteServidor(id: $id) {
+      id
+    }
+  }
+`
 
 const GET_SERVIDORES = gql`
   query GetServidores {
@@ -31,137 +47,278 @@ const GET_SERVIDORES = gql`
       usuario_creacion
       fecha_modificacion
       usuario_modificacion
+      data_centers {
+        nombre
+      }
     }
   }
 `
 
-const formatFecha = (fecha) => {
-  const date = new Date(fecha)
-  const day = date.getDate()
-  const month = date.getMonth() + 1
-  const year = date.getFullYear()
-  const hours = date.getHours()
-  const minutes = date.getMinutes()
-  const seconds = date.getSeconds()
-
-  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
+// Función para formatear la fecha
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 }
+
+const tableName = 'Servidors'
 
 const ServidoresPage = () => {
   const { id, chasisId, bladeId } = useParams()
-  const { data, loading, error } = useQuery(GET_SERVIDORES)
 
-  // Usamos directamente el objeto styles sin invocar una función
-  const styles = useStyles
+  // Consulta de servidores y de usuarios
+  const { data, loading, error, refetch } = useQuery(GET_SERVIDORES)
+  const { data: usuariosData } = useQuery(GET_USUARIOS_QUERY)
+  const usuariosMap = usuariosData?.usuarios.reduce((map, usuario) => {
+    map[usuario.id] = usuario.nombre_usuario
+    return map
+  }, {})
 
-  if (loading) return <p>Cargando servidores...</p>
-  if (error) return <p>Error: {error.message}</p>
+  // Contextos para filtrado global, refresco y configuración de tabla
+  const { search } = useSearch()
+  const { refresh } = useRefresh()
+  const { setTableData, setTableConfig } = useContext(TableDataContext)
+  const { setCurrentTableConfig, currentTable } = useContext(ColumnConfigContext)
 
-  const filteredServidores = data.servidors.filter((servidor) => {
-    const isVirtual = servidor.tipo === 'Virtual'
-    const hasMetadata =
-      servidor.metadata && servidor.metadata.chasis && servidor.metadata.blade
+  // Estado local para los datos de servidores (se actualiza con la consulta)
+  const [servidoresData, setServidoresData] = useState([])
+  useEffect(() => {
+    if (data && data.servidors) {
+      setServidoresData(data.servidors)
+    }
+  }, [data])
 
-    return (
-      servidor.id_data_center === parseInt(id) &&
-      isVirtual &&
-      hasMetadata &&
-      servidor.metadata.chasis === `CH-0${chasisId}` &&
-      servidor.metadata.blade === `BL-0${bladeId}`
-    )
+  // Mutación para eliminar servidor
+  const [deleteServidor] = useMutation(DELETE_SERVIDOR_MUTATION, {
+    onCompleted: async () => {
+      toast.success('Servidor eliminado')
+      await refetch()
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
   })
 
+  const onDeleteClick = (id) => {
+    if (confirm('Are you sure you want to delete servidor ' + id + '?')) {
+      deleteServidor({ variables: { id } })
+    }
+  }
+
+  // Refrescar datos cuando se active el flag de refresh
+  useEffect(() => {
+    if (refresh) {
+      refetch().then(({ data }) => {
+        if (data?.servidors) {
+          setServidoresData(data.servidors)
+        }
+      })
+    }
+  }, [refresh, refetch])
+
+  // Filtrado de servidores
+  const filteredServidors = useMemo(() => {
+    const lowerSearch = search?.toLowerCase() || ''
+    return servidoresData.filter((servidor) => {
+      return (
+        servidor.id_data_center === parseInt(id) &&
+        servidor.metadata &&
+        servidor.metadata.chasis === `CH-0${chasisId}` &&
+        servidor.metadata.blade === `BL-0${bladeId}` &&
+        (
+          String(servidor.id).toLowerCase().includes(lowerSearch) ||
+          servidor.nombre?.toLowerCase().includes(lowerSearch) ||
+          servidor.nodo?.toLowerCase().includes(lowerSearch) ||
+          servidor.ip?.toLowerCase().includes(lowerSearch) ||
+          servidor.tipo?.toLowerCase().includes(lowerSearch)
+        )
+      )
+    })
+  }, [search, servidoresData, id, chasisId, bladeId])
+
+  // Selección de filas
+  const [selectedServidores, setSelectedServidores] = useState([])
+
+  // Columnas iniciales
+  const initialColumns = useMemo(
+    () => [
+      { name: 'checkbox', label: '', visible: true, type: 'checkbox' },
+      { name: 'id', label: 'Id', visible: true },
+      { name: 'nro_cluster', label: 'Nro cluster', visible: true },
+      { name: 'vmid', label: 'Vmid', visible: true },
+      { name: 'nombre', label: 'Nombre', visible: true },
+      { name: 'nodo', label: 'Nodo', visible: true },
+      { name: 'ip', label: 'Ip', visible: true },
+      { name: 'tipo', label: 'Tipo', visible: true },
+      { name: 'estado', label: 'Estado', visible: true },
+      { name: 'metadata', label: 'Metadata', visible: false },
+      { name: 'fecha_creacion', label: 'Fecha creacion', visible: true },
+      { name: 'usuario_creacion', label: 'Usuario creacion', visible: true },
+      { name: 'fecha_modificacion', label: 'Fecha modificacion', visible: false },
+      { name: 'usuario_modificacion', label: 'Usuario modificacion', visible: false },
+      { name: 'data_center', label: 'Data Center', visible: true },
+    ],
+    []
+  )
+
+  useEffect(() => {
+    if (!currentTable || currentTable.tableName !== tableName) {
+      setCurrentTableConfig({ tableName, columns: initialColumns })
+    }
+  }, [setCurrentTableConfig, currentTable, initialColumns])
+
+  const columnsToDisplay =
+    currentTable && currentTable.tableName === tableName
+      ? currentTable.columns.filter((col) => col.visible)
+      : initialColumns
+
+  // Actualizar datos y configuración de tabla en el contexto
+  useEffect(() => {
+    setTableData(filteredServidors)
+    setTableConfig({
+      tableName,
+      filas: selectedServidores,
+      columns: columnsToDisplay,
+      usuarios: usuariosMap,
+    })
+  }, [filteredServidors, selectedServidores, columnsToDisplay, usuariosMap, setTableData, setTableConfig])
+
+  // Función para renderizar el contenido de cada celda
+  const renderCell = (servidor, colName) => {
+    switch (colName) {
+      case 'checkbox':
+        return (
+          <Checkbox
+            checked={selectedServidores.includes(servidor.id)}
+            onChange={(e) => {
+              if (e.target.checked) {
+                setSelectedServidores([...selectedServidores, servidor.id])
+              } else {
+                setSelectedServidores(
+                  selectedServidores.filter((id) => id !== servidor.id)
+                )
+              }
+            }}
+          />
+        )
+      case 'id':
+        return truncate(servidor.id)
+      case 'nro_cluster':
+        return truncate(servidor.nro_cluster)
+      case 'vmid':
+        return truncate(servidor.vmid)
+      case 'nombre':
+        return (
+          <Link to={routes.despliegueSelector({ id: servidor.id })}>
+            {truncate(servidor.nombre)}
+          </Link>
+        )
+      case 'nodo':
+        return truncate(servidor.nodo)
+      case 'ip':
+        return truncate(servidor.ip)
+      case 'tipo':
+        return truncate(servidor.tipo)
+      case 'estado':
+        return formatEnum(servidor.estado)
+      case 'metadata':
+        return jsonTruncate(servidor.metadata)
+      case 'fecha_creacion':
+        return truncate(formatDate(servidor.fecha_creacion))
+      case 'usuario_creacion':
+        return truncate(usuariosMap?.[servidor.usuario_creacion] || 'N/A')
+      case 'fecha_modificacion':
+        return truncate(formatDate(servidor.fecha_modificacion))
+      case 'usuario_modificacion':
+        return truncate(usuariosMap?.[servidor.usuario_modificacion] || 'N/A')
+      case 'data_center':
+        return truncate(servidor?.data_centers?.nombre)
+      default:
+        return ''
+    }
+  }
+
+  const allSelected =
+    filteredServidors.length > 0 &&
+    selectedServidores.length === filteredServidors.length
+
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>
+    <div className="rw-segment rw-table-wrapper-responsive">
+      <h2 className="title">
         Data Center {id} -- Chasis {chasisId} -- Blade {bladeId}
       </h2>
 
-      <TableContainer component={Paper}>
+
+      <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell sx={styles.tableHeadCell}>Nro Cluster</TableCell>
-              <TableCell sx={styles.tableHeadCell}>VMID</TableCell>
-              <TableCell sx={styles.tableHeadCell}>Nombre</TableCell>
-              <TableCell sx={styles.tableHeadCell}>Nodo</TableCell>
-              <TableCell sx={styles.tableHeadCell}>IP</TableCell>
-              <TableCell sx={styles.tableHeadCell}>Tipo</TableCell>
-              <TableCell sx={styles.tableHeadCell}>Estado</TableCell>
-              <TableCell sx={styles.tableHeadCell}>Fecha Creación</TableCell>
-              <TableCell sx={styles.tableHeadCell}>Actions</TableCell>
+              <TableCell>
+                <Checkbox
+                  checked={allSelected}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedServidores(filteredServidors.map((s) => s.id))
+                    } else {
+                      setSelectedServidores([])
+                    }
+                  }}
+                />
+              </TableCell>
+              {columnsToDisplay
+                .filter((col) => col.name !== 'checkbox')
+                .map((col) => (
+                  <TableCell key={col.name}>
+                    <TableSortLabel>{col.label}</TableSortLabel>
+                  </TableCell>
+                ))}
+              <TableCell>&nbsp;</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredServidores.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan="9" sx={styles.tableCell} align="center">
-                  No hay servidores disponibles.
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredServidores.map((servidor) => (
-                <TableRow
-                  key={servidor.id}
-                  hover
-                  sx={styles.tableRowHover}
-                  style={{ textDecoration: 'none' }}
-                  component={Link}
-                  to={routes.despliegueFiltro({
-                    dataCenterId: id,
-                    chasisId: chasisId,
-                    bladeId: bladeId,
-                    servidorId: servidor.id,
-                  })}
-                >
-                  <TableCell sx={styles.tableCell}>
-                    {servidor.nro_cluster}
-                  </TableCell>
-                  <TableCell sx={styles.tableCell}>{servidor.vmid}</TableCell>
-                  <TableCell sx={styles.tableCell}>{servidor.nombre}</TableCell>
-                  <TableCell sx={styles.tableCell}>{servidor.nodo}</TableCell>
-                  <TableCell sx={styles.tableCell}>{servidor.ip}</TableCell>
-                  <TableCell sx={styles.tableCell}>{servidor.tipo}</TableCell>
-                  <TableCell sx={styles.tableCell}>{servidor.estado}</TableCell>
-                  <TableCell sx={styles.tableCell}>
-                    {formatFecha(servidor.fecha_creacion)}
-                  </TableCell>
-                  <TableCell sx={styles.tableCell}>
-                    {/* Los botones evitan la propagación del clic */}
-                    <Link
+            {filteredServidors?.map((servidor) => (
+              <TableRow key={servidor.id}>
+                {columnsToDisplay.map((col) => (
+                  <TableCell key={col.name}>{renderCell(servidor, col.name)}</TableCell>
+                ))}
+                <TableCell>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <IconButton
+                      component={Link}
                       to={routes.servidor({ id: servidor.id })}
                       title={'Show servidor ' + servidor.id + ' detail'}
-                      style={{ textDecoration: 'none' }}
-                      onClick={(e) => e.stopPropagation()}
+                      size="small"
+                      color="success"
                     >
-                      <Button
-                        variant="outlined"
-                        color="secondary"
-                        size="small"
-                        sx={styles.button}
-                      >
-                        Show
-                      </Button>
-                    </Link>
-                    <Link
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton
+                      component={Link}
                       to={routes.editServidor({ id: servidor.id })}
                       title={'Edit servidor ' + servidor.id}
-                      style={{ textDecoration: 'none' }}
-                      onClick={(e) => e.stopPropagation()}
+                      color="primary"
+                      size="small"
                     >
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        size="small"
-                        sx={styles.button}
-                      >
-                        Edit
-                      </Button>
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      color="secondary"
+                      title={'Delete servidor ' + servidor.id}
+                      onClick={() => onDeleteClick(servidor.id)}
+                      size="small"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                </TableCell>
+
+
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>

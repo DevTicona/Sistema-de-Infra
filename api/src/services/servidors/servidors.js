@@ -26,7 +26,7 @@ export const createServidor = ({ input }) => {
   const metadataData = {
     blade: input.blade,
     chasis: input.chasis,
-    marca: input.marca,
+    almacenamiento: input.almacenamiento,
     procesador: input.procesador,
     sistema_operativo: input.sistema_operativo,
     memoria_ram: input.memoria_ram,
@@ -53,7 +53,7 @@ export const updateServidor = ({ id, input }) => {
   const metadataData = {
     blade: input.blade,
     chasis: input.chasis,
-    marca: input.marca,
+    almacenamiento: input.almacenamiento,
     procesador: input.procesador,
     sistema_operativo: input.sistema_operativo,
     memoria_ram: input.memoria_ram,
@@ -69,8 +69,8 @@ export const updateServidor = ({ id, input }) => {
       tipo: input.tipo,
       estado: input.estado,
       metadata: metadataData,
-      fecha_creacion: new Date(),
-      usuario_creacion: input.usuario_creacion,
+      usuario_modificacion: input.usuario_modificacion,
+      fecha_modificacion: new Date(),
       id_data_center: input.id_data_center,
     },
     where: { id },

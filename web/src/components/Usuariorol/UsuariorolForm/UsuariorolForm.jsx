@@ -1,17 +1,18 @@
 import Select from 'react-select'
-
 import {
   Form,
   FormError,
   FieldError,
   Label,
-  Submit,
-  Controller,
   SelectField,
+  Controller,
+
 } from '@redwoodjs/forms'
 import { useQuery } from '@redwoodjs/web'
-
 import { useAuth } from 'src/auth'
+
+import './UsuariorolForm.css'
+
 
 const OBTENER_USUARIOS = gql`
   query obtenerUsuarios {
@@ -48,9 +49,9 @@ const OBTENER_SISTEMAS = gql`
     }
   }
 `
-
 const UsuariorolForm = (props) => {
   const { currentUser } = useAuth()
+
 
   // Consultas para obtener los datos
   const { data: usuariosData } = useQuery(OBTENER_USUARIOS)
@@ -82,80 +83,47 @@ const UsuariorolForm = (props) => {
       value: s.id,
       label: s.nombre,
     })) || []
-
   const onSubmit = (data) => {
     const formData = {
       ...data,
       usuario_modificacion: currentUser?.id,
-      usuario_creacion: props.usuariorol?.id
-        ? currentUser?.id
-        : currentUser?.id || 1,
+      usuario_creacion: props.usuariorol?.id ? currentUser?.id : currentUser?.id || 1,
     }
     props.onSave(formData, props?.usuariorol?.id)
   }
 
-  // Estilos personalizados para los selects
-  const selectStyles = {
-    control: (base) => ({
-      ...base,
-      borderColor: '#e2e8f0',
-      borderRadius: '0.375rem',
-      '&:hover': { borderColor: '#cbd5e0' },
-    }),
-    option: (base, { isFocused }) => ({
-      ...base,
-      backgroundColor: isFocused ? '#f8fafc' : 'white',
-      color: '#1e293b',
-    }),
-  }
-
   return (
-    <div className="rw-form-wrapper max-w-2xl mx-auto p-6 bg-white rounded-lg shadow">
+    <div className="usuariorol-form">
       <Form onSubmit={onSubmit} error={props.error}>
         <FormError
           error={props.error}
-          wrapperClassName="rw-form-error-wrapper"
-          titleClassName="rw-form-error-title"
-          listClassName="rw-form-error-list"
+          wrapperClassName="form-error"
+          listClassName="error-list"
         />
 
-        <div className="space-y-4">
+        <div className="form-grid">
           {/* Campo Usuario */}
-          <div>
-            <Label
-              name="id_usuario"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Usuario
-            </Label>
+          <div className="form-group">
+            <Label className="input-label">Usuario</Label>
             <Controller
               name="id_usuario"
               defaultValue={props.usuariorol?.id_usuario}
               render={({ field }) => (
                 <Select
                   options={usuariosOptions}
-                  value={usuariosOptions.find(
-                    (opt) => opt.value === field.value
-                  )}
+                  value={usuariosOptions.find(opt => opt.value === field.value)}
                   onChange={(selected) => field.onChange(selected?.value)}
-                  placeholder="Seleccione un usuario..."
-                  noOptionsMessage={() => 'No hay usuarios disponibles'}
-                  styles={selectStyles}
+                  placeholder="Seleccionar usuario..."
                   classNamePrefix="react-select"
                 />
               )}
             />
-            <FieldError name="id_usuario" className="rw-field-error" />
+            <FieldError name="id_usuario" className="error-message" />
           </div>
 
           {/* Campo Rol */}
-          <div>
-            <Label
-              name="id_rol"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Rol
-            </Label>
+          <div className="form-group">
+            <Label className="input-label">Rol</Label>
             <Controller
               name="id_rol"
               defaultValue={props.usuariorol?.id_rol}
@@ -163,26 +131,19 @@ const UsuariorolForm = (props) => {
               render={({ field }) => (
                 <Select
                   options={rolesOptions}
-                  value={rolesOptions.find((opt) => opt.value === field.value)}
+                  value={rolesOptions.find(opt => opt.value === field.value)}
                   onChange={(selected) => field.onChange(selected?.value)}
-                  placeholder="Seleccione un rol..."
-                  noOptionsMessage={() => 'No hay roles disponibles'}
-                  styles={selectStyles}
+                  placeholder="Seleccionar rol..."
                   classNamePrefix="react-select"
                 />
               )}
             />
-            <FieldError name="id_rol" className="rw-field-error" />
+            <FieldError name="id_rol" className="error-message" />
           </div>
 
           {/* Campo Despliegue */}
-          <div>
-            <Label
-              name="id_despliegue"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Despliegue
-            </Label>
+          <div className="form-group">
+            <Label className="input-label">Despliegue</Label>
             <Controller
               name="id_despliegue"
               defaultValue={props.usuariorol?.id_despliegue}
@@ -190,28 +151,19 @@ const UsuariorolForm = (props) => {
               render={({ field }) => (
                 <Select
                   options={desplieguesOptions}
-                  value={desplieguesOptions.find(
-                    (opt) => opt.value === field.value
-                  )}
+                  value={desplieguesOptions.find(opt => opt.value === field.value)}
                   onChange={(selected) => field.onChange(selected?.value)}
-                  placeholder="Seleccione un despliegue..."
-                  noOptionsMessage={() => 'No hay despliegues disponibles'}
-                  styles={selectStyles}
+                  placeholder="Seleccionar despliegue..."
                   classNamePrefix="react-select"
                 />
               )}
             />
-            <FieldError name="id_despliegue" className="rw-field-error" />
+            <FieldError name="id_despliegue" className="error-message" />
           </div>
 
           {/* Campo Sistema */}
-          <div>
-            <Label
-              name="id_sistema"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Sistema
-            </Label>
+          <div className="form-group">
+            <Label className="input-label">Sistema</Label>
             <Controller
               name="id_sistema"
               defaultValue={props.usuariorol?.id_sistema}
@@ -219,48 +171,40 @@ const UsuariorolForm = (props) => {
               render={({ field }) => (
                 <Select
                   options={sistemasOptions}
-                  value={sistemasOptions.find(
-                    (opt) => opt.value === field.value
-                  )}
+                  value={sistemasOptions.find(opt => opt.value === field.value)}
                   onChange={(selected) => field.onChange(selected?.value)}
-                  placeholder="Seleccione un sistema..."
-                  noOptionsMessage={() => 'No hay sistemas disponibles'}
-                  styles={selectStyles}
+                  placeholder="Seleccionar sistema..."
                   classNamePrefix="react-select"
                 />
               )}
             />
-            <FieldError name="id_sistema" className="rw-field-error" />
+            <FieldError name="id_sistema" className="error-message" />
           </div>
-        </div>
-        <Label
-          name="estado"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Estado
-        </Label>
-        <SelectField
-          name="estado"
-          defaultValue={props.servidor?.estado || 'ACTIVO'}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        >
-          {['ACTIVO', 'INACTIVO'].map((estado) => (
-            <option key={estado} value={estado}>
-              {estado}
-            </option>
-          ))}
-        </SelectField>
-        <FieldError name="estado" className="rw-field-error" />
 
-        <div className="rw-button-group mt-6 flex justify-end">
-          <Submit
-            disabled={props.loading}
-            className="rw-button rw-button-blue bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
-          >
-            Guardar
-          </Submit>
+          {/* Campo Estado */}
+          <div className="form-group">
+                        <Label className="input-label">Estado Actual</Label>
+                        <SelectField
+                          name="estado"
+                          defaultValue={props.usuariorol?.estado || 'ACTIVO'}
+                          className="input-field select-field"
+                          validation={{ required: true }}
+                        >
+                          {['ACTIVO', 'INACTIVO'].map((estado) => (
+                            <option key={estado} value={estado}>
+                              {estado.charAt(0) + estado.slice(1).toLowerCase()}
+                            </option>
+                          ))}
+                        </SelectField>
+                        <FieldError name="estado" className="error-message" />
+                      </div>
+
+        </div>
+
+        <div className="form-actions">
+          <button type="submit" className="submit-button" disabled={props.loading}>
+            {props.loading ? 'Guardando..' : 'Guardar Asignación'}
+          </button>
         </div>
       </Form>
     </div>

@@ -1,15 +1,15 @@
 import { useContext, useEffect, useMemo, useState } from 'react'
-
 import { Link, routes } from '@redwoodjs/router'
 import { useMutation, useQuery } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
-
 import { QUERY } from 'src/components/Servidor/ServidorsCell'
 import { ColumnConfigContext } from 'src/context/ColumnConfigContext'
 import { useRefresh } from 'src/context/RefreshContext'
 import { useSearch } from 'src/context/SearchContext'
 import { TableDataContext } from 'src/context/TableDataContext'
 import { formatEnum, jsonTruncate, truncate } from 'src/lib/formatters'
+
+import './Servidors.css'
 
 const GET_USUARIOS_QUERY = gql`
   query UsuariosQuery {
@@ -31,7 +31,7 @@ const DELETE_SERVIDOR_MUTATION = gql`
 const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString('es-ES', {
     year: 'numeric',
-    month: 'long',
+    month: 'short',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
@@ -159,7 +159,6 @@ const ServidorsList = ({ servidors }) => {
     tableName,
     usuariosMap,
   ])
-
   const renderCell = (servidor, colName) => {
     switch (colName) {
       case 'checkbox':
@@ -199,7 +198,11 @@ const ServidorsList = ({ servidors }) => {
       case 'estado':
         return formatEnum(servidor.estado)
       case 'metadata':
-        return jsonTruncate(servidor.metadata)
+        return (
+          <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+            {JSON.stringify(servidor.metadata, null, 2)}
+          </pre>
+        )
       case 'fecha_creacion':
         return truncate(formatDate(servidor.fecha_creacion))
       case 'usuario_creacion':
@@ -220,69 +223,86 @@ const ServidorsList = ({ servidors }) => {
     selectedServidores.length === filteredServidors?.length
 
   return (
-    <div className="rw-segment rw-table-wrapper-responsive">
-      <table className="rw-table">
-        <thead>
-          <tr>
-            <th>
-              <input
-                type="checkbox"
-                checked={allSelected}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    setSelectedServidores(
-                      filteredServidors.map((servidor) => servidor.id)
-                    )
-                  } else {
-                    setSelectedServidores([])
-                  }
-                }}
-              />
-            </th>
-            {columnsToDisplay
-              .filter((col) => col.name !== 'checkbox')
-              .map((col) => (
-                <th key={col.name}>{col.label}</th>
-              ))}
-            <th>&nbsp;</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredServidors?.map((servidor) => (
-            <tr key={servidor.id}>
-              {columnsToDisplay.map((col) => (
-                <td key={col.name}>{renderCell(servidor, col.name)}</td>
-              ))}
-              <td>
-                <nav className="rw-table-actions">
-                  <Link
-                    to={routes.servidor({ id: servidor.id })}
-                    title={'Show servidor ' + servidor.id + ' detail'}
-                    className="rw-button rw-button-small"
-                  >
-                    Show
-                  </Link>
-                  <Link
-                    to={routes.editServidor({ id: servidor.id })}
-                    title={'Edit servidor ' + servidor.id}
-                    className="rw-button rw-button-small rw-button-blue"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    type="button"
-                    title={'Delete servidor ' + servidor.id}
-                    className="rw-button rw-button-small rw-button-red"
-                    onClick={() => onDeleteClick(servidor.id)}
-                  >
-                    Delete
-                  </button>
-                </nav>
-              </td>
+    <div className="servidores-container">
+      <div className="table-wrapper">
+        <table className="modern-table">
+          <thead>
+            <tr>
+              <th className="checkbox-column">
+                <input
+                  type="checkbox"
+                  className="styled-checkbox"
+                  checked={allSelected}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedServidores(
+                        filteredServidors.map((servidor) => servidor.id)
+                      )
+                    } else {
+                      setSelectedServidores([])
+                    }
+                  }}
+                />
+              </th>
+              {columnsToDisplay
+                .filter((col) => col.name !== 'checkbox')
+                .map((col) => (
+                  <th key={col.name} className="table-header">
+                    <div className="header-content">
+                      {col.label}
+                    </div>
+                  </th>
+                ))}
+              <th className="actions-header">Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredServidors?.map((servidor) => (
+              <tr key={servidor.id} className="table-row">
+                {columnsToDisplay.map((col) => (
+                  <td key={col.name} className="table-cell">
+                    <div className="cell-content">
+                      {renderCell(servidor, col.name)}
+                    </div>
+                  </td>
+                ))}
+                <td className="actions-cell">
+                  <div className="action-buttons">
+                    <Link
+                      to={routes.servidor({ id: servidor.id })}
+                      className="action-btn view-btn"
+                      title="Ver detalle"
+                    >
+                      <i className="fas fa-eye"></i>
+                    </Link>
+                    <Link
+                      to={routes.editServidor({ id: servidor.id })}
+                      className="action-btn edit-btn"
+                      title="Editar"
+                    >
+                      <i className="fas fa-edit"></i>
+                    </Link>
+                    <button
+                      type="button"
+                      className="action-btn delete-btn"
+                      onClick={() => onDeleteClick(servidor.id)}
+                      title="Eliminar"
+                    >
+                      <i className="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {filteredServidors?.length === 0 && (
+        <div className="no-results">
+          <i className="fas fa-database"></i>
+          <p>No se encontraron servidores</p>
+        </div>
+      )}
     </div>
   )
 }

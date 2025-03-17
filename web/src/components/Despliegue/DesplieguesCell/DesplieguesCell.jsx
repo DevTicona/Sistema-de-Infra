@@ -12,7 +12,11 @@ export const QUERY = gql`
       nombre
       tipo
       estado
+
       fecha_creacion
+      usuario_creacion
+      fecha_modificacion
+      usuario_modificacion
       servidores {
         id
         nombre

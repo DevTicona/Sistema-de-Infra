@@ -44,8 +44,8 @@ export const schema = gql`
   }
 
   type Mutation {
-    createEntidad(input: CreateEntidadInput!): Entidad! @requireAuth
-    updateEntidad(id: Int!, input: UpdateEntidadInput!): Entidad! @requireAuth
-    deleteEntidad(id: Int!): Entidad! @requireAuth
+    createEntidad(input: CreateEntidadInput!): Entidad! @skipAuth
+    updateEntidad(id: Int!, input: UpdateEntidadInput!): Entidad! @skipAuth
+    deleteEntidad(id: Int!): Entidad! @skipAuth
   }
 `

@@ -11,6 +11,8 @@ import DespliegueFiltro from 'src/pages/Despliegue/DespliegueFiltro/DespliegueFi
 import DespliegueSelector from 'src/pages/Despliegue/DespliegueSelector/DespliegueSelector'
 import ServidorDetalle from 'src/pages/Servidor/ServidorDetalle/ServidorDetalle'
 import SistemaDetalle from 'src/pages/Sistema/SistemaDetalle/SistemaDetalle'
+import ReportesPage from 'src/pages/ReportesPage/ReportesPage'
+import ReporteComponente from 'src/pages/ReportesPage/ReporteComponente'
 
 import { useAuth } from './auth'
 import HomeLayout from './layouts/HomeLayout/HomeLayout'
@@ -23,17 +25,15 @@ const Routes = () => {
       <Route path="/forgot-password" page={ForgotPasswordPage} name="forgotPassword" />
       <Route path="/reset-password" page={ResetPasswordPage} name="resetPassword" />
       <Set wrap={HomeLayout}>
-        <Set wrap={ScaffoldLayout} title="Datacenters" titleTo="datacenters" buttonLabel="New Datacenter" buttonTo="newDatacenter">
+        <Set wrap={AccesoriosLayout} title="Datacenters" titleTo="datacenters" buttonLabel="New Datacenter" buttonTo="newDatacenter">
           <Route path="/datacenters/new" page={DatacenterNewDatacenterPage} name="newDatacenter" />
           <Route path="/datacenters/{id:Int}/edit" page={DatacenterEditDatacenterPage} name="editDatacenter" />
           <Route path="/datacenters/{id:Int}" page={DatacenterDatacenterPage} name="datacenter" />
           <Route path="/datacenters" page={DatacenterDatacentersPage} name="datacenters" />
           <Route path="/datacenters/{id}/chasis" page={ChasisPage} name="chasis" />
-          <Route path="/datacenters/{id}/servidoresFisicos" page={servidoresFisicos} name="servidoresFisicos" />
           <Route path="/datacenters/{id}/chasis/{chasisId}/blades" page={BladesPage} name="blades" />
-          <Route path="/datacenters/{id}/chasis/{chasisId}/blades/{bladeId}/servidoresPage" page={ServidoresPage} name="servidoresPage" />
         </Set>
-        <Set wrap={ScaffoldLayout} title="UserRols" titleTo="userRols" bsuttonLabel="New UserRol" buttonTo="newUserRol">
+        <Set wrap={AccesoriosLayout} title="UserRols" titleTo="userRols" bsuttonLabel="New UserRol" buttonTo="newUserRol">
           <Route path="/user-rols/new" page={UserRolNewUserRolPage} name="newUserRol" />
           <Route path="/user-rols/{id:Int}/edit" page={UserRolEditUserRolPage} name="editUserRol" />
           <Route path="/user-rols/{id:Int}" page={UserRolUserRolPage} name="userRol" />
@@ -42,7 +42,7 @@ const Routes = () => {
         <Route path="/" page={HomePage} name="home" />
         <Route path="/about" page={AboutPage} name="about" />
         {/*<PrivateSet unauthenticated="home"> */}
-        <Set wrap={ScaffoldLayout} title="Usuarios" titleTo="usuarios" buttonLabel="New Usuario" buttonTo="newUsuario">
+        <Set wrap={AccesoriosLayout} title="Usuarios" titleTo="usuarios" buttonLabel="New Usuario" buttonTo="newUsuario">
           <Route path="/usuarios/new" page={UsuarioNewUsuarioPage} name="newUsuario" />
           <Route path="/usuarios/{id:Int}/edit" page={UsuarioEditUsuarioPage} name="editUsuario" />
           <Route path="/usuarios/{id:Int}" page={UsuarioUsuarioPage} name="usuario" />
@@ -55,14 +55,17 @@ const Routes = () => {
           <Route path="/sistemas" page={SistemaSistemasPage} name="sistemas" />
           <Route path="/sistemas/{id}/SistemaDetalle" page={SistemaDetalle} name="sistemaDetalle" />
         </Set>
-        <Set wrap={AccesoriosLayout} title="Servidors" titleTo="servidors" buttonLabel="Nuevo Servidor" buttonTo="newServidor">
+        <Set wrap={AccesoriosLayout} title="Servidores" titleTo="servidors" buttonLabel="Nuevo Servidor" buttonTo="newServidor">
           <Route path="/servidors/new" page={ServidorNewServidorPage} name="newServidor" />
           <Route path="/servidors/{id:Int}/edit" page={ServidorEditServidorPage} name="editServidor" />
           <Route path="/servidors/{id:Int}" page={ServidorServidorPage} name="servidor" />
           <Route path="/servidors" page={ServidorServidorsPage} name="servidors" />
           <Route path="/servidors/{id}/servidorDetalle" page={ServidorDetalle} name="servidorDetalle" />
+
+          <Route path="/datacenters/{id}/chasis/{chasisId}/blades/{bladeId}/servidoresPage" page={ServidoresPage} name="servidoresPage" />
+          <Route path="/datacenters/{id}/servidoresFisicos" page={servidoresFisicos} name="servidoresFisicos" />
         </Set>
-        <Set wrap={ScaffoldLayout} title="Rols" titleTo="rols" buttonLabel="New Rol" buttonTo="newRol">
+        <Set wrap={AccesoriosLayout} title="Rols" titleTo="rols" buttonLabel="New Rol" buttonTo="newRol">
           <Route path="/rols/new" page={RolNewRolPage} name="newRol" />
           <Route path="/rols/{id:Int}/edit" page={RolEditRolPage} name="editRol" />
           <Route path="/rols/{id:Int}" page={RolRolPage} name="rol" />
@@ -77,7 +80,7 @@ const Routes = () => {
 
           <Route path="/{id}/despliegueSelector" page={DespliegueSelector} name="despliegueSelector" />
         </Set>
-        <Set wrap={ScaffoldLayout} title="Entidads" titleTo="entidads" buttonLabel="New Entidad" buttonTo="newEntidad">
+        <Set wrap={AccesoriosLayout} title="Entidads" titleTo="entidads" buttonLabel="New Entidad" buttonTo="newEntidad">
           <Route path="/entidads/new" page={EntidadNewEntidadPage} name="newEntidad" />
           <Route path="/entidads/{id:Int}/edit" page={EntidadEditEntidadPage} name="editEntidad" />
           <Route path="/entidads/{id:Int}" page={EntidadEntidadPage} name="entidad" />
@@ -91,13 +94,17 @@ const Routes = () => {
 
           <Route path="/{id:Int}/componenteSelector" page={ComponenteSelector} name="componenteSelector" />
         </Set>
-        <Set wrap={ScaffoldLayout} title="Usuariorols" titleTo="usuariorols" buttonLabel="New Usuariorol" buttonTo="newUsuariorol">
+        <Set wrap={AccesoriosLayout} title="Usuariorols" titleTo="usuariorols" buttonLabel="New Usuariorol" buttonTo="newUsuariorol">
           <Route path="/usuariorols/new" page={UsuariorolNewUsuariorolPage} name="newUsuariorol" />
           <Route path="/usuariorols/{id:Int}/edit" page={UsuariorolEditUsuariorolPage} name="editUsuariorol" />
           <Route path="/usuariorols/{id:Int}" page={UsuariorolUsuariorolPage} name="usuariorol" />
           <Route path="/usuariorols" page={UsuariorolUsuariorolsPage} name="usuariorols" />
         </Set>
-        {/*</PrivateSet>*/}
+       <Route path="/reportes" page={ReportesPage} name="reportes" />
+       <Route path="/reportecomponentes" page={ReporteComponente} name="reportecomponentes" />
+
+       {/*</PrivateSet>*/}
+
       </Set>
       <Route notfound page={NotFoundPage} />
     </Router>

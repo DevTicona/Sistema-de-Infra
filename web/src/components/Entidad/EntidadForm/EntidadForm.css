@@ -1,0 +1,91 @@
+/* src/components/EntidadForm/EntidadForm.css */
+/* src/components/EntidadForm/EntidadForm.css */
+
+/* Estilos específicos para el formulario de Entidad */
+.entidad-form {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Espaciado adicional para campos específicos */
+.entidad-form .form-field-group {
+  margin-bottom: 2rem;
+}
+
+/* Estilos para el campo de código */
+.entidad-form .codigo-field {
+  max-width: 200px;
+}
+
+/* Estilos para el grupo de radio buttons */
+.entidad-form .radio-group {
+  gap: 1.5rem;
+}
+
+/* Estilos para el botón de guardar */
+.entidad-form .submit-button {
+  margin-top: 2rem;
+}
+/* Estilos específicos para el formulario de Entidad */
+.entidad-form {
+  /* Puedes ajustar el ancho máximo si es necesario */
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Estilos para el grupo de campos */
+.entidad-form .form-field-group {
+  margin-bottom: 20px; /* Más espacio entre campos */
+}
+
+/* Estilos para el campo de código */
+.entidad-form .codigo-field {
+  /* Por ejemplo, un ancho reducido para campos numéricos */
+  max-width: 200px;
+}
+
+/* Estilos para el grupo de radio buttons (estado) */
+.entidad-form .radio-group {
+  display: flex;
+  gap: 20px; /* Espacio entre los botones de radio */
+  margin-top: 10px;
+}
+
+.entidad-form .radio-option {
+  display: flex;
+  align-items: center;
+}
+
+.entidad-form .radio-label {
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+/* Estilos para el botón de guardar */
+.entidad-form .submit-button {
+  margin-top: 30px; /* Más espacio arriba del botón */
+  width: 100%; /* Botón de ancho completo */
+  max-width: 300px; /* Pero con un máximo */
+  margin-left: auto;
+  margin-right: auto;
+  display: block; /* Centrar el botón */
+}
+
+/* Estilos para el modo oscuro específico de EntidadForm */
+.app-form.dark .entidad-form .form-label {
+  color: #e2e8f0; /* Color de texto más claro en modo oscuro */
+}
+
+.app-form.dark .entidad-form .form-input {
+  background-color: #2d3748; /* Fondo más oscuro para inputs */
+  border-color: #4a5568; /* Borde más claro */
+  color: #f7fafc; /* Texto claro */
+}
+
+.app-form.dark .entidad-form .submit-button {
+  background-color: #4c51bf; /* Color diferente para el botón en modo oscuro */
+}
+
+.app-form.dark .entidad-form .submit-button:hover {
+  background-color: #434190; /* Color hover en modo oscuro */
+}

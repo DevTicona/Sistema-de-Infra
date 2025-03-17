@@ -28,6 +28,7 @@ export const QUERY = gql`
       despliegue {
         id
         nombre
+        agrupador
       }
     }
   }

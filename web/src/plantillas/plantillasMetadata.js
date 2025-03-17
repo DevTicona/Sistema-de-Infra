@@ -1,7 +1,7 @@
 const PLANTILLAS_METADATA = {
   servidorVirtual: { chasis: '', blade: '' },
   servidorFisico: {
-    marca: '',
+    almacenamiento: '',
     procesador: '',
     sistema_operativo: '',
     memoria_ram: '',

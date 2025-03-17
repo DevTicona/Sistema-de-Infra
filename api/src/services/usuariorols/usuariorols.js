@@ -34,8 +34,8 @@ export const updateUsuariorol = ({ id, input }) => {
       id_sistema: input.id_sistema,
 
       estado: input.estado,
-      fecha_creacion: new Date(), // Si existe
-      usuario_creacion: input.usuario_creacion,
+      usuario_modificacion: input.usuario_modificacion,
+      fecha_modificacion: new Date(),
     },
     where: { id },
   })

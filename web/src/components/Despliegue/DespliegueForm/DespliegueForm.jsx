@@ -1,18 +1,17 @@
 import Select from 'react-select'
-
 import {
   Form,
   FormError,
   FieldError,
   Label,
   TextField,
-  SelectField,
-  Submit,
+SelectField,
   Controller,
 } from '@redwoodjs/forms'
 import { useQuery } from '@redwoodjs/web'
-
 import { useAuth } from 'src/auth'
+
+import './DespliegueForm.css'
 
 const OBTENER_COMPONENTES = gql`
   query obtenerComponentes {
@@ -35,11 +34,9 @@ const OBTENER_SERVIDORES = gql`
 const DespliegueForm = (props) => {
   const { currentUser } = useAuth()
 
-  // Consultas para obtener los datos
   const { data: componentesData } = useQuery(OBTENER_COMPONENTES)
   const { data: servidoresData } = useQuery(OBTENER_SERVIDORES)
 
-  // Preparar opciones para los selects
   const componentesOptions =
     componentesData?.componentes?.map((c) => ({
       value: c.id,
@@ -56,47 +53,20 @@ const DespliegueForm = (props) => {
     const formData = {
       ...data,
       usuario_modificacion: currentUser?.id,
-      usuario_creacion: props.despliegue?.id
-        ? currentUser?.id
-        : currentUser?.id || 1,
+      usuario_creacion: props.despliegue?.id ? currentUser?.id : currentUser?.id || 1,
     }
     props.onSave(formData, props?.despliegue?.id)
   }
 
-  // Estilos personalizados para los selects
-  const selectStyles = {
-    control: (base) => ({
-      ...base,
-      borderColor: '#e2e8f0',
-      borderRadius: '0.375rem',
-      '&:hover': { borderColor: '#cbd5e0' },
-    }),
-    option: (base, { isFocused }) => ({
-      ...base,
-      backgroundColor: isFocused ? '#f8fafc' : 'white',
-      color: '#1e293b',
-    }),
-  }
-
   return (
-    <div className="rw-form-wrapper max-w-2xl mx-auto p-6 bg-white rounded-lg shadow">
+    <div className="despliegue-form">
       <Form onSubmit={onSubmit} error={props.error}>
-        <FormError
-          error={props.error}
-          wrapperClassName="rw-form-error-wrapper"
-          titleClassName="rw-form-error-title"
-          listClassName="rw-form-error-list"
-        />
+        <FormError error={props.error} className="form-error" />
 
-        <div className="space-y-4">
-          {/* Campo Servidor (requerido) */}
-          <div>
-            <Label
-              name="id_servidor"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Servidor
-            </Label>
+        <div className="form-grid">
+          {/* Servidor */}
+          <div className="form-group">
+            <Label className="input-label">Servidor</Label>
             <Controller
               name="id_servidor"
               defaultValue={props.despliegue?.id_servidor}
@@ -104,132 +74,96 @@ const DespliegueForm = (props) => {
               render={({ field }) => (
                 <Select
                   options={servidoresOptions}
-                  value={servidoresOptions.find(
-                    (opt) => opt.value === field.value
-                  )}
+                  value={servidoresOptions.find(opt => opt.value === field.value)}
                   onChange={(selected) => field.onChange(selected?.value)}
-                  placeholder="Seleccione un servidor..."
-                  noOptionsMessage={() => 'No hay servidores disponibles'}
-                  styles={selectStyles}
+                  placeholder="Seleccionar servidor..."
                   classNamePrefix="react-select"
                 />
               )}
             />
-            <FieldError name="id_servidor" className="rw-field-error" />
+            <FieldError name="id_servidor" className="error-message" />
           </div>
 
-          {/* Campo Componente (opcional) */}
-          <div>
-            <Label
-              name="id_componente"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Componente
-            </Label>
+          {/* Componente */}
+          <div className="form-group">
+            <Label className="input-label">Componente</Label>
             <Controller
               name="id_componente"
               defaultValue={props.despliegue?.id_componente}
               render={({ field }) => (
                 <Select
                   options={componentesOptions}
-                  value={componentesOptions.find(
-                    (opt) => opt.value === field.value
-                  )}
+                  value={componentesOptions.find(opt => opt.value === field.value)}
                   onChange={(selected) => field.onChange(selected?.value)}
-                  placeholder="Seleccione un componente..."
-                  noOptionsMessage={() => 'No hay componentes disponibles'}
-                  styles={selectStyles}
+                  placeholder="Seleccionar componente..."
                   classNamePrefix="react-select"
                   isClearable
                 />
               )}
             />
-            <FieldError name="id_componente" className="rw-field-error" />
+            <FieldError name="id_componente" className="error-message" />
           </div>
 
-          {/* Campos restantes */}
-          <div>
-            <Label
-              name="agrupador"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Agrupador
-            </Label>
+          {/* Agrupador */}
+          <div className="form-group">
+            <Label className="input-label">Agrupador</Label>
             <TextField
               name="agrupador"
               defaultValue={props.despliegue?.agrupador}
-              className="rw-input"
-              errorClassName="rw-input rw-input-error"
+              className="input-field"
               validation={{ required: true }}
             />
-            <FieldError name="agrupador" className="rw-field-error" />
+            <FieldError name="agrupador" className="error-message" />
           </div>
 
-          <div>
-            <Label
-              name="nombre"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Nombre
-            </Label>
+          {/* Nombre */}
+          <div className="form-group">
+            <Label className="input-label">Nombre</Label>
             <TextField
               name="nombre"
               defaultValue={props.despliegue?.nombre}
-              className="rw-input"
-              errorClassName="rw-input rw-input-error"
+              className="input-field"
               validation={{ required: true }}
             />
-            <FieldError name="nombre" className="rw-field-error" />
+            <FieldError name="nombre" className="error-message" />
           </div>
 
-          <div>
-            <Label
-              name="tipo"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Tipo
-            </Label>
+          {/* Tipo */}
+          <div className="form-group">
+            <Label className="input-label">Tipo</Label>
             <TextField
               name="tipo"
               defaultValue={props.despliegue?.tipo}
-              className="rw-input"
-              errorClassName="rw-input rw-input-error"
+              className="input-field"
               validation={{ required: true }}
             />
-            <FieldError name="tipo" className="rw-field-error" />
+            <FieldError name="tipo" className="error-message" />
           </div>
 
-          <div>
-            <Label
-              name="estado"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Estado
-            </Label>
-            <SelectField
-              name="estado"
-              defaultValue={props.despliegue?.estado || 'ACTIVO'}
-              className="rw-input"
-              errorClassName="rw-input rw-input-error"
-              validation={{ required: true }}
-            >
-              {['ACTIVO', 'INACTIVO'].map((estado) => (
-                <option key={estado} value={estado}>
-                  {estado}
-                </option>
-              ))}
-            </SelectField>
-            <FieldError name="estado" className="rw-field-error" />
-          </div>
+          {/* Estado */}
+          <div className="form-group">
+                                  <Label className="input-label">Estado</Label>
+                                  <SelectField
+                                    name="estado"
+                                    defaultValue={props.despliegue?.estado || 'ACTIVO'}
+                                    className="input-field select-field"
+                                    validation={{ required: true }}
+                                  >
+                                    {['ACTIVO', 'INACTIVO'].map((estado) => (
+                                      <option key={estado} value={estado}>
+                                        {estado.charAt(0) + estado.slice(1).toLowerCase()}
+                                      </option>
+                                    ))}
+                                  </SelectField>
+                                  <FieldError name="estado" className="error-message" />
+                                </div>
+
         </div>
 
-        <div className="rw-button-group mt-6 flex justify-end">
-          <Submit
-            disabled={props.loading}
-            className="rw-button rw-button-blue bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
-          >
-            Guardar
-          </Submit>
+        <div className="form-actions">
+          <button type="submit" className="submit-button" disabled={props.loading}>
+            {props.loading ? 'Guardando...' : 'Guardar Despliegue'}
+          </button>
         </div>
       </Form>
     </div>

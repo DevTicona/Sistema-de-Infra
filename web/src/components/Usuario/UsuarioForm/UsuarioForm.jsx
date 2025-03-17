@@ -1,5 +1,4 @@
 import { useState } from 'react'
-
 import {
   Form,
   FormError,
@@ -9,218 +8,205 @@ import {
   TextField,
   Submit,
 } from '@redwoodjs/forms'
-
 import { useAuth } from 'src/auth'
+import { Person, Phone, Email, Lock } from '@mui/icons-material'
 
-// Component for structured JSON input for Profile
+import './UsuarioForm.css'
+
+// Componente para datos de perfil
 const ProfileField = ({ defaultValue }) => {
   const [profileData, setProfileData] = useState(
-    defaultValue ? defaultValue : { nombre: '', apellido: '' }
+    defaultValue || { nombre: '', apellido: '' }
   )
 
-  const handleChange = (event) => {
-    setProfileData({
-      ...profileData,
-      [event.target.name]: event.target.value,
-    })
+  const handleChange = (e) => {
+    setProfileData({ ...profileData, [e.target.name]: e.target.value })
   }
 
   return (
-    <div>
-      <Label className="rw-label">Nombre</Label>
-      <TextField
-        name="nombre"
-        value={profileData.nombre}
-        onChange={handleChange}
-        className="rw-input"
-      />
-      <Label className="rw-label">Apellido</Label>
-      <TextField
-        name="apellido"
-        value={profileData.apellido}
-        onChange={handleChange}
-        className="rw-input"
-      />
-      {/* Send profile data as JSON */}
+    <div className="form-section">
+      <div className="section-header">
+        <Person className="section-icon" />
+        <h3>Información Personal</h3>
+      </div>
+      <div className="form-grid">
+        <div className="form-group">
+          <Label className="input-label">Nombre</Label>
+          <TextField
+            name="nombre"
+            value={profileData.nombre}
+            onChange={handleChange}
+            className="input-field"
+          />
+        </div>
+        <div className="form-group">
+          <Label className="input-label">Apellido</Label>
+          <TextField
+            name="apellido"
+            value={profileData.apellido}
+            onChange={handleChange}
+            className="input-field"
+          />
+        </div>
+      </div>
       <input type="hidden" name="profile" value={JSON.stringify(profileData)} />
     </div>
   )
 }
 
-// Component for structured JSON input for Telefono
+// Componente para datos de teléfono
 const TelefonoField = ({ defaultValue }) => {
   const [telefonoData, setTelefonoData] = useState(
-    defaultValue ? defaultValue : { movil: '', fijo: '' }
+    defaultValue || { movil: '', fijo: '' }
   )
 
-  const handleChange = (event) => {
-    setTelefonoData({
-      ...telefonoData,
-      [event.target.name]: event.target.value,
-    })
+  const handleChange = (e) => {
+    setTelefonoData({ ...telefonoData, [e.target.name]: e.target.value })
   }
 
   return (
-    <div>
-      <Label className="rw-label">Móvil</Label>
-      <TextField
-        name="movil"
-        value={telefonoData.movil}
-        onChange={handleChange}
-        className="rw-input"
-      />
-      <Label className="rw-label">Fijo</Label>
-      <TextField
-        name="fijo"
-        value={telefonoData.fijo}
-        onChange={handleChange}
-        className="rw-input"
-      />
-      {/* Send telefono data as JSON */}
-      <input
-        type="hidden"
-        name="telefono"
-        value={JSON.stringify(telefonoData)}
-      />
+    <div className="form-section">
+      <div className="section-header">
+        <Phone className="section-icon" />
+        <h3>Contacto Telefónico</h3>
+      </div>
+      <div className="form-grid">
+        <div className="form-group">
+          <Label className="input-label">Móvil</Label>
+          <TextField
+            name="movil"
+            value={telefonoData.movil}
+            onChange={handleChange}
+            className="input-field"
+          />
+        </div>
+        <div className="form-group">
+          <Label className="input-label">Fijo</Label>
+          <TextField
+            name="fijo"
+            value={telefonoData.fijo}
+            onChange={handleChange}
+            className="input-field"
+          />
+        </div>
+      </div>
+      <input type="hidden" name="telefono" value={JSON.stringify(telefonoData)} />
     </div>
   )
 }
 
-// Component for structured JSON input for Correo Electronico
+// Componente para datos de correo
 const CorreoElectronicoField = ({ defaultValue }) => {
   const [correoData, setCorreoData] = useState(
-    defaultValue ? defaultValue : { personal: '', trabajo: '' }
+    defaultValue || { personal: '', trabajo: '' }
   )
 
-  const handleChange = (event) => {
-    setCorreoData({
-      ...correoData,
-      [event.target.name]: event.target.value,
-    })
+  const handleChange = (e) => {
+    setCorreoData({ ...correoData, [e.target.name]: e.target.value })
   }
 
   return (
-    <div>
-      <Label className="rw-label">Correo Personal</Label>
-      <TextField
-        name="personal"
-        value={correoData.personal}
-        onChange={handleChange}
-        className="rw-input"
-      />
-      <Label className="rw-label">Correo Trabajo</Label>
-      <TextField
-        name="trabajo"
-        value={correoData.trabajo}
-        onChange={handleChange}
-        className="rw-input"
-      />
-      {/* Send correo data as JSON */}
-      <input
-        type="hidden"
-        name="correo_electronico"
-        value={JSON.stringify(correoData)}
-      />
+    <div className="form-section">
+      <div className="section-header">
+        <Email className="section-icon" />
+        <h3>Correos Electrónicos</h3>
+      </div>
+      <div className="form-grid">
+        <div className="form-group">
+          <Label className="input-label">Personal</Label>
+          <TextField
+            name="personal"
+            value={correoData.personal}
+            onChange={handleChange}
+            className="input-field"
+          />
+        </div>
+        <div className="form-group">
+          <Label className="input-label">Trabajo</Label>
+          <TextField
+            name="trabajo"
+            value={correoData.trabajo}
+            onChange={handleChange}
+            className="input-field"
+          />
+        </div>
+      </div>
+      <input type="hidden" name="correo_electronico" value={JSON.stringify(correoData)} />
     </div>
   )
 }
 
 const UsuarioForm = (props) => {
-  const { currentUser } = useAuth() // Obtén el usuario logueado
+  const { currentUser } = useAuth()
+
   const onSubmit = (data) => {
-    // Asegurarse de que los campos profile, telefono y correo_electronico se envíen como objetos
     const formData = {
       ...data,
-      profile: data.profile ? JSON.parse(data.profile) : {}, // Parse JSON if it's a string
-      telefono: data.telefono ? JSON.parse(data.telefono) : {}, // Parse JSON if it's a string
-      correo_electronico: data.correo_electronico
-        ? JSON.parse(data.correo_electronico)
-        : {}, // Parse JSON if it's a string
-      usuario_modificacion: currentUser?.id, // Asigna el ID del usuario logueado
-      usuario_creacion: currentUser?.id, // Asigna el ID si es creación o mantenimiento
+      profile: data.profile ? JSON.parse(data.profile) : {},
+      telefono: data.telefono ? JSON.parse(data.telefono) : {},
+      correo_electronico: data.correo_electronico ? JSON.parse(data.correo_electronico) : {},
+      usuario_modificacion: currentUser?.id,
+      usuario_creacion: props.usuario?.usuario_creacion || currentUser?.id || 1,
     }
-
-    // Enviar los datos al servidor
     props.onSave(formData, props?.usuario?.id)
   }
 
   return (
-    <div className="rw-form-wrapper max-w-sm mx-auto bg-white p-3 rounded-lg shadow-md">
+    <div className="usuario-form">
       <Form onSubmit={onSubmit} error={props.error}>
-        <FormError
-          error={props.error}
-          wrapperClassName="rw-form-error-wrapper"
-          titleClassName="rw-form-error-title"
-          listClassName="rw-form-error-list"
-        />
+        <FormError error={props.error} className="form-error" />
 
-        <Label
-          name="uuid_ciudadano"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Uuid ciudadano
-        </Label>
+        <div className="form-section">
+          <div className="section-header">
+            <Lock className="section-icon" />
+            <h3>Datos de Cuenta</h3>
+          </div>
+          <div className="form-grid">
+            <div className="form-group">
+              <Label className="input-label">UUID Ciudadano</Label>
+              <TextField
+                name="uuid_ciudadano"
+                defaultValue={props.usuario?.uuid_ciudadano}
+                className="input-field"
+              />
+              <FieldError name="uuid_ciudadano" className="error-message" />
+            </div>
 
-        <TextField
-          name="uuid_ciudadano"
-          defaultValue={props.usuario?.uuid_ciudadano}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
+            <div className="form-group">
+              <Label className="input-label">Nombre de Usuario</Label>
+              <TextField
+                name="nombre_usuario"
+                defaultValue={props.usuario?.nombre_usuario}
+                className="input-field"
+                validation={{ required: true }}
+              />
+              <FieldError name="nombre_usuario" className="error-message" />
+            </div>
 
-        <FieldError name="uuid_ciudadano" className="rw-field-error" />
+            <div className="form-group">
+              <Label className="input-label">Estado</Label>
+              <SelectField
+                name="estado"
+                defaultValue={props.usuario?.estado || 'ACTIVO'}
+                className="input-field"
+                validation={{ required: true }}
+              >
+                <option value="ACTIVO">Activo</option>
+                <option value="INACTIVO">Inactivo</option>
+              </SelectField>
+              <FieldError name="estado" className="error-message" />
+            </div>
+          </div>
+        </div>
 
-        <Label
-          name="nombre_usuario"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Nombre usuario
-        </Label>
-
-        <TextField
-          name="nombre_usuario"
-          defaultValue={props.usuario?.nombre_usuario}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="nombre_usuario" className="rw-field-error" />
-
-        {/* Profile JSON Input */}
         <ProfileField defaultValue={props.usuario?.profile} />
-
-        {/* Telefono JSON Input */}
         <TelefonoField defaultValue={props.usuario?.telefono} />
+        <CorreoElectronicoField defaultValue={props.usuario?.correo_electronico} />
 
-        {/* Correo Electronico JSON Input */}
-        <CorreoElectronicoField
-          defaultValue={props.usuario?.correo_electronico}
-        />
-
-        <Label
-          name="estado"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Estado
-        </Label>
-        <SelectField
-          name="estado"
-          defaultValue={props.usuario?.estado}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        >
-          <option value="ACTIVO">Activo</option>
-          <option value="INACTIVO">Inactivo</option>
-        </SelectField>
-        <div className="rw-button-group">
-          <Submit disabled={props.loading} className="rw-button rw-button-blue">
-            Save
-          </Submit>
+        <div className="form-actions">
+          <button type="submit" className="submit-button" disabled={props.loading}>
+            {props.loading ? 'Guardando...' : 'Guardar Usuario'}
+          </button>
         </div>
       </Form>
     </div>

@@ -1,0 +1,119 @@
+.componentes-container {
+  padding: 20px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.table-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background: white;
+  overflow: hidden;
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.table-header {
+  background-color: #2c3e50;
+  color: white;
+  padding: 12px 15px;
+  text-align: left;
+}
+
+.table-row {
+  border-bottom: 1px solid #ecf0f1;
+  transition: background-color 0.2s;
+}
+
+.table-row:hover {
+  background-color: #f8f9fa;
+}
+
+.table-cell {
+  padding: 12px 15px;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.checkbox-column {
+  width: 30px;
+  padding: 0 10px !important;
+}
+
+.styled-checkbox {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.action-btn {
+  border: none;
+  padding: 5px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  background: none;
+}
+
+.action-btn:hover {
+  opacity: 0.8;
+}
+
+.view-btn { color: #3498db; }
+.edit-btn { color: #2ecc71; }
+.delete-btn { color: #e74c3c; }
+
+.no-results {
+  text-align: center;
+  padding: 40px;
+  color: #7f8c8d;
+}
+
+.no-results i {
+  font-size: 40px;
+  margin-bottom: 15px;
+}
+
+.custom-dialog {
+  border-radius: 10px;
+}
+
+.dialog-btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.cancel-btn {
+  background-color: #95a5a6;
+  color: white;
+}
+
+.confirm-btn {
+  background-color: #e74c3c;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .table-cell {
+    padding: 8px 10px;
+    font-size: 0.85em;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+}

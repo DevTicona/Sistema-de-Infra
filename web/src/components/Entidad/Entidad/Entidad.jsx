@@ -109,7 +109,7 @@ const Entidad = ({ entidad }) => {
         </Box>
         <div>
           <Button
-            variant="contained"
+            variant="outlined"
             color="primary"
             startIcon={<Edit />}
             component={Link}

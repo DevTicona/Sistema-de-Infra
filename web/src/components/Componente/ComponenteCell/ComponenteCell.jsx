@@ -16,6 +16,18 @@ export const QUERY = gql`
       usuario_modificacion
       sistemas {
         nombre
+        estado
+      }
+      despliegue {
+        id
+        agrupador
+        tipo
+        estado
+        servidores {
+          id
+          nombre
+          estado
+        }
       }
     }
   }

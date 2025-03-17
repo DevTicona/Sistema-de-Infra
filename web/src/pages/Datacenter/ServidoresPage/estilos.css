@@ -1,0 +1,61 @@
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px; /* Bordes redondeados para la tabla */
+  overflow: hidden; /* Para asegurarse de que los bordes redondeados se apliquen correctamente */
+}
+
+.custom-table th{
+  padding: 10px;
+  border: 1px solid #141414;
+  text-align: left;
+}
+
+.custom-table th {
+  background-color: #007bff; /* Encabezado azul */
+  color: white;
+  font-weight: bold;
+}
+
+.custom-table td {
+  background-color: #f9f9f9;
+  border-top: 1px solid #ddd; /* Asegurando que las celdas tengan bordes */
+}
+
+.rw-button {
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px; /* Bordes redondeados en los botones */
+  transition: background-color 0.3s ease; /* Animación de transición para el color de fondo */
+}
+
+.rw-button:hover {
+  opacity: 0.8; /* Efecto de hover en los botones */
+}
+
+.rw-button-small {
+  font-size: 12px;
+}
+
+.rw-button-blue {
+  background-color: blue;
+  color: white;
+}
+
+.rw-button-red {
+  background-color: red;
+  color: white;
+}
+
+.rw-table-actions {
+  display: flex;
+  gap: 5px;
+}

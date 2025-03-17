@@ -1,3 +1,4 @@
+import React from 'react'
 import {
   Person,
   Info,
@@ -7,6 +8,7 @@ import {
   Lock,
   ContactPhone,
   AlternateEmail,
+  CloudDownload, // Nuevo icono para descargar
 } from '@mui/icons-material'
 import {
   Card,
@@ -31,6 +33,8 @@ import {
 import { Link, routes, navigate } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 
 const DELETE_USUARIO_MUTATION = gql`
   mutation DeleteUsuarioMutation($id: Int!) {
@@ -86,6 +90,28 @@ const Usuario = ({ usuario }) => {
     setDeleteDialogOpen(false)
   }
 
+  const downloadPDF = () => {
+    const input = document.getElementById('usuario-content')
+
+    // Pequeño delay para asegurar renderizado
+    setTimeout(() => {
+      html2canvas(input, {
+        scale: 2,
+        useCORS: true,
+        logging: true,
+        allowTaint: true,
+      }).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png', 1.0)
+        const pdf = new jsPDF('p', 'mm', 'a4')
+        const imgWidth = 210
+        const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
+        pdf.save(`usuario_${usuario.nombre_usuario}.pdf`)
+      })
+    }, 500) // Delay de 500ms
+  }
+
   return (
     <div style={{ maxWidth: 1200, margin: '2rem auto', padding: '0 1rem' }}>
       {/* Encabezado */}
@@ -118,11 +144,11 @@ const Usuario = ({ usuario }) => {
             </Typography>
             <Chip
               label={usuario.estado}
-              style={{
+              sx={{
                 marginTop: '0.5rem',
                 backgroundColor:
-                  usuario.estado === 'ACTIVO' ? '#e8f5e9' : '#ffebee',
-                color: usuario.estado === 'ACTIVO' ? '#2e7d32' : '#c62828',
+                  usuario.estado === 'ACTIVO' ? '#e8f5e9 !important' : '#ffebee !important',
+                color: usuario.estado === 'ACTIVO' ? '#2e7d32 !important' : '#c62828 !important',
               }}
             />
           </div>
@@ -138,6 +164,17 @@ const Usuario = ({ usuario }) => {
           >
             Editar
           </Button>
+
+          <Button
+            variant="contained"
+            color="secondary"
+            startIcon={<CloudDownload />}
+            onClick={downloadPDF}
+            style={{ marginRight: '1rem' }}
+          >
+            Descargar PDF
+          </Button>
+
           <Button
             variant="outlined"
             color="error"
@@ -149,252 +186,255 @@ const Usuario = ({ usuario }) => {
         </div>
       </div>
 
-      <Grid container spacing={3}>
-        {/* Columna Izquierda - Información del Usuario */}
-        <Grid item xs={12} md={6}>
-          <Card elevation={3} style={{ borderRadius: 16 }}>
-            <CardContent>
-              <Typography
-                variant="h6"
-                gutterBottom
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  color: '#3f51b5',
-                }}
-              >
-                <Person style={{ marginRight: 8 }} /> Información del Usuario
-              </Typography>
-              <Divider style={{ margin: '1rem 0' }} />
-
-              <Grid container spacing={2}>
-                <DetailItem
-                  label="ID Único"
-                  value={usuario.id}
-                  icon={<Lock fontSize="small" />}
-                />
-
-                <DetailItem
-                  label="UUID Ciudadano"
-                  value={
-                    usuario.uuid_ciudadano
-                      ? `${usuario.uuid_ciudadano.slice(0)}`
-                      : 'No registrado'
-                  }
-                  icon={<Info fontSize="small" />}
-                />
-
-                <DetailItem
-                  label="Contacto"
-                  value={
-                    <Box
-                      sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                        }}
-                      >
-                        <ContactPhone fontSize="small" />
-                        {formatJSON(usuario.telefono)}
-                      </div>
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                        }}
-                      >
-                        <AlternateEmail fontSize="small" />
-                        {formatJSON(usuario.correo_electronico)}
-                      </div>
-                    </Box>
-                  }
-                  fullWidth
-                />
-
-                <DetailItem
-                  label="Historial"
-                  value={
-                    <Box sx={{ display: 'flex', gap: 3 }}>
-                      <div>
-                        <Typography variant="caption">Creación</Typography>
-                        <Typography>
-                          {formatDate(usuario.fecha_creacion)}
-                        </Typography>
-                        <Typography variant="body2" color="textSecondary">
-                          por: {usuario.usuario_creacion || 'Sistema'}
-                        </Typography>
-                      </div>
-                      {usuario.fecha_modificacion && (
-                        <div>
-                          <Typography variant="caption">
-                            Última modificación
-                          </Typography>
-                          <Typography>
-                            {formatDate(usuario.fecha_modificacion)}
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            por: {usuario.usuario_modificacion}
-                          </Typography>
-                        </div>
-                      )}
-                    </Box>
-                  }
-                  fullWidth
-                />
-
-                <Grid item xs={12}>
-                  <Paper
-                    variant="outlined"
-                    style={{ padding: '1rem', marginTop: '1rem' }}
-                  >
-                    <Typography
-                      variant="subtitle2"
-                      color="textSecondary"
-                      gutterBottom
-                    >
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <Person fontSize="small" /> Perfil Completo
-                      </Box>
-                    </Typography>
-                    <Box
-                      sx={{
-                        backgroundColor: '#f8f9fa',
-                        borderRadius: '4px',
-                        padding: '1rem',
-                        maxHeight: '300px',
-                        overflowY: 'auto',
-                      }}
-                    >
-                      {formatJSON(usuario.profile)}
-                    </Box>
-                  </Paper>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Columna Derecha - Sistemas Asociados */}
-        <Grid item xs={12} md={6}>
-          <Card elevation={3} style={{ borderRadius: 16, height: '100%' }}>
-            <CardContent>
-              <Typography
-                variant="h6"
-                gutterBottom
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  color: '#3f51b5',
-                }}
-              >
-                <Computer style={{ marginRight: 8 }} /> Sistemas y Roles
-                Asignados
-              </Typography>
-              <Divider style={{ margin: '1rem 0' }} />
-
-              {usuario.usuario_roles?.length > 0 ? (
-                <List dense>
-                  {usuario.usuario_roles.map((rol) => (
-                    <ListItem
-                      key={rol.id}
-                      button
-                      component={Link}
-                      to={routes.sistema({ id: rol.sistemas?.id })}
-                      style={{
-                        padding: '12px',
-                        margin: '4px 0',
-                        borderRadius: '8px',
-                        transition: 'all 0.2s',
-                        '&:hover': {
-                          backgroundColor: '#f8f9fa',
-                        },
-                      }}
-                    >
-                      <Avatar
-                        sx={{
-                          width: 40,
-                          height: 40,
-                          bgcolor: '#3f51b5',
-                          fontSize: '1rem',
-                          marginRight: 2,
-                        }}
-                      >
-                        {rol.sistemas?.nombre?.[0]?.toUpperCase() || 'S'}
-                      </Avatar>
-
-                      <ListItemText
-                        primary={
-                          <Box display="flex" alignItems="center" gap={1}>
-                            <Typography variant="subtitle1" fontWeight={500}>
-                              {rol.sistemas?.nombre || 'Sistema no encontrado'}
-                            </Typography>
-                            <Chip
-                              label={rol.roles?.nombre}
-                              size="small"
-                              sx={{
-                                backgroundColor: '#e3f2fd',
-                                color: '#1e88e5',
-                                fontWeight: 600,
-                              }}
-                            />
-                          </Box>
-                        }
-                        secondary={
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 2,
-                              mt: 1,
-                            }}
-                          >
-                            <Chip
-                              label={rol.estado}
-                              size="small"
-                              sx={{
-                                backgroundColor:
-                                  rol.estado === 'ACTIVO'
-                                    ? '#e8f5e9'
-                                    : '#ffebee',
-                                color:
-                                  rol.estado === 'ACTIVO'
-                                    ? '#2e7d32'
-                                    : '#c62828',
-                              }}
-                            />
-                            <Typography variant="caption" color="textSecondary">
-                              Asignado el: {formatDate(rol.fecha_creacion)}
-                            </Typography>
-                          </Box>
-                        }
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              ) : (
-                <Box
-                  sx={{
+      {/* Contenido para el PDF */}
+      <div id="usuario-content">
+        <Grid container spacing={3}>
+          {/* Columna Izquierda - Información del Usuario */}
+          <Grid item xs={12} md={6}>
+            <Card elevation={3} style={{ borderRadius: 16 }}>
+              <CardContent>
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  style={{
                     display: 'flex',
-                    flexDirection: 'column',
                     alignItems: 'center',
-                    py: 4,
-                    gap: 2,
+                    color: '#3f51b5',
                   }}
                 >
-                  <Computer sx={{ fontSize: 40, color: '#e0e0e0' }} />
-                  <Typography variant="body2" color="textSecondary">
-                    No tiene sistemas asociados
-                  </Typography>
-                </Box>
-              )}
-            </CardContent>
-          </Card>
+                  <Person style={{ marginRight: 8 }} /> Información del Usuario
+                </Typography>
+                <Divider style={{ margin: '1rem 0' }} />
+
+                <Grid container spacing={2}>
+                  <DetailItem
+                    label="ID Único"
+                    value={usuario.id}
+                    icon={<Lock fontSize="small" />}
+                  />
+
+                  <DetailItem
+                    label="UUID Ciudadano"
+                    value={
+                      usuario.uuid_ciudadano
+                        ? `${usuario.uuid_ciudadano.slice(0)}`
+                        : 'No registrado'
+                    }
+                    icon={<Info fontSize="small" />}
+                  />
+
+                  <DetailItem
+                    label="Contacto"
+                    value={
+                      <Box
+                        sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
+                      >
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                          }}
+                        >
+                          <ContactPhone fontSize="small" />
+                          {formatJSON(usuario.telefono)}
+                        </div>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                          }}
+                        >
+                          <AlternateEmail fontSize="small" />
+                          {formatJSON(usuario.correo_electronico)}
+                        </div>
+                      </Box>
+                    }
+                    fullWidth
+                  />
+
+                  <DetailItem
+                    label="Historial"
+                    value={
+                      <Box sx={{ display: 'flex', gap: 3 }}>
+                        <div>
+                          <Typography variant="caption">Creación</Typography>
+                          <Typography>
+                            {formatDate(usuario.fecha_creacion)}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            por: {usuario.usuario_creacion || 'Sistema'}
+                          </Typography>
+                        </div>
+                        {usuario.fecha_modificacion && (
+                          <div>
+                            <Typography variant="caption">
+                              Última modificación
+                            </Typography>
+                            <Typography>
+                              {formatDate(usuario.fecha_modificacion)}
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                              por: {usuario.usuario_modificacion}
+                            </Typography>
+                          </div>
+                        )}
+                      </Box>
+                    }
+                    fullWidth
+                  />
+
+                  <Grid item xs={12}>
+                    <Paper
+                      variant="outlined"
+                      style={{ padding: '1rem', marginTop: '1rem' }}
+                    >
+                      <Typography
+                        variant="subtitle2"
+                        color="textSecondary"
+                        gutterBottom
+                      >
+                        <Box display="flex" alignItems="center" gap={1}>
+                          <Person fontSize="small" /> Perfil Completo
+                        </Box>
+                      </Typography>
+                      <Box
+                        sx={{
+                          backgroundColor: '#f8f9fa',
+                          borderRadius: '4px',
+                          padding: '1rem',
+                          maxHeight: '300px',
+                          overflowY: 'auto',
+                        }}
+                      >
+                        {formatJSON(usuario.profile)}
+                      </Box>
+                    </Paper>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Columna Derecha - Sistemas Asociados */}
+          <Grid item xs={12} md={6}>
+            <Card elevation={3} style={{ borderRadius: 16, height: '100%' }}>
+              <CardContent>
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    color: '#3f51b5',
+                  }}
+                >
+                  <Computer style={{ marginRight: 8 }} /> Sistemas y Roles
+                  Asignados
+                </Typography>
+                <Divider style={{ margin: '1rem 0' }} />
+
+                {usuario.usuario_roles?.length > 0 ? (
+                  <List dense>
+                    {usuario.usuario_roles.map((rol) => (
+                      <ListItem
+                        key={rol.id}
+                        button
+                        component={Link}
+                        to={routes.sistema({ id: rol.sistemas?.id })}
+                        style={{
+                          padding: '12px',
+                          margin: '4px 0',
+                          borderRadius: '8px',
+                          transition: 'all 0.2s',
+                          '&:hover': {
+                            backgroundColor: '#f8f9fa',
+                          },
+                        }}
+                      >
+                        <Avatar
+                          sx={{
+                            width: 40,
+                            height: 40,
+                            bgcolor: '#3f51b5',
+                            fontSize: '1rem',
+                            marginRight: 2,
+                          }}
+                        >
+                          {rol.sistemas?.nombre?.[0]?.toUpperCase() || 'S'}
+                        </Avatar>
+
+                        <ListItemText
+                          primary={
+                            <Box display="flex" alignItems="center" gap={1}>
+                              <Typography variant="subtitle1" fontWeight={500}>
+                                {rol.sistemas?.nombre || 'Sistema no encontrado'}
+                              </Typography>
+                              <Chip
+                                label={rol.roles?.nombre}
+                                size="small"
+                                sx={{
+                                  backgroundColor: '#e3f2fd',
+                                  color: '#1e88e5',
+                                  fontWeight: 600,
+                                }}
+                              />
+                            </Box>
+                          }
+                          secondary={
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 2,
+                                mt: 1,
+                              }}
+                            >
+                              <Chip
+                                label={rol.estado}
+                                size="small"
+                                sx={{
+                                  backgroundColor:
+                                    rol.estado === 'ACTIVO'
+                                      ? '#e8f5e9 !important'
+                                      : '#ffebee !important',
+                                  color:
+                                    rol.estado === 'ACTIVO'
+                                      ? '#2e7d32 !important'
+                                      : '#c62828 !important',
+                                }}
+                              />
+                              <Typography variant="caption" color="textSecondary">
+                                Asignado el: {formatDate(rol.fecha_creacion)}
+                              </Typography>
+                            </Box>
+                          }
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                ) : (
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      py: 4,
+                      gap: 2,
+                    }}
+                  >
+                    <Computer sx={{ fontSize: 40, color: '#e0e0e0' }} />
+                    <Typography variant="body2" color="textSecondary">
+                      No tiene sistemas asociados
+                    </Typography>
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
-      </Grid>
+      </div>
 
       {/* Diálogo de Confirmación */}
       <Dialog

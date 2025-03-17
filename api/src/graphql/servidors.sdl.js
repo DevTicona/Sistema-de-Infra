@@ -44,7 +44,7 @@ export const schema = gql`
 
     blade: String
     chasis: String
-    marca: String
+    almacenamiento: String
     procesador: String
     sistema_operativo: String
     memoria_ram: String
@@ -65,7 +65,7 @@ export const schema = gql`
     usuario_modificacion: Int
     id_data_center: Int
 
-    marca: String
+    almacenamiento: String
     procesador: String
     sistema_operativo: String
     memoria_ram: String

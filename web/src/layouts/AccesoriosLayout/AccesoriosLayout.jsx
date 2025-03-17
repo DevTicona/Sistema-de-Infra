@@ -392,3 +392,4 @@ const AccesoriosLayout = ({
 }
 
 export default AccesoriosLayout
+
