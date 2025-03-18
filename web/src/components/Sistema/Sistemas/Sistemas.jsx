@@ -41,12 +41,13 @@ import {
 } from '@mui/material';
 
 import { Link, routes } from '@redwoodjs/router';
-import { useMutation } from '@redwoodjs/web';
+import { useMutation, useQuery } from '@redwoodjs/web';
 import { toast } from '@redwoodjs/web/toast';
 
 import { useSearch } from 'src/context/SearchContext';
 import { ColumnConfigContext } from 'src/context/ColumnConfigContext';
 import { TableDataContext } from 'src/context/TableDataContext';
+import { formatEnum, jsonTruncate, truncate } from 'src/lib/formatters';
 
 // Mutación para eliminar un sistema
 const DELETE_SISTEMA_MUTATION = gql`
@@ -89,15 +90,39 @@ const QUERY = gql`
   }
 `;
 
-// Función para obtener valores anidados
-const getNestedValue = (obj, path) => {
-  return path.split('.').reduce((o, p) => (o || {})[p], obj);
+// Consulta para obtener usuarios
+const GET_USUARIOS_QUERY = gql`
+  query UsuariosQuery {
+    usuarios {
+      id
+      nombre_usuario
+    }
+  }
+`;
+
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 };
 
 const SistemasList = ({ sistemas }) => {
   const { search } = useSearch();
   const { setTableData, setTableConfig } = useContext(TableDataContext);
   const { setCurrentTableConfig, currentTable } = useContext(ColumnConfigContext);
+
+  // Obtener usuarios
+  const { data: usuariosData } = useQuery(GET_USUARIOS_QUERY);
+  const usuariosMap = useMemo(() => {
+    return usuariosData?.usuarios?.reduce((acc, usuario) => {
+      acc[usuario.id] = usuario.nombre_usuario;
+      return acc;
+    }, {}) || {};
+  }, [usuariosData]);
 
   const [orderBy, setOrderBy] = useState('id');
   const [order, setOrder] = useState('asc');
@@ -109,9 +134,14 @@ const SistemasList = ({ sistemas }) => {
   const [filters, setFilters] = useState({
     estado: '',
     entidad: '',
-    usuario: '', // Cambio aquí para usuario
+    usuario: '',
   });
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [localSistemas, setLocalSistemas] = useState(sistemas);
+
+  useEffect(() => {
+    setLocalSistemas(sistemas);
+  }, [sistemas]);
 
   const [deleteSistema] = useMutation(DELETE_SISTEMA_MUTATION, {
     onCompleted: () => {
@@ -138,10 +168,10 @@ const SistemasList = ({ sistemas }) => {
       { name: 'descripcion', label: 'Descripción', visible: true },
       { name: 'entidad', label: 'Entidad', visible: true },
       { name: 'estado', label: 'Estado', visible: true },
-      { name: 'usuario', label: 'Usuario', visible: true }, // Cambio aquí de "responsable" a "usuario"
+      { name: 'usuario', label: 'Usuario', visible: true },
       { name: 'respaldo_creacion', label: 'Respaldo Creación', visible: false },
       { name: 'fecha_creacion', label: 'Fecha Creación', visible: true },
-      { name: 'usuario_creacion', label: 'Usuario Creación', visible: false },
+      { name: 'usuario_creacion', label: 'Usuario Creación', visible: true },
       { name: 'fecha_modificacion', label: 'Fecha Modificación', visible: false },
       { name: 'usuario_modificacion', label: 'Usuario Modificación', visible: false },
     ],
@@ -160,17 +190,17 @@ const SistemasList = ({ sistemas }) => {
 
   // Actualizar contexto de tabla
   useEffect(() => {
-    setTableData(sistemas);
+    setTableData(localSistemas);
     setTableConfig({
       tableName,
       filas: selectedSistemas,
       columns: columnsToDisplay,
     });
-  }, [sistemas, selectedSistemas, columnsToDisplay, setTableData, setTableConfig]);
+  }, [localSistemas, selectedSistemas, columnsToDisplay, setTableData, setTableConfig]);
 
   // Manejo de selección
   const handleSelectAll = (event) => {
-    setSelectedSistemas(event.target.checked ? sistemas.map(s => s.id) : []);
+    setSelectedSistemas(event.target.checked ? filteredSistemas.map(s => s.id) : []);
   };
 
   const handleSelectOne = (id) => (event) => {
@@ -191,18 +221,31 @@ const SistemasList = ({ sistemas }) => {
     setFilters((prev) => ({ ...prev, [filterName]: value }));
   };
 
+  // Filtrado combinado con búsqueda global
   const filteredSistemas = useMemo(() => {
-    return sistemas.filter((sistema) => {
+    const lowerSearch = search?.toLowerCase() || '';
+
+    return localSistemas.filter((sistema) => {
+      const matchesSearch = [
+        sistema.codigo,
+        sistema.sigla,
+        sistema.nombre,
+        sistema.descripcion
+      ].some(field =>
+        String(field).toLowerCase().includes(lowerSearch)
+      );
+
       return (
+        matchesSearch &&
         (filters.estado === '' || sistema.estado === filters.estado) &&
         (filters.entidad === '' || sistema.entidades?.nombre === filters.entidad) &&
         (filters.usuario === '' ||
           sistema.usuario_roles?.some((ur) =>
-            ur.usuarios.nombre_usuario.includes(filters.usuario) // Cambio aquí a "usuario"
+            ur.usuarios.nombre_usuario.toLowerCase().includes(filters.usuario.toLowerCase())
           ))
       );
     });
-  }, [sistemas, filters]);
+  }, [localSistemas, search, filters]);
 
   // Renderizado de celdas
   const renderCell = (sistema, colName) => {
@@ -224,23 +267,25 @@ const SistemasList = ({ sistemas }) => {
             size="small"
           />
         );
-      case 'usuario': // Cambio aquí para "usuario"
+      case 'usuario':
         return sistema.usuario_roles
           ?.map((ur) => ur.usuarios.nombre_usuario)
           ?.join(', ') || 'Sin usuario';
       case 'respaldo_creacion':
         return JSON.stringify(sistema.respaldo_creacion)?.substring(0, 30) + '...';
       case 'fecha_creacion':
+        return truncate(formatDate(sistema.fecha_creacion));
+      case 'usuario_creacion':
+        return usuariosMap[sistema.usuario_creacion] || 'N/A';
       case 'fecha_modificacion':
-        return new Date(sistema[colName]).toLocaleDateString();
+        return sistema.fecha_modificacion
+          ? truncate(formatDate(sistema.fecha_modificacion))
+          : 'N/A';
+      case 'usuario_modificacion':
+        return usuariosMap[sistema.usuario_modificacion] || 'N/A';
       default:
         return sistema[colName];
     }
-  };
-
-  // Manejar impresión
-  const handlePrint = () => {
-    console.log('Imprimiendo sistemas seleccionados:', selectedSistemas);
   };
 
   return (
@@ -279,7 +324,7 @@ const SistemasList = ({ sistemas }) => {
               label="Usuario"
               size="small"
               value={filters.usuario}
-              onChange={(e) => handleFilterChange('usuario', e.target.value)} // Cambio aquí para "usuario"
+              onChange={(e) => handleFilterChange('usuario', e.target.value)}
               sx={{ minWidth: 200 }}
               InputProps={{
                 startAdornment: (
@@ -306,10 +351,10 @@ const SistemasList = ({ sistemas }) => {
                   >
                     {col.type === 'checkbox' ? (
                       <Checkbox
-                        checked={selectedSistemas.length === sistemas.length}
+                        checked={selectedSistemas.length === filteredSistemas.length}
                         indeterminate={
                           selectedSistemas.length > 0 &&
-                          selectedSistemas.length < sistemas.length
+                          selectedSistemas.length < filteredSistemas.length
                         }
                         onChange={handleSelectAll}
                         sx={{ color: 'white' }}

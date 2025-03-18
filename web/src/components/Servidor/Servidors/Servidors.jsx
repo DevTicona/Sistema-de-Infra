@@ -207,9 +207,12 @@ const ServidorsList = ({ servidors }) => {
         return truncate(formatDate(servidor.fecha_creacion))
       case 'usuario_creacion':
         return truncate(usuariosMap?.[servidor?.usuario_creacion] || 'N/A')
-      case 'fecha_modificacion':
-        return truncate(formatDate(servidor.fecha_modificacion))
-      case 'usuario_modificacion':
+        case 'fecha_modificacion':
+          return servidor.fecha_modificacion
+            ? truncate(formatDate(servidor.fecha_modificacion))
+            : 'N/A'
+
+        case 'usuario_modificacion':
         return truncate(usuariosMap?.[servidor?.usuario_modificacion] || 'N/A')
       case 'data_center':
         return truncate(servidor?.data_centers?.nombre)

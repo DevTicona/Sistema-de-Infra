@@ -1,6 +1,6 @@
 import React, { useState, useContext, useMemo, useEffect } from 'react'
 import { Link, routes } from '@redwoodjs/router'
-import { useMutation } from '@redwoodjs/web'
+import { useMutation, useQuery } from '@redwoodjs/web' // Añadido useQuery
 import { toast } from '@redwoodjs/web/toast'
 import { QUERY } from 'src/components/Usuariorol/UsuariorolsCell'
 import { formatEnum, timeTag, truncate } from 'src/lib/formatters'
@@ -27,9 +27,19 @@ import {
   LinearProgress,
 } from '@mui/material'
 import { Visibility as VisibilityIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material'
-import { useSearch } from 'src/context/SearchContext' // Suponiendo que tienes un contexto de búsqueda
-import { ColumnConfigContext } from 'src/context/ColumnConfigContext' // Suponiendo que tienes un contexto de configuración de columnas
-import { TableDataContext } from 'src/context/TableDataContext' // Suponiendo que tienes un contexto de datos de tabla
+import { useSearch } from 'src/context/SearchContext'
+import { ColumnConfigContext } from 'src/context/ColumnConfigContext'
+import { TableDataContext } from 'src/context/TableDataContext'
+
+// Añadido: Query para obtener los usuarios
+const GET_USUARIOS_QUERY = gql`
+  query UsuariosQuery {
+    usuarios {
+      id
+      nombre_usuario
+    }
+  }
+`
 
 const DELETE_USUARIOROL_MUTATION = gql`
   mutation DeleteUsuariorolMutation($id: Int!) {
@@ -38,6 +48,17 @@ const DELETE_USUARIOROL_MUTATION = gql`
     }
   }
 `
+
+// Función para formatear fechas
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
 
 // Estilos personalizados con styled de Material-UI
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -58,9 +79,18 @@ const ActionButton = styled(IconButton)(({ theme }) => ({
 }))
 
 const UsuariorolsList = ({ usuariorols }) => {
-  const { search } = useSearch() // Usamos el contexto de búsqueda
+  const { search } = useSearch()
   const { setTableData, setTableConfig } = useContext(TableDataContext)
   const { setCurrentTableConfig, currentTable } = useContext(ColumnConfigContext)
+
+  // Añadido: Obtener usuarios
+  const { data: usuariosData } = useQuery(GET_USUARIOS_QUERY)
+  const usuariosMap = useMemo(() => {
+    return usuariosData?.usuarios?.reduce((acc, usuario) => {
+      acc[usuario.id] = usuario.nombre_usuario
+      return acc
+    }, {}) || {}
+  }, [usuariosData])
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
@@ -166,14 +196,13 @@ const UsuariorolsList = ({ usuariorols }) => {
           />
         )
       case 'fecha_creacion':
-        return timeTag(usuariorol.fecha_creacion)
+        return formatDate(usuariorol.fecha_creacion) // Formatear fecha
       case 'usuario_creacion':
-        return truncate(usuariorol.usuario_creacion)
-        case 'fecha_modificacion':
-          return new Date(usuariorol[colName]).toLocaleDateString();
-
+        return usuariosMap[usuariorol.usuario_creacion] || 'N/A' // Mostrar nombre en lugar de ID
+      case 'fecha_modificacion':
+        return formatDate(usuariorol.fecha_modificacion) // Formatear fecha
       case 'usuario_modificacion':
-        return truncate(usuariorol.usuario_modificacion)
+        return usuariosMap[usuariorol.usuario_modificacion] || 'N/A' // Mostrar nombre en lugar de ID
       default:
         return truncate(usuariorol[colName])
     }

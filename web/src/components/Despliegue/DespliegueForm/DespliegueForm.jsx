@@ -52,8 +52,9 @@ const DespliegueForm = (props) => {
   const onSubmit = (data) => {
     const formData = {
       ...data,
+      fecha_modificacion: new Date().toISOString(), // Asegúrate de incluir la fecha de modificación
       usuario_modificacion: currentUser?.id,
-      usuario_creacion: props.despliegue?.id ? currentUser?.id : currentUser?.id || 1,
+      usuario_creacion: props.despliegue?.usuario_creacion || currentUser?.id || 1,
     }
     props.onSave(formData, props?.despliegue?.id)
   }

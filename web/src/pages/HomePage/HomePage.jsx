@@ -31,44 +31,58 @@ import {
 } from 'recharts'
 
 import { Link, routes } from '@redwoodjs/router'
+import { gql, useQuery } from '@redwoodjs/web'
+
+// GraphQL query to fetch statistics
+const GET_SYSTEM_STATS = gql`
+  query GetSystemStats {
+    systemStats {
+      sistemas
+      servidores
+      usuarios
+      componentes
+    }
+    serverStatusData {
+      name
+      cpu
+    }
+    deploymentData {
+      system
+      deployments
+    }
+    recentDeployments {
+      id
+      system
+      version
+      status
+    }
+    activeAlerts {
+      id
+      server
+      description
+    }
+  }
+`
 
 const HomePage = () => {
   const theme = useTheme()
 
-  // Datos de ejemplo (deberías conectar con tu API)
-  const systemStats = {
-    sistemas: 12,
-    servidores: 45,
-    contenedores: 128,
-    usuarios: 23,
-    alertas: 3,
+  // Fetch data using the query
+  const { loading, error, data } = useQuery(GET_SYSTEM_STATS)
+
+  // Use real data or fallback to empty values while loading
+  const systemStats = data?.systemStats || {
+    sistemas: 0,
+    servidores: 0,
+    usuarios: 0,
+    componentes: 0,
+
   }
 
-  const serverStatusData = [
-    { name: 'Servidor 1', cpu: 65 },
-    { name: 'Servidor 2', cpu: 45 },
-    { name: 'Servidor 3', cpu: 85 },
-    { name: 'Servidor 4', cpu: 30 },
-  ]
-
-  const deploymentData = [
-    { system: 'ERP', deployments: 14 },
-    { system: 'CRM', deployments: 8 },
-    { system: 'BI', deployments: 5 },
-    { system: 'HR', deployments: 11 },
-  ]
-
-  const recentDeployments = [
-    { id: 1, system: 'ERP', version: '2.3.1', status: 'Exitoso' },
-    { id: 2, system: 'CRM', version: '1.0.5', status: 'Fallido' },
-    { id: 3, system: 'BI', version: '3.1.0', status: 'En progreso' },
-  ]
-
-  const activeAlerts = [
-    { id: 1, server: 'SRV-01', description: 'Alto uso de CPU' },
-    { id: 2, server: 'SRV-05', description: 'Memoria baja' },
-    { id: 3, server: 'CON-12', description: 'Contenedor inactivo' },
-  ]
+  const serverStatusData = data?.serverStatusData || []
+  const deploymentData = data?.deploymentData || []
+  const recentDeployments = data?.recentDeployments || []
+  const activeAlerts = data?.activeAlerts || []
 
   const InfoCard = ({ icon, title, value, link }) => (
     <Card
@@ -88,7 +102,7 @@ const HomePage = () => {
           </Typography>
         </Box>
         <Typography variant="h4" component="div" gutterBottom>
-          {value}
+          {loading ? "..." : value}
         </Typography>
         {link && (
           <Link to={link} style={{ color: 'white', textDecoration: 'none' }}>
@@ -107,6 +121,14 @@ const HomePage = () => {
       </Typography>
     </Box>
   )
+
+  if (error) {
+    return (
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Typography color="error" variant="h6">Error cargando datos: {error.message}</Typography>
+      </Container>
+    )
+  }
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -128,14 +150,6 @@ const HomePage = () => {
             link={routes.servidors()}
           />
         </Grid>
-        {/*<Grid item xs={12} md={6} lg={3}>
-          <InfoCard
-            icon={<Code fontSize="large" />}
-            title="Contenedores"
-            value={systemStats.data_centers}
-            link={routes.data_centers()}
-          />
-        </Grid>*/}
         <Grid item xs={12} md={6} lg={3}>
           <InfoCard
             icon={<People fontSize="large" />}
@@ -144,6 +158,15 @@ const HomePage = () => {
             link={routes.usuarios()}
           />
         </Grid>
+        <Grid item xs={12} md={6} lg={3}>
+          <InfoCard
+            icon={<Cloud fontSize="large" />}
+            title="Componentes"
+            value={systemStats.componentes}
+            link={routes.componentes()}
+          />
+        </Grid>
+
       </Grid>
 
       {/* Gráficos principales */}
@@ -257,7 +280,7 @@ const HomePage = () => {
                   }}
                 >
                   <Typography>
-                    <strong>{deploy.system}</strong> v{deploy.version}
+                    <strong>{deploy.system}</strong> {deploy.version}
                   </Typography>
                   <Typography
                     color={

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react'
+import { useQuery, useMutation } from '@redwoodjs/web' // Añadido useQuery
 import {
   Visibility as VisibilityIcon,
   Edit as EditIcon,
@@ -26,18 +27,26 @@ import {
   Typography,
   Checkbox,
   Stack,
+  Chip,
 } from '@mui/material'
-
 import { Link, routes } from '@redwoodjs/router'
-import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
-
 import { QUERY } from 'src/components/Componente/ComponentesCell'
 import { ColumnConfigContext } from 'src/context/ColumnConfigContext'
 import { useRefresh } from 'src/context/RefreshContext'
 import { useSearch } from 'src/context/SearchContext'
 import { TableDataContext } from 'src/context/TableDataContext'
-import { timeTag, truncate } from 'src/lib/formatters'
+import { truncate } from 'src/lib/formatters'
+
+// Añadido: Query para obtener los usuarios
+const GET_USUARIOS_QUERY = gql`
+  query UsuariosQuery {
+    usuarios {
+      id
+      nombre_usuario
+    }
+  }
+`
 
 const DELETE_COMPONENTE_MUTATION = gql`
   mutation DeleteComponenteMutation($id: Int!) {
@@ -47,11 +56,31 @@ const DELETE_COMPONENTE_MUTATION = gql`
   }
 `
 
+// Función para formatear fechas
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
 const ComponentesList = ({ componentes }) => {
   const { search } = useSearch()
   const { refresh } = useRefresh()
   const { setTableData, setTableConfig } = useContext(TableDataContext)
   const { setCurrentTableConfig, currentTable } = useContext(ColumnConfigContext)
+
+  // Añadido: Obtener usuarios
+  const { data: usuariosData } = useQuery(GET_USUARIOS_QUERY)
+  const usuariosMap = useMemo(() => {
+    return usuariosData?.usuarios?.reduce((acc, usuario) => {
+      acc[usuario.id] = usuario.nombre_usuario
+      return acc
+    }, {}) || {}
+  }, [usuariosData])
 
   const [componentesData, setComponentesData] = useState(componentes)
   const [page, setPage] = useState(0)
@@ -86,6 +115,8 @@ const ComponentesList = ({ componentes }) => {
       { name: 'estado', label: 'Estado', visible: true },
       { name: 'entorno', label: 'Entorno', visible: true },
       { name: 'categoria', label: 'Categoría', visible: true },
+      { name: 'despliegues', label: 'Despliegues', visible: true },
+      { name: 'servidores', label: 'Servidores', visible: true },
       { name: 'fecha_creacion', label: 'Fecha Creación', visible: true },
       { name: 'usuario_creacion', label: 'Usuario Creación', visible: true },
       { name: 'fecha_modificacion', label: 'Fecha Modificación', visible: false },
@@ -161,7 +192,12 @@ const ComponentesList = ({ componentes }) => {
       c.nombre?.toLowerCase().includes(lowerSearch) ||
       c.sistemas?.nombre?.toLowerCase().includes(lowerSearch) ||
       c.entorno?.toLowerCase().includes(lowerSearch) ||
-      c.categoria?.toLowerCase().includes(lowerSearch)
+      c.categoria?.toLowerCase().includes(lowerSearch) ||
+      c.despliegue?.some(d =>
+        d.tipo?.toLowerCase().includes(lowerSearch) ||
+        d.agrupador?.toLowerCase().includes(lowerSearch) ||
+        d.servidores?.nombre?.toLowerCase().includes(lowerSearch)
+      )
     )
   }, [search, sortedData])
 
@@ -188,34 +224,66 @@ const ComponentesList = ({ componentes }) => {
       case 'descripcion':
         return truncate(componente.descripcion)
       case 'estado':
-        return truncate(componente.estado)
+        return (
+          <Chip
+            label={componente.estado}
+            color={componente.estado === 'ACTIVO' ? 'success' : 'error'}
+            size="small"
+          />
+        )
       case 'entorno':
         return truncate(componente.entorno)
       case 'categoria':
         return truncate(componente.categoria)
+      case 'despliegues':
+        return (
+          <Stack direction="row" spacing={1}>
+            {componente.despliegue?.map((d, i) => (
+              <Chip
+                key={i}
+                label={`${d.tipo} / ${d.agrupador}`}
+                color="primary"
+                size="small"
+                variant="outlined"
+              />
+            ))}
+          </Stack>
+        )
+      case 'servidores':
+        return (
+          <Stack direction="row" spacing={1}>
+            {componente.despliegue?.map((d, i) => (
+              <Chip
+                key={i}
+                label={d.servidores?.nombre}
+                component={Link}
+                to={routes.servidor({ id: d.servidores?.id })}
+                clickable
+                color="secondary"
+                size="small"
+              />
+            ))}
+          </Stack>
+        )
       case 'fecha_creacion':
-        return timeTag(componente.fecha_creacion)
+        return formatDate(componente.fecha_creacion) // Formatear fecha
       case 'usuario_creacion':
-        return truncate(componente.usuario_creacion)
+        return usuariosMap[componente.usuario_creacion] || 'N/A' // Mostrar nombre en lugar de ID
+
       case 'fecha_modificacion':
-        return timeTag(componente.fecha_modificacion)
-      case 'usuario_modificacion':
-        return truncate(componente.usuario_modificacion)
+              return componente.fecha_modificacion
+                ? truncate(formatDate(componente.fecha_modificacion))
+                : 'N/A'
+
+        case 'usuario_modificacion':
+        return usuariosMap[componente.usuario_modificacion] || 'N/A' // Mostrar nombre en lugar de ID
       default:
         return ''
     }
   }
 
-  // Acciones de impresión
-  const handlePrintSelected = () => {
-    // Lógica para imprimir seleccionados
-    console.log('Imprimiendo:', selectedComponentes)
-  }
-
   return (
     <Box sx={{ width: '100%' }}>
-
-
       <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: '12px', boxShadow: 3 }}>
         <TableContainer>
           <Table size="small" stickyHeader>
@@ -311,7 +379,13 @@ const ComponentesList = ({ componentes }) => {
           rowsPerPageOptions={[5, 10, 25, 100]}
           component="div"
           count={filteredComponentes.length}
-
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10))
+            setPage(0)
+          }}
         />
       </Paper>
 

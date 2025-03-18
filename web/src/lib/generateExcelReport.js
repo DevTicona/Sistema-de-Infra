@@ -50,9 +50,30 @@ export const generateExcelReport = (filas, data, columns, usuarios, title) => {
           case 'sistema':
             cellValue = item.sistemas?.nombre || 'N/A';
             break;
-          case 'despliegue':
-            cellValue = item.despliegue?.nombre || 'N/A';
+
+            case 'despliegues':
+              // Procesar despliegues como una cadena de texto
+              if (item.despliegue && Array.isArray(item.despliegue)) {
+                cellValue = item.despliegue
+                  .map((d) => `${d.tipo} / ${d.agrupador}`)
+                  .join(', ');
+              } else {
+                cellValue = 'N/A';
+              }
+              break;
+
+              case 'servidores':
+            // Procesar servidores como una cadena de texto
+            if (item.despliegue && Array.isArray(item.despliegue)) {
+              cellValue = item.despliegue
+                .map((d) => d.servidores?.nombre)
+                .filter(Boolean)
+                .join(', ');
+            } else {
+              cellValue = 'N/A';
+            }
             break;
+
           case 'data_center':
             cellValue = item.data_centers?.nombre || 'N/A';
             break;

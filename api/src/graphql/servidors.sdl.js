@@ -26,6 +26,7 @@ export const schema = gql`
   type Query {
     servidors: [Servidor!]! @skipAuth
     servidor(id: Int!): Servidor @skipAuth
+
   }
 
   input CreateServidorInput {

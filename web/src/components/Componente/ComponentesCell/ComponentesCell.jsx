@@ -20,6 +20,14 @@ export const QUERY = gql`
         id
         nombre
       }
+      despliegue {
+        tipo
+        agrupador
+        servidores {
+          id
+          nombre
+        }
+      }
     }
   }
 `

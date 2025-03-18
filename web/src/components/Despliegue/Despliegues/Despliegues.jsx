@@ -1,12 +1,12 @@
 import React, { useState, useContext, useMemo, useEffect } from 'react'
 import { Link, routes } from '@redwoodjs/router'
-import { useMutation } from '@redwoodjs/web'
+import { useMutation, useQuery } from '@redwoodjs/web' // Añadido useQuery
 import { toast } from '@redwoodjs/web/toast'
 import { QUERY } from 'src/components/Despliegue/DesplieguesCell'
 import { useSearch } from 'src/context/SearchContext'
 import { ColumnConfigContext } from 'src/context/ColumnConfigContext'
 import { TableDataContext } from 'src/context/TableDataContext'
-import { formatEnum, timeTag, truncate } from 'src/lib/formatters'
+import { formatEnum, truncate } from 'src/lib/formatters'
 import {
   Box,
   Paper,
@@ -28,9 +28,28 @@ import {
   styled,
   TablePagination,
   Checkbox,
-  LinearProgress,
 } from '@mui/material'
 import { Visibility as VisibilityIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material'
+
+// Añadido: Query para obtener los usuarios
+const GET_USUARIOS_QUERY = gql`
+  query UsuariosQuery {
+    usuarios {
+      id
+      nombre_usuario
+    }
+  }
+`
+
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
 
 const DELETE_DESPLIEGUE_MUTATION = gql`
   mutation DeleteDespliegueMutation($id: Int!) {
@@ -59,9 +78,18 @@ const ActionButton = styled(IconButton)(({ theme }) => ({
 }))
 
 const DesplieguesList = ({ despliegues }) => {
-  const { search } = useSearch() // Obtén el valor de búsqueda desde el contexto
+  const { search } = useSearch()
   const { setTableData, setTableConfig } = useContext(TableDataContext)
   const { setCurrentTableConfig, currentTable } = useContext(ColumnConfigContext)
+
+  // Añadido: Obtener usuarios
+  const { data: usuariosData } = useQuery(GET_USUARIOS_QUERY)
+  const usuariosMap = useMemo(() => {
+    return usuariosData?.usuarios?.reduce((acc, usuario) => {
+      acc[usuario.id] = usuario.nombre_usuario
+      return acc
+    }, {}) || {}
+  }, [usuariosData])
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
@@ -91,15 +119,12 @@ const DesplieguesList = ({ despliegues }) => {
       { name: 'nombre', label: 'Nombre', visible: true },
       { name: 'tipo', label: 'Tipo', visible: true },
       { name: 'estado', label: 'Estado', visible: true },
-
       { name: 'servidor', label: 'Servidor', visible: true },
       { name: 'componente', label: 'Componente', visible: true },
-
       { name: 'fecha_creacion', label: 'Fecha Creación', visible: true },
-      { name: 'usuario_creacion', label: 'Usuario Creación', visible: false },
+      { name: 'usuario_creacion', label: 'Usuario Creación', visible: true }, // Cambiado a visible
       { name: 'fecha_modificacion', label: 'Fecha Modificación', visible: false },
       { name: 'usuario_modificacion', label: 'Usuario Modificación', visible: false },
-
     ],
     []
   )
@@ -196,14 +221,16 @@ const DesplieguesList = ({ despliegues }) => {
         ) : (
           'No componente'
         )
-      case 'usuario':
-        return despliegue.usuario_roles?.usuarios
-          ? truncate(despliegue.usuario_roles.usuarios.nombre_usuario)
-          : 'No usuario'
-      case 'rol':
-        return despliegue.usuario_roles?.roles
-          ? truncate(despliegue.usuario_roles.roles.nombre)
-          : 'No Rol'
+      case 'usuario_creacion': // Modificado para mostrar nombre en lugar de ID
+        return usuariosMap[despliegue.usuario_creacion] || 'N/A'
+      case 'usuario_modificacion': // Modificado para mostrar nombre en lugar de ID
+        return usuariosMap[despliegue.usuario_modificacion] || 'N/A'
+      case 'fecha_creacion':
+        return truncate(formatDate(despliegue.fecha_creacion))
+      case 'fecha_modificacion':
+        return despliegue.fecha_modificacion
+          ? truncate(formatDate(despliegue.fecha_modificacion))
+          : 'N/A'
       default:
         return truncate(despliegue[colName])
     }

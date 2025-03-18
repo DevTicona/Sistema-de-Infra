@@ -82,7 +82,9 @@ export const deleteServidor = ({ id }) => {
     where: { id },
   })
 }
-
+export const servidorsCount = ({ where }) => {
+  return db.servidores.count({ where })
+}
 export const Servidor = {
   despliegue: (_obj, { root }) => {
     return db.servidores.findUnique({ where: { id: root?.id } }).despliegue()
