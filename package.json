@@ -51,6 +51,7 @@
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.0",
     "jspdf-autotable": "^5.0.2",
+    "keycloak-js": "26.1.4",
     "lodash": "^4.17.21",
     "material-react-table": "^3.2.1",
     "papaparse": "^5.5.2",

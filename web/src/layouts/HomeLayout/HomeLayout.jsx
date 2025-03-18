@@ -39,13 +39,13 @@ import {
 import { styled } from '@mui/material/styles';
 import { Link, routes } from '@redwoodjs/router';
 import { useAuth } from 'src/auth';
-
+import { keycloak } from 'src/auth';
 const HomeLayout = ({ children }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [expandedSections, setExpandedSections] = useState({});
   const trigger = useScrollTrigger({ threshold: 100 });
   const { isAuthenticated, currentUser, logOut, hasRole } = useAuth();
-
+  const isUserAuthenticated = isAuthenticated || !!keycloak?.token
   const sections = [
     {
       title: 'Gestión de Infraestructura',
@@ -133,10 +133,17 @@ const HomeLayout = ({ children }) => {
           >
             Unidad de Infraestructura Tecnológica
           </Typography>
-          {isAuthenticated ? (
+          {console.log('Datos de Keycloak:', keycloak?.tokenParsed)}
+          {console.log('Esta aut:', isUserAuthenticated)}
+          {isUserAuthenticated ? (
             <div>
-              <span>{currentUser.email}</span>{' '}
-              <button type="button" onClick={logOut}>
+              <span>
+                {currentUser?.email ||
+                  keycloak?.tokenParsed?.email ||
+                  keycloak?.tokenParsed?.preferred_username ||
+                  'Correo no disponible'}
+              </span>{' '}
+              <button type="button" onClick={keycloak.logout}>
                 Cerrar Sesión
               </button>
             </div>

@@ -12,7 +12,8 @@ import { Link, navigate, routes } from '@redwoodjs/router'
 import { Metadata } from '@redwoodjs/web'
 import { toast, Toaster } from '@redwoodjs/web/toast'
 
-import { useAuth } from 'src/auth'
+// Se importa tanto el hook de dbAuth como el método para Keycloak
+import { useAuth, login as keycloakLogin } from 'src/auth'
 
 const LoginPage = () => {
   const { isAuthenticated, logIn } = useAuth()
@@ -70,14 +71,7 @@ const LoginPage = () => {
                     className="rw-input"
                     errorClassName="rw-input rw-input-error"
                     ref={usernameRef}
-                    validation={{
-                      required: {
-                        value: true,
-                        message: 'Username is required',
-                      },
-                    }}
                   />
-
                   <FieldError name="username" className="rw-field-error" />
 
                   <Label
@@ -92,12 +86,6 @@ const LoginPage = () => {
                     className="rw-input"
                     errorClassName="rw-input rw-input-error"
                     autoComplete="current-password"
-                    validation={{
-                      required: {
-                        value: true,
-                        message: 'Password is required',
-                      },
-                    }}
                   />
 
                   <div className="rw-forgot-link">
@@ -108,13 +96,18 @@ const LoginPage = () => {
                       Forgot Password?
                     </Link>
                   </div>
-
                   <FieldError name="password" className="rw-field-error" />
 
                   <div className="rw-button-group">
                     <Submit className="rw-button rw-button-blue">Login</Submit>
                   </div>
                 </Form>
+              </div>
+              <div className="rw-button-group">
+                {/* Botón para iniciar sesión vía Keycloak (Google) */}
+                <button onClick={() => keycloakLogin()}>
+                  Iniciar sesión con Google
+                </button>
               </div>
             </div>
           </div>
