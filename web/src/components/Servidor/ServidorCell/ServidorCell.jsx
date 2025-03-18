@@ -24,9 +24,19 @@ export const QUERY = gql`
       despliegue {
         id
         agrupador
+        tipo
+        estado
+        fecha_creacion
+        fecha_modificacion
+        usuario_creacion
+        usuario_modificacion
         componentes {
           id
           nombre
+          descripcion
+          estado
+          entorno
+          categoria
           sistemas {
             id
             nombre

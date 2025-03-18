@@ -1,254 +1,210 @@
+import Select from 'react-select'
 import {
   Form,
   FormError,
   FieldError,
   Label,
-  NumberField,
-  TextField,
-  RadioField,
-  TextAreaField,
-  DatetimeLocalField,
-  Submit,
+  SelectField,
+  Controller,
+
 } from '@redwoodjs/forms'
+import { useQuery } from '@redwoodjs/web'
+import { useAuth } from 'src/auth'
 
-const formatDatetime = (value) => {
-  if (value) {
-    return value.replace(/:\d{2}\.\d{3}\w/, '')
+import './UsuariorolForm.css'
+
+
+const OBTENER_USUARIOS = gql`
+  query obtenerUsuarios {
+    usuarios {
+      id
+      nombre_usuario
+    }
   }
-}
+`
 
+const OBTENER_ROLES = gql`
+  query obtenerRols {
+    rols {
+      id
+      nombre
+    }
+  }
+`
+
+const OBTENER_DESPLIEGUES = gql`
+  query obtenerDespliegues {
+    despliegues {
+      id
+      nombre
+    }
+  }
+`
+
+const OBTENER_SISTEMAS = gql`
+  query obtenerSistemas {
+    sistemas {
+      id
+      nombre
+    }
+  }
+`
 const UsuariorolForm = (props) => {
+  const { currentUser } = useAuth()
+
+
+  // Consultas para obtener los datos
+  const { data: usuariosData } = useQuery(OBTENER_USUARIOS)
+  const { data: rolesData } = useQuery(OBTENER_ROLES)
+  const { data: desplieguesData } = useQuery(OBTENER_DESPLIEGUES)
+  const { data: sistemasData } = useQuery(OBTENER_SISTEMAS)
+
+  // Preparar opciones para los selects
+  const usuariosOptions =
+    usuariosData?.usuarios?.map((u) => ({
+      value: u.id,
+      label: u.nombre_usuario,
+    })) || []
+
+  const rolesOptions =
+    rolesData?.rols?.map((r) => ({
+      value: r.id,
+      label: r.nombre,
+    })) || []
+
+  const desplieguesOptions =
+    desplieguesData?.despliegues?.map((d) => ({
+      value: d.id,
+      label: d.nombre,
+    })) || []
+
+  const sistemasOptions =
+    sistemasData?.sistemas?.map((s) => ({
+      value: s.id,
+      label: s.nombre,
+    })) || []
   const onSubmit = (data) => {
-    props.onSave(data, props?.usuariorol?.id)
+    const formData = {
+      ...data,
+      usuario_modificacion: currentUser?.id,
+      usuario_creacion: props.usuariorol?.id ? currentUser?.id : currentUser?.id || 1,
+    }
+    props.onSave(formData, props?.usuariorol?.id)
   }
 
   return (
-    <div className="rw-form-wrapper">
+    <div className="usuariorol-form">
       <Form onSubmit={onSubmit} error={props.error}>
         <FormError
           error={props.error}
-          wrapperClassName="rw-form-error-wrapper"
-          titleClassName="rw-form-error-title"
-          listClassName="rw-form-error-list"
+          wrapperClassName="form-error"
+          listClassName="error-list"
         />
 
-        <Label
-          name="id_usuario"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Id usuario
-        </Label>
+        <div className="form-grid">
+          {/* Campo Usuario */}
+          <div className="form-group">
+            <Label className="input-label">Usuario</Label>
+            <Controller
+              name="id_usuario"
+              defaultValue={props.usuariorol?.id_usuario}
+              render={({ field }) => (
+                <Select
+                  options={usuariosOptions}
+                  value={usuariosOptions.find(opt => opt.value === field.value)}
+                  onChange={(selected) => field.onChange(selected?.value)}
+                  placeholder="Seleccionar usuario..."
+                  classNamePrefix="react-select"
+                />
+              )}
+            />
+            <FieldError name="id_usuario" className="error-message" />
+          </div>
 
-        <NumberField
-          name="id_usuario"
-          defaultValue={props.usuariorol?.id_usuario}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
+          {/* Campo Rol */}
+          <div className="form-group">
+            <Label className="input-label">Rol</Label>
+            <Controller
+              name="id_rol"
+              defaultValue={props.usuariorol?.id_rol}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Select
+                  options={rolesOptions}
+                  value={rolesOptions.find(opt => opt.value === field.value)}
+                  onChange={(selected) => field.onChange(selected?.value)}
+                  placeholder="Seleccionar rol..."
+                  classNamePrefix="react-select"
+                />
+              )}
+            />
+            <FieldError name="id_rol" className="error-message" />
+          </div>
 
-        <FieldError name="id_usuario" className="rw-field-error" />
+          {/* Campo Despliegue */}
+          <div className="form-group">
+            <Label className="input-label">Despliegue</Label>
+            <Controller
+              name="id_despliegue"
+              defaultValue={props.usuariorol?.id_despliegue}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Select
+                  options={desplieguesOptions}
+                  value={desplieguesOptions.find(opt => opt.value === field.value)}
+                  onChange={(selected) => field.onChange(selected?.value)}
+                  placeholder="Seleccionar despliegue..."
+                  classNamePrefix="react-select"
+                />
+              )}
+            />
+            <FieldError name="id_despliegue" className="error-message" />
+          </div>
 
-        <Label
-          name="id_rol"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Id rol
-        </Label>
+          {/* Campo Sistema */}
+          <div className="form-group">
+            <Label className="input-label">Sistema</Label>
+            <Controller
+              name="id_sistema"
+              defaultValue={props.usuariorol?.id_sistema}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Select
+                  options={sistemasOptions}
+                  value={sistemasOptions.find(opt => opt.value === field.value)}
+                  onChange={(selected) => field.onChange(selected?.value)}
+                  placeholder="Seleccionar sistema..."
+                  classNamePrefix="react-select"
+                />
+              )}
+            />
+            <FieldError name="id_sistema" className="error-message" />
+          </div>
 
-        <NumberField
-          name="id_rol"
-          defaultValue={props.usuariorol?.id_rol}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
+          {/* Campo Estado */}
+          <div className="form-group">
+                        <Label className="input-label">Estado Actual</Label>
+                        <SelectField
+                          name="estado"
+                          defaultValue={props.usuariorol?.estado || 'ACTIVO'}
+                          className="input-field select-field"
+                          validation={{ required: true }}
+                        >
+                          {['ACTIVO', 'INACTIVO'].map((estado) => (
+                            <option key={estado} value={estado}>
+                              {estado.charAt(0) + estado.slice(1).toLowerCase()}
+                            </option>
+                          ))}
+                        </SelectField>
+                        <FieldError name="estado" className="error-message" />
+                      </div>
 
-        <FieldError name="id_rol" className="rw-field-error" />
-
-        <Label
-          name="id_despliegue"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Id despliegue
-        </Label>
-
-        <NumberField
-          name="id_despliegue"
-          defaultValue={props.usuariorol?.id_despliegue}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="id_despliegue" className="rw-field-error" />
-
-        <Label
-          name="id_sistema"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Id sistema
-        </Label>
-
-        <NumberField
-          name="id_sistema"
-          defaultValue={props.usuariorol?.id_sistema}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="id_sistema" className="rw-field-error" />
-
-        <Label
-          name="descripcion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Descripcion
-        </Label>
-
-        <TextField
-          name="descripcion"
-          defaultValue={props.usuariorol?.descripcion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="descripcion" className="rw-field-error" />
-
-        <Label
-          name="tipo"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Tipo
-        </Label>
-
-        <TextField
-          name="tipo"
-          defaultValue={props.usuariorol?.tipo}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="tipo" className="rw-field-error" />
-
-        <Label
-          name="estado"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Estado
-        </Label>
-
-        <div className="rw-check-radio-items">
-          <RadioField
-            id="usuariorol-estado-0"
-            name="estado"
-            defaultValue="ACTIVO"
-            defaultChecked={props.usuariorol?.estado?.includes('ACTIVO')}
-            className="rw-input"
-            errorClassName="rw-input rw-input-error"
-          />
-
-          <div>Activo</div>
         </div>
 
-        <div className="rw-check-radio-items">
-          <RadioField
-            id="usuariorol-estado-1"
-            name="estado"
-            defaultValue="INACTIVO"
-            defaultChecked={props.usuariorol?.estado?.includes('INACTIVO')}
-            className="rw-input"
-            errorClassName="rw-input rw-input-error"
-          />
-
-          <div>Inactivo</div>
-        </div>
-
-        <FieldError name="estado" className="rw-field-error" />
-
-        <Label
-          name="respaldo"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Respaldo
-        </Label>
-
-        <TextAreaField
-          name="respaldo"
-          defaultValue={JSON.stringify(props.usuariorol?.respaldo)}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ valueAsJSON: true }}
-        />
-
-        <FieldError name="respaldo" className="rw-field-error" />
-
-        <Label
-          name="usuario_creacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario creacion
-        </Label>
-
-        <NumberField
-          name="usuario_creacion"
-          defaultValue={props.usuariorol?.usuario_creacion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="usuario_creacion" className="rw-field-error" />
-
-        <Label
-          name="fecha_modificacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Fecha modificacion
-        </Label>
-
-        <DatetimeLocalField
-          name="fecha_modificacion"
-          defaultValue={formatDatetime(props.usuariorol?.fecha_modificacion)}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="fecha_modificacion" className="rw-field-error" />
-
-        <Label
-          name="usuario_modificacion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Usuario modificacion
-        </Label>
-
-        <NumberField
-          name="usuario_modificacion"
-          defaultValue={props.usuariorol?.usuario_modificacion}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="usuario_modificacion" className="rw-field-error" />
-
-        <div className="rw-button-group">
-          <Submit disabled={props.loading} className="rw-button rw-button-blue">
-            Save
-          </Submit>
+        <div className="form-actions">
+          <button type="submit" className="submit-button" disabled={props.loading}>
+            {props.loading ? 'Guardando..' : 'Guardar Asignación'}
+          </button>
         </div>
       </Form>
     </div>

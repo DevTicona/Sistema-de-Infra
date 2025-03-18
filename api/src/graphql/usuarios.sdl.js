@@ -22,7 +22,7 @@ export const schema = gql`
   type Query {
     usuarios: [Usuario!]! @skipAuth
     usuario(id: Int!): Usuario @skipAuth
-  }
+}
 
   input CreateUsuarioInput {
     uuid_ciudadano: String

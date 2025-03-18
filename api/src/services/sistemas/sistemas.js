@@ -65,6 +65,9 @@ export const deleteSistema = ({ id }) => {
   })
 }
 
+export const sistemasCount = ({ where }) => {
+  return db.sistemas.count({ where })
+}
 export const Sistema = {
   componentes: (_obj, { root }) => {
     return db.sistemas.findUnique({ where: { id: root?.id } }).componentes()

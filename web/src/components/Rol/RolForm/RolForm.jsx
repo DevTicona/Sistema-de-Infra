@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import {
   Container,
@@ -21,8 +20,9 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from '@mui/material'
-
 import { useAuth } from 'src/auth'
+
+import './RolForm.css'
 
 const RolForm = (props) => {
   const { currentUser } = useAuth()
@@ -33,19 +33,16 @@ const RolForm = (props) => {
   })
   const [error, setError] = useState('')
 
-  // Mapeo de tipos a siglas
   const TIPO_MAP = {
     'Sistema Operativo': 'SO',
     'Base de Datos': 'BD',
   }
 
-  // Mapeo inverso de siglas a tipos
   const SIGLA_MAP = {
     SO: 'Sistema Operativo',
     BD: 'Base de Datos',
   }
 
-  // Opciones de privilegios por tipo
   const PRIVILEGIOS_POR_TIPO = {
     'Sistema Operativo': [
       'Root (Superusuario)',
@@ -61,10 +58,8 @@ const RolForm = (props) => {
     ],
   }
 
-  // Inicializar estado cuando hay datos existentes
   useEffect(() => {
     if (props.rol) {
-      // Convertir siglas a nombres completos
       const tiposCompletos = props.rol.tipo
         .split(',')
         .map((t) => t.trim())
@@ -72,14 +67,12 @@ const RolForm = (props) => {
 
       setSelectedTipos(tiposCompletos)
 
-      // Parsear privilegios
       if (props.rol.privilegios) {
         setPrivilegios(props.rol.privilegios)
       }
     }
   }, [props.rol])
 
-  // Manejar selección de tipos
   const handleTipoChange = (tipo) => {
     const newTipos = selectedTipos.includes(tipo)
       ? selectedTipos.filter((t) => t !== tipo)
@@ -87,7 +80,6 @@ const RolForm = (props) => {
     setSelectedTipos(newTipos)
   }
 
-  // Manejar selección de privilegios
   const handlePrivilegioChange = (tipo, privilegio) => {
     const newPrivilegios = { ...privilegios }
     newPrivilegios[tipo] = newPrivilegios[tipo].includes(privilegio)
@@ -100,7 +92,6 @@ const RolForm = (props) => {
     event.preventDefault()
     const data = new FormData(event.currentTarget)
 
-    // Validaciones
     if (selectedTipos.length === 0) {
       setError('Debe seleccionar al menos un tipo')
       return
@@ -111,7 +102,6 @@ const RolForm = (props) => {
       return
     }
 
-    // Convertir tipos a siglas
     const tipoMapeado = selectedTipos.map((t) => TIPO_MAP[t] || t).join(', ')
 
     if (tipoMapeado.length > 15) {
@@ -119,7 +109,6 @@ const RolForm = (props) => {
       return
     }
 
-    // Preparar datos para enviar
     const formData = {
       nombre: data.get('nombre'),
       tipo: tipoMapeado,
@@ -140,34 +129,36 @@ const RolForm = (props) => {
   }
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+    <Container maxWidth="md" className="rol-container">
+      <Paper elevation={3} className="rol-paper">
+        <Typography variant="h4" component="h1" className="rol-title">
           {props.rol ? 'Editar Rol' : 'Crear Nuevo Rol'}
         </Typography>
 
         {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
+          <Alert severity="error" className="rol-error-alert">
             {error}
           </Alert>
         )}
 
         <Box component="form" onSubmit={onSubmit}>
-          {/* Campo Nombre */}
+          Nombre
           <TextField
             fullWidth
-            margin="normal"
-            label="Nombre (máx. 15 caracteres)"
             name="nombre"
             defaultValue={props.rol?.nombre}
             required
             inputProps={{ maxLength: 15 }}
+            className="rol-input"
+            InputProps={{ className: "rol-input-field" }}
+            InputLabelProps={{ className: "rol-input-label" }}
           />
 
-          {/* Selector de Tipos */}
-          <FormControl component="fieldset" sx={{ mt: 2, mb: 2 }}>
-            <FormLabel component="legend">Tipo</FormLabel>
-            <FormGroup row>
+          <FormControl component="fieldset" className="rol-tipo-container">
+            <FormLabel component="legend" className="rol-section-label">
+              Tipo
+            </FormLabel>
+            <FormGroup row className="rol-checkbox-group">
               {Object.keys(PRIVILEGIOS_POR_TIPO).map((tipo) => (
                 <FormControlLabel
                   key={tipo}
@@ -175,43 +166,53 @@ const RolForm = (props) => {
                     <Checkbox
                       checked={selectedTipos.includes(tipo)}
                       onChange={() => handleTipoChange(tipo)}
+                      className="rol-checkbox"
                     />
                   }
                   label={tipo}
+                  className="rol-checkbox-label"
                 />
               ))}
             </FormGroup>
           </FormControl>
 
-          {/* Selector de Privilegios */}
           {selectedTipos.length > 0 && (
-            <Accordion defaultExpanded sx={{ mb: 3 }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="h6">Privilegios</Typography>
+            <Accordion defaultExpanded className="rol-accordion">
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                className="rol-accordion-summary"
+              >
+                <Typography variant="h6" className="rol-accordion-title">
+                  Privilegios
+                </Typography>
               </AccordionSummary>
-              <AccordionDetails>
-                <Grid container spacing={2}>
+              <AccordionDetails className="rol-accordion-details">
+                <Grid container spacing={3}>
                   {selectedTipos.map((tipo) => (
                     <Grid item xs={12} md={6} key={tipo}>
-                      <Typography variant="subtitle1" gutterBottom>
-                        {tipo}
-                      </Typography>
-                      <FormGroup>
-                        {PRIVILEGIOS_POR_TIPO[tipo].map((privilegio) => (
-                          <FormControlLabel
-                            key={privilegio}
-                            control={
-                              <Checkbox
-                                checked={privilegios[tipo].includes(privilegio)}
-                                onChange={() =>
-                                  handlePrivilegioChange(tipo, privilegio)
-                                }
-                              />
-                            }
-                            label={privilegio}
-                          />
-                        ))}
-                      </FormGroup>
+                      <div className="privilegio-group">
+                        <Typography variant="subtitle1" className="privilegio-group-title">
+                          {tipo}
+                        </Typography>
+                        <FormGroup>
+                          {PRIVILEGIOS_POR_TIPO[tipo].map((privilegio) => (
+                            <FormControlLabel
+                              key={privilegio}
+                              control={
+                                <Checkbox
+                                  checked={privilegios[tipo].includes(privilegio)}
+                                  onChange={() =>
+                                    handlePrivilegioChange(tipo, privilegio)
+                                  }
+                                  className="rol-checkbox"
+                                />
+                              }
+                              label={privilegio}
+                              className="rol-checkbox-label"
+                            />
+                          ))}
+                        </FormGroup>
+                      </div>
                     </Grid>
                   ))}
                 </Grid>
@@ -219,36 +220,38 @@ const RolForm = (props) => {
             </Accordion>
           )}
 
-          {/* Campo Estado */}
-          <FormControl component="fieldset" sx={{ mt: 2, mb: 3 }}>
-            <FormLabel component="legend">Estado</FormLabel>
+          <FormControl component="fieldset" className="rol-estado-container">
+            <FormLabel component="legend" className="rol-section-label">
+              Estado
+            </FormLabel>
             <RadioGroup
               row
               name="estado"
               defaultValue={props.rol?.estado || 'ACTIVO'}
+              className="rol-radio-group"
             >
               <FormControlLabel
                 value="ACTIVO"
-                control={<Radio />}
+                control={<Radio className="rol-radio" />}
                 label="Activo"
+                className="rol-radio-label"
               />
               <FormControlLabel
                 value="INACTIVO"
-                control={<Radio />}
+                control={<Radio className="rol-radio" />}
                 label="Inactivo"
+                className="rol-radio-label"
               />
             </RadioGroup>
           </FormControl>
 
-          {/* Botón de Guardar */}
           <Button
             type="submit"
             variant="contained"
-            color="primary"
-            size="large"
+            className="rol-submit-button"
             disabled={props.loading}
           >
-            Guardar
+            {props.loading ? 'Guardando...' : 'Guardar Rol'}
           </Button>
         </Box>
       </Paper>

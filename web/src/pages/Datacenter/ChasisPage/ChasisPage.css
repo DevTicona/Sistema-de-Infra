@@ -1,41 +1,229 @@
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* ChasisPage.css */
+:root {
+  --primary-accent: #00b4d8;
+  --secondary-accent: #0077b6;
+  --background-base: #f8f9fa;
+  --card-surface: #ffffff;
+  --text-primary: #2d3436;
+  --text-secondary: #636e72;
+  --success: #00b894;
+  --warning: #fdcb6e;
+  --danger: #d63031;
+  --highlight: rgba(0, 180, 216, 0.1);
 }
 
-.content {
+.tech-dashboard {
+  min-height: 100vh;
+  background: var(--background-base);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+}
+
+.dashboard-header {
+  padding: 2rem 3rem;
+  background: var(--card-surface);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
-  width: 100%;
-}
-
-.left-container {
-  flex: 1;
-  padding: 20px;
-}
-
-.right-container {
-  flex: 1;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 2rem;
 }
 
-.grid {
+.datacenter-title {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.datacenter-id {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--primary-accent);
+}
+
+.datacenter-status {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  padding: 0.5rem 1rem;
+  background: var(--highlight);
+  border-radius: 8px;
+}
+
+.status-pulse {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--success);
+  animation: pulse 1.5s infinite;
+}
+
+.nav-button {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: var(--card-surface);
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.nav-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 180, 216, 0.15);
+}
+
+.button-glow {
+  position: absolute;
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(circle,
+    rgba(0, 180, 216, 0.1) 0%,
+    transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.nav-button:hover .button-glow {
+  opacity: 0.3;
+}
+
+.dashboard-main {
+  max-width: 1400px;
+  margin: 2rem auto;
+  padding: 0 3rem;
+}
+
+.cluster-metrics {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
 }
 
-.chasis-button, .navigate-button {
-  padding: 10px 20px;
-  font-size: 14px;
-  cursor: pointer;
+.metric-card {
+  background: var(--card-surface);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-.navigate-button {
-  margin-top: 20px;
+.chasis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.chasis-card {
+  background: var(--card-surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #f0f0f0;
+}
+
+.chasis-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 180, 216, 0.15);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.card-header h2 {
+  font-size: 1.4rem;
+  color: var(--primary-accent);
+  margin: 0;
+}
+
+.status-led {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.status-led.active {
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(0, 184, 148, 0.3);
+}
+
+.status-led.maintenance {
+  background: var(--warning);
+  box-shadow: 0 0 8px rgba(253, 203, 110, 0.3);
+}
+
+.load-bar {
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.load-progress {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
+  transition: width 0.6s ease;
+}
+
+.temp-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.temp-fill {
+  height: 6px;
+  background: linear-gradient(90deg, #ffd700, #ff8c00);
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.virtual-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  background: var(--highlight);
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard-main {
+    padding: 0 1.5rem;
+  }
 }

@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react'
-
+import { useState } from 'react'
 import {
   Form,
   FormError,
@@ -7,14 +6,13 @@ import {
   Label,
   TextField,
   SelectField,
-  Submit,
 } from '@redwoodjs/forms'
-import { gql } from '@redwoodjs/graphql-client'
 import { useQuery } from '@redwoodjs/web'
-
 import { useAuth } from 'src/auth'
+import { Save, Loader, Shield, Folder, FileText, User } from 'react-feather'
 
-// Consulta GraphQL para obtener los sistemas
+import './SistemaForm.css'
+
 const OBTENER_SISTEMAS = gql`
   query ObtenerSistemas {
     sistemas {
@@ -24,7 +22,6 @@ const OBTENER_SISTEMAS = gql`
   }
 `
 
-// Consulta GraphQL para obtener las entidades
 const OBTENER_ENTIDADES = gql`
   query ObtenerEntidades {
     entidads {
@@ -34,285 +31,262 @@ const OBTENER_ENTIDADES = gql`
   }
 `
 
-const RespaldoField = ({ defaultValue }) => {
+const RespaldoField = ({ defaultValue, onRespaldoChange }) => {
   const [respaldoData, setRespaldoData] = useState(
-    Array.isArray(defaultValue)
-      ? defaultValue
-      : [
-          {
-            tipo_respaldo: '',
-            detalle_respaldo: '',
-            fecha_solicitud: '',
-            responsable_admin: '',
-          },
-        ]
+    defaultValue || {
+      tipo_respaldo: '',
+      detalle_respaldo: '',
+      fecha_solicitud: '',
+      responsable_admin: '',
+    }
   )
 
-  const handleChange = (event, index) => {
+  const handleChange = (event) => {
     const { name, value } = event.target
-    const updatedData = [...respaldoData]
-    updatedData[index] = {
-      ...updatedData[index],
-      [name]: value,
-    }
-    setRespaldoData(updatedData)
-  }
-
-  const handleAddRespaldo = () => {
-    setRespaldoData([
-      ...respaldoData,
-      {
-        tipo_respaldo: '',
-        detalle_respaldo: '',
-        fecha_solicitud: '',
-        responsable_admin: '',
-      },
-    ])
+    const newData = { ...respaldoData, [name]: value }
+    setRespaldoData(newData)
+    onRespaldoChange(newData)
   }
 
   return (
-    <div>
-      <Label className="rw-label">Respaldo del sistema</Label>
-      {respaldoData.map((respaldo, index) => (
-        <div key={index} className="respaldo-row">
-          <div className="rw-input-group">
-            <Label className="rw-label">Tipo de Respaldo</Label>
-            <TextField
-              name="tipo_respaldo"
-              value={respaldo.tipo_respaldo || ''}
-              onChange={(e) => handleChange(e, index)}
-              className="rw-input"
-            />
-          </div>
-
-          <div className="rw-input-group">
-            <Label className="rw-label">Detalle del Respaldo</Label>
-            <TextField
-              name="detalle_respaldo"
-              value={respaldo.detalle_respaldo || ''}
-              onChange={(e) => handleChange(e, index)}
-              className="rw-input"
-            />
-          </div>
-
-          <div className="rw-input-group">
-            <Label className="rw-label">Fecha de Solicitud</Label>
-            <TextField
-              name="fecha_solicitud"
-              value={respaldo.fecha_solicitud || ''}
-              onChange={(e) => handleChange(e, index)}
-              className="rw-input"
-            />
-          </div>
-
-          <div className="rw-input-group">
-            <Label className="rw-label">Responsable Administrativo</Label>
-            <TextField
-              name="responsable_admin"
-              value={respaldo.responsable_admin || ''}
-              onChange={(e) => handleChange(e, index)}
-              className="rw-input"
-            />
-          </div>
+    <div className="respaldo-section">
+      <div className="section-header">
+        <FileText size={24} className="section-icon" />
+        <h3>Datos de Respaldo</h3>
+      </div>
+      <div className="form-grid">
+        <div className="form-group">
+          <Label className="input-label">Tipo de Respaldo</Label>
+          <TextField
+            value={respaldoData.tipo_respaldo}
+            onChange={handleChange}
+            name="tipo_respaldo"
+            className="input-field"
+            placeholder="Ej: Cite oficial"
+          />
         </div>
-      ))}
 
-      <button type="button" onClick={handleAddRespaldo} className="rw-button">
-        Agregar Respaldo
-      </button>
+        <div className="form-group">
+          <Label className="input-label">Detalle del Respaldo</Label>
+          <TextField
+            value={respaldoData.detalle_respaldo}
+            onChange={handleChange}
+            name="detalle_respaldo"
+            className="input-field"
+            placeholder="Ej: AGETIC/UGAT/001"
+          />
+        </div>
 
-      <input
-        type="hidden"
-        name="respaldo_creacion"
-        value={JSON.stringify(respaldoData)}
-      />
+        <div className="form-group">
+          <Label className="input-label">Fecha de Solicitud</Label>
+          <TextField
+
+            value={respaldoData.fecha_solicitud}
+            onChange={handleChange}
+            name="fecha_solicitud"
+            className="input-field"
+          />
+        </div>
+
+        <div className="form-group">
+          <Label className="input-label">Responsable Administrativo</Label>
+          <TextField
+            value={respaldoData.responsable_admin}
+            onChange={handleChange}
+            name="responsable_admin"
+            className="input-field"
+            placeholder="Nombre del responsable"
+          />
+        </div>
+      </div>
     </div>
   )
 }
 
 const SistemaForm = (props) => {
-  const { currentUser } = useAuth() // Obtén el usuario logueado
-  const { data: sistemasData } = useQuery(OBTENER_SISTEMAS)
-  const { data: entidadesData } = useQuery(OBTENER_ENTIDADES)
+  const { data: sistemasData, loading: sistemasLoading } = useQuery(OBTENER_SISTEMAS)
+  const { data: entidadesData, loading: entidadesLoading } = useQuery(OBTENER_ENTIDADES)
+  const { currentUser } = useAuth()
 
-  // Estado para los datos del sistema a editar
-  const [formData, setFormData] = useState(props.sistema || {})
-
-  useEffect(() => {
-    if (props.sistema) {
-      setFormData(props.sistema) // Asegúrate de que el estado se actualice con los datos del sistema
+  const [respaldoData, setRespaldoData] = useState(
+    props.sistema?.respaldo_creacion || {
+      tipo_respaldo: '',
+      detalle_respaldo: '',
+      fecha_solicitud: '',
+      responsable_admin: '',
     }
-  }, [props.sistema]) // Se actualiza cuando props.sistema cambia
+  )
 
-  const onSubmit = (data) => {
-    const formData = {
-      ...data,
-      id_padre: parseInt(data.id_padre, 10),
-      id_entidad: parseInt(data.id_entidad, 10),
-      respaldo_creacion: data.respaldo_creacion
-        ? JSON.parse(data.respaldo_creacion) // Convierte el JSON a objeto
-        : [],
-      usuario_modificacion: currentUser?.id, // Asigna el ID del usuario logueado
-      usuario_creacion: 1, // Asigna el ID si es creación o mantenimiento
+  const onSubmit = (formData) => {
+    const submissionData = {
+      ...formData,
+      id_padre: formData.id_padre ? parseInt(formData.id_padre, 10) : null,
+      id_entidad: parseInt(formData.id_entidad, 10),
+      respaldo_creacion: respaldoData,
+      usuario_modificacion: currentUser?.id,
+      usuario_creacion: props.sistema?.usuario_creacion || currentUser?.id || 1,
     }
-    props.onSave(formData, props?.sistema?.id)
+
+    props.onSave(submissionData, props.sistema?.id)
+  }
+
+  if (sistemasLoading || entidadesLoading) {
+    return (
+      <div className="loading-container">
+        <Loader className="loading-spinner" />
+        <span>Cargando datos iniciales...</span>
+      </div>
+    )
   }
 
   return (
-    <div className="rw-form-wrapper">
+    <div className="sistema-form">
       <Form onSubmit={onSubmit} error={props.error}>
         <FormError
           error={props.error}
-          wrapperClassName="rw-form-error-wrapper"
-          titleClassName="rw-form-error-title"
-          listClassName="rw-form-error-list"
+          wrapperClassName="form-error"
+          titleClassName="error-title"
         />
 
-        {/* Selección del sistema */}
-        <Label
-          name="id_padre"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Sistema
-        </Label>
+        <div className="form-section">
+          <div className="section-header">
+            <Folder size={24} className="section-icon" />
+            <h3>Información General</h3>
+          </div>
 
-        <SelectField
-          name="id_padre"
-          defaultValue={formData?.id_padre || ''}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        >
-          <option value="">Seleccione un sistema</option>
-          {sistemasData?.sistemas?.length > 0 ? (
-            sistemasData.sistemas.map((sistema) => (
-              <option key={sistema.id} value={sistema.id}>
-                {sistema.nombre}
-              </option>
-            ))
-          ) : (
-            <option disabled>No hay sistemas disponibles</option>
-          )}
-        </SelectField>
+          <div className="form-grid">
+            <div className="form-group">
+              <Label className="input-label">Sistema Padre (Opcional)</Label>
+              <SelectField
+                name="id_padre"
+                defaultValue={props.sistema?.id_padre || ''}
+                className="input-field select-field"
+              >
+                <option value="">Seleccionar sistema padre...</option>
+                {sistemasData?.sistemas.map((sistema) => (
+                  <option key={sistema.id} value={sistema.id}>
+                    {sistema.nombre}
+                  </option>
+                ))}
+              </SelectField>
+            </div>
 
-        <FieldError name="id_padre" className="rw-field-error" />
+            <div className="form-group">
+              <Label className="input-label">Entidad</Label>
+              <SelectField
+                name="id_entidad"
+                defaultValue={props.sistema?.id_entidad || ''}
+                className="input-field select-field"
+                validation={{ required: true }}
+              >
+                <option value="">Seleccionar entidad...</option>
+                {entidadesData?.entidads.map((entidad) => (
+                  <option key={entidad.id} value={entidad.id}>
+                    {entidad.nombre}
+                  </option>
+                ))}
+              </SelectField>
+              <FieldError name="id_entidad" className="error-message" />
+            </div>
+          </div>
+        </div>
 
-        {/* Selección de la entidad */}
-        <Label
-          name="id_entidad"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Entidad
-        </Label>
-        <SelectField
-          name="id_entidad"
-          defaultValue={formData?.id_entidad || ''}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        >
-          <option value="">Seleccione una entidad</option>
-          {entidadesData?.entidads?.length > 0 ? (
-            entidadesData.entidads.map((entidad) => (
-              <option key={entidad.id} value={entidad.id}>
-                {entidad.nombre}
-              </option>
-            ))
-          ) : (
-            <option disabled>No hay entidades disponibles</option>
-          )}
-        </SelectField>
-        <FieldError name="id_entidad" className="rw-field-error" />
+        <div className="form-section">
+          <div className="section-header">
+            <Shield size={24} className="section-icon" />
+            <h3>Detalles del Sistema</h3>
+          </div>
 
-        {/* Campos adicionales del formulario */}
-        <Label
-          name="codigo"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Código
-        </Label>
-        <TextField
-          name="codigo"
-          defaultValue={formData?.codigo || ''}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
+          <div className="form-grid">
+            <div className="form-group">
+              <Label className="input-label">Código</Label>
+              <TextField
+                name="codigo"
+                defaultValue={props.sistema?.codigo || ''}
+                className="input-field"
+                validation={{ required: true }}
+                placeholder="Ej: SIS-001"
+              />
+              <FieldError name="codigo" className="error-message" />
+            </div>
+
+            <div className="form-group">
+              <Label className="input-label">Sigla</Label>
+              <TextField
+                name="sigla"
+                defaultValue={props.sistema?.sigla || ''}
+                className="input-field"
+                validation={{ required: true }}
+                placeholder="Ej: SIS"
+              />
+              <FieldError name="sigla" className="error-message" />
+            </div>
+
+            <div className="form-group">
+              <Label className="input-label">Nombre del Sistema</Label>
+              <TextField
+                name="nombre"
+                defaultValue={props.sistema?.nombre || ''}
+                className="input-field"
+                validation={{ required: true }}
+                placeholder="Ej: Sistema de Gestión Documental"
+              />
+              <FieldError name="nombre" className="error-message" />
+            </div>
+
+            <div className="form-group">
+              <Label className="input-label">Estado</Label>
+              <SelectField
+                name="estado"
+                defaultValue={props.sistema?.estado || 'ACTIVO'}
+                className="input-field select-field"
+                validation={{ required: true }}
+              >
+                <option value="ACTIVO">Activo</option>
+                <option value="INACTIVO">Inactivo</option>
+
+              </SelectField>
+              <FieldError name="estado" className="error-message" />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <Label className="input-label">Descripción</Label>
+            <TextField
+              name="descripcion"
+              defaultValue={props.sistema?.descripcion || ''}
+              className="input-field textarea-field"
+              validation={{ required: true }}
+
+              placeholder="Descripción detallada del sistema..."
+            />
+            <FieldError name="descripcion" className="error-message" />
+          </div>
+        </div>
+
+        <RespaldoField
+          defaultValue={respaldoData}
+          onRespaldoChange={setRespaldoData}
         />
-        <FieldError name="codigo" className="rw-field-error" />
 
-        <Label
-          name="sigla"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Sigla
-        </Label>
-        <TextField
-          name="sigla"
-          defaultValue={formData?.sigla || ''}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-        <FieldError name="sigla" className="rw-field-error" />
-
-        <Label
-          name="nombre"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Nombre
-        </Label>
-        <TextField
-          name="nombre"
-          defaultValue={formData?.nombre || ''}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-        <FieldError name="nombre" className="rw-field-error" />
-
-        <Label
-          name="descripcion"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Descripción
-        </Label>
-        <TextField
-          name="descripcion"
-          defaultValue={formData?.descripcion || ''}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-        <FieldError name="descripcion" className="rw-field-error" />
-
-        <Label
-          name="estado"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Estado
-        </Label>
-        <SelectField
-          name="estado"
-          defaultValue={formData?.estado || ''}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        >
-          <option value="ACTIVO">Activo</option>
-          <option value="INACTIVO">Inactivo</option>
-        </SelectField>
-        <FieldError name="estado" className="rw-field-error" />
-
-        <RespaldoField defaultValue={formData?.respaldo_creacion || []} />
-
-        <div className="rw-button-group">
-          <Submit className="rw-button rw-button-blue">Guardar</Submit>
+        <div className="form-actions">
+          <button
+            type="submit"
+            className="submit-button"
+            disabled={props.loading}
+          >
+            {props.loading ? (
+              <>
+                <Loader className="loading-spinner" />
+                <span>Guardando...</span>
+              </>
+            ) : (
+              <>
+                <Save size={20} />
+                <span>{props.sistema?.id ? 'Actualizar' : 'Crear Sistema'}</span>
+              </>
+            )}
+          </button>
         </div>
       </Form>
     </div>

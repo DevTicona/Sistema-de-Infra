@@ -15,7 +15,7 @@ const EntidadForm = (props) => {
     const formData = {
       ...data,
       usuario_modificacion: currentUser?.id, // Asigna el ID del usuario logueado
-      usuario_creacion: currentUser?.id, // Asigna el ID si es creación o mantenimiento
+      usuario_creacion: currentUser?.id || 1, // Asigna el ID si es creación o mantenimiento
     }
     props.onSave(formData, props?.entidad?.id)
   }

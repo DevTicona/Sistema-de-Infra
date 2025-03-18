@@ -23,13 +23,6 @@ export const QUERY = gql`
         id
         nombre
       }
-      despliegue {
-        id
-        componentes {
-          id
-          nombre
-        }
-      }
     }
   }
 `

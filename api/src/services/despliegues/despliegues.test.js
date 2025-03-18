@@ -31,20 +31,18 @@ describe('despliegues', () => {
         id_servidor: scenario.despliegue.two.id_servidor,
         agrupador: 'String',
         nombre: 'String',
-        descripcion: 'String',
         tipo: 'String',
         estado: 'ACTIVO',
-        usuario_creacion: 6361034,
+        usuario_creacion: 9093411,
       },
     })
 
     expect(result.id_servidor).toEqual(scenario.despliegue.two.id_servidor)
     expect(result.agrupador).toEqual('String')
     expect(result.nombre).toEqual('String')
-    expect(result.descripcion).toEqual('String')
     expect(result.tipo).toEqual('String')
     expect(result.estado).toEqual('ACTIVO')
-    expect(result.usuario_creacion).toEqual(6361034)
+    expect(result.usuario_creacion).toEqual(9093411)
   })
 
   scenario('updates a despliegue', async (scenario) => {

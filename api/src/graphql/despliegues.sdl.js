@@ -5,10 +5,8 @@ export const schema = gql`
     id_servidor: Int!
     agrupador: String!
     nombre: String!
-    descripcion: String!
     tipo: String!
     estado: estado!
-    respaldo: JSON
     fecha_creacion: DateTime!
     usuario_creacion: Int!
     fecha_modificacion: DateTime
@@ -33,11 +31,9 @@ export const schema = gql`
     id_servidor: Int!
     agrupador: String!
     nombre: String!
-    descripcion: String!
     tipo: String!
     estado: estado!
-    respaldo: JSON
-    fecha_creacion: DateTime!
+
     usuario_creacion: Int!
     fecha_modificacion: DateTime
     usuario_modificacion: Int
@@ -48,10 +44,8 @@ export const schema = gql`
     id_servidor: Int
     agrupador: String
     nombre: String
-    descripcion: String
     tipo: String
     estado: estado
-    respaldo: JSON
     fecha_creacion: DateTime
     usuario_creacion: Int
     fecha_modificacion: DateTime

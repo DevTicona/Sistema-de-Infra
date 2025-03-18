@@ -1,0 +1,237 @@
+/* Estilos generales */
+.servidores-container {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+
+/* Contenedor de la tabla */
+.table-wrapper {
+  position: relative;
+  max-height: 70vh;
+  overflow: auto;
+}
+
+/* Estilos de la tabla */
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+.modern-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f8f9fa;
+}
+
+.table-header {
+  background: #f8f9fa;
+  color: #2c3e50;
+  font-weight: 600;
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 2px solid #e9ecef;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.table-row {
+  transition: background-color 0.2s ease;
+}
+
+.table-row:hover {
+  background-color: #f8f9fa;
+}
+
+.table-cell {
+  padding: 0.75rem;
+  color: #495057;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 0.85rem;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+/* Contenido de celdas y cabeceras */
+.header-content,
+.cell-content {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Columnas específicas */
+.checkbox-column {
+  width: 40px;
+  padding-left: 1rem;
+}
+
+.actions-header {
+  width: 120px;
+}
+
+/* Checkbox */
+.styled-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #dee2e6;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.styled-checkbox:checked {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+/* Acciones */
+.actions-cell {
+  padding: 0.5rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn i {
+  font-size: 14px;
+}
+
+.view-btn {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.view-btn:hover {
+  background-color: #dee2e6;
+}
+
+.edit-btn {
+  background-color: #60a5fa;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #3b82f6;
+}
+
+.delete-btn {
+  background-color: #f87171;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #ef4444;
+}
+
+/* Sin resultados */
+.no-results {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+}
+
+.no-results i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #ced4da;
+}
+
+.no-results p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Texto truncado */
+.truncate {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+/* Enlaces */
+.table-cell a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.table-cell a:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* Responsividad */
+@media (max-width: 1200px) {
+  .servidores-container {
+    padding: 1rem;
+  }
+
+  .table-header,
+  .table-cell {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .action-btn {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 992px) {
+  .modern-table {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .servidores-container {
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+  }
+
+  .table-header,
+  .table-cell {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .action-btn {
+    width: 24px;
+    height: 24px;
+  }
+
+  .action-btn i {
+    font-size: 12px;
+  }
+}

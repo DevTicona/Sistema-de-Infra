@@ -9,10 +9,14 @@ export const QUERY = gql`
       id_componente
       id_servidor
       agrupador
-      descripcion
+      nombre
       tipo
       estado
+
       fecha_creacion
+      usuario_creacion
+      fecha_modificacion
+      usuario_modificacion
       servidores {
         id
         nombre

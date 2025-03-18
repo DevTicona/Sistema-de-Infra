@@ -1,0 +1,152 @@
+/* Variables del sistema de diseño */
+:root {
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --surface: #ffffff;
+  --background: #f8fafc;
+  --border: #e2e8f0;
+  --text: #1e293b;
+  --text-light: #64748b;
+  --error: #dc2626;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --transition: all 0.2s ease;
+}
+
+/* Estructura principal */
+.MuiContainer-root.rol-container {
+  padding: 2rem 1rem;
+  max-width: 800px !important;
+}
+
+.MuiPaper-root.rol-paper {
+  padding: 2rem;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+  background: var(--surface) !important;
+}
+
+/* Encabezado */
+.rol-title {
+  color: var(--text) !important;
+  font-weight: 700 !important;
+  margin-bottom: 1.5rem !important;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border);
+}
+
+/* Campos de formulario */
+.MuiTextField-root.rol-input {
+  margin: 0.75rem 0 !important;
+}
+
+.MuiInputBase-input.rol-input-field {
+  padding: 0.75rem 1rem !important;
+  font-size: 0.95rem !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.MuiInputLabel-root.rol-input-label {
+  transform: translate(14px, 12px) scale(1) !important;
+  font-size: 0.95rem !important;
+  color: var(--text-light) !important;
+}
+
+/* Checkboxes y Radios */
+.MuiFormControlLabel-root.rol-checkbox-label {
+  margin-right: 2rem !important;
+}
+
+.MuiCheckbox-root.rol-checkbox,
+.MuiRadio-root.rol-radio {
+  color: var(--text-light) !important;
+  padding: 0.5rem !important;
+}
+
+.MuiCheckbox-root.rol-checkbox.Mui-checked,
+.MuiRadio-root.rol-radio.Mui-checked {
+  color: var(--primary) !important;
+}
+
+/* Acordeón de privilegios */
+.MuiAccordion-root.rol-accordion {
+  background: var(--background) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  margin: 1rem 0 !important;
+  box-shadow: none !important;
+}
+
+.MuiAccordionSummary-root.rol-accordion-summary {
+  padding: 0 1rem !important;
+  min-height: 56px !important;
+}
+
+.MuiAccordionDetails-root.rol-accordion-details {
+  padding: 1rem !important;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+/* Grupo de privilegios */
+.privilegio-group {
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
+}
+
+.privilegio-group-title {
+  font-weight: 600 !important;
+  color: var(--text) !important;
+  margin-bottom: 0.75rem !important;
+}
+
+/* Botón de guardar */
+.MuiButton-root.rol-submit-button {
+  background: var(--primary) !important;
+  color: white !important;
+  padding: 0.75rem 2rem !important;
+  border-radius: var(--radius-md) !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  margin-top: 1rem !important;
+  transition: var(--transition) !important;
+}
+
+.MuiButton-root.rol-submit-button:hover {
+  background: var(--primary-hover) !important;
+  transform: translateY(-1px);
+}
+
+/* Mensajes de error */
+.MuiAlert-root.rol-error-alert {
+  border-radius: var(--radius-md) !important;
+  margin-bottom: 1.5rem !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .MuiContainer-root.rol-container {
+    padding: 1rem;
+  }
+
+  .MuiPaper-root.rol-paper {
+    padding: 1.5rem;
+  }
+
+  .MuiFormGroup-root.rol-checkbox-group {
+    flex-direction: column;
+  }
+
+  .MuiFormControlLabel-root.rol-checkbox-label {
+    margin-right: 0 !important;
+    margin-bottom: 0.5rem;
+  }
+
+  .privilegio-group {
+    padding: 0.75rem;
+  }
+}

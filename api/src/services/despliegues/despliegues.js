@@ -13,12 +13,14 @@ export const despliegue = ({ id }) => {
 export const createDespliegue = ({ input }) => {
   return db.despliegue.create({
     data: input,
+
   })
 }
 
 export const updateDespliegue = ({ id, input }) => {
   return db.despliegue.update({
     data: input,
+
     where: { id },
   })
 }

@@ -85,3 +85,6 @@ export const Usuario = {
     return db.usuarios.findUnique({ where: { id: root?.id } }).usuario_roles()
   },
 }
+export const usuariosCount = ({ where }) => {
+  return db.usuarios.count({ where })
+}
