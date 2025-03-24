@@ -3,8 +3,8 @@ import { createDbAuthClient, createAuth } from '@redwoodjs/auth-dbauth-web'
 
 // Configuración de Keycloak
 const keycloak = new Keycloak({
-  url: 'http://localhost:8080', // Cambia esta URL con tu servidor Keycloak
-  realm: 'myrealm', // Cambia esto por tu realm de Keycloak
+  url: 'https://auth-uit.agetic.gob.bo/', // Cambia esta URL con tu servidor Keycloak
+  realm: 'ciudadaniadigital', // Cambia esto por tu realm de Keycloak
   clientId: 'redwood-app', // Cambia esto por el client ID que configuraste en Keycloak
 })
 

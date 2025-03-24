@@ -33,6 +33,16 @@ import {
 import { Link, routes } from '@redwoodjs/router'
 import { gql, useQuery } from '@redwoodjs/web'
 
+// Colores institucionales AGETIC
+const AGETIC_COLORS = {
+  primary: '#8B0000',       // Guindo principal
+  secondary: '#D32F2F',     // Guindo claro
+  accent: '#FFD700',        // Dorado para acentos
+  background: '#FFF5F5',    // Fondo claro
+  text: '#4A4A4A',          // Texto principal
+  lightText: '#757575',     // Texto secundario
+};
+
 // GraphQL query to fetch statistics
 const GET_SYSTEM_STATS = gql`
   query GetSystemStats {
@@ -76,7 +86,6 @@ const HomePage = () => {
     servidores: 0,
     usuarios: 0,
     componentes: 0,
-
   }
 
   const serverStatusData = data?.serverStatusData || []
@@ -88,7 +97,7 @@ const HomePage = () => {
     <Card
       sx={{
         height: '100%',
-        background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.secondary.main} 90%)`,
+        background: `linear-gradient(45deg, ${AGETIC_COLORS.primary} 30%, ${AGETIC_COLORS.secondary} 90%)`,
         color: 'white',
         transition: 'transform 0.3s',
         '&:hover': { transform: 'translateY(-5px)' },
@@ -96,7 +105,7 @@ const HomePage = () => {
     >
       <CardContent>
         <Box display="flex" alignItems="center" mb={2}>
-          {icon}
+          {React.cloneElement(icon, { sx: { color: AGETIC_COLORS.accent } })}
           <Typography variant="h6" sx={{ ml: 1 }}>
             {title}
           </Typography>
@@ -115,8 +124,8 @@ const HomePage = () => {
 
   const SectionHeader = ({ title, icon }) => (
     <Box display="flex" alignItems="center" mb={3}>
-      {icon}
-      <Typography variant="h5" sx={{ ml: 1, fontWeight: 'bold' }}>
+      {React.cloneElement(icon, { sx: { color: AGETIC_COLORS.primary } })}
+      <Typography variant="h5" sx={{ ml: 1, fontWeight: 'bold', color: AGETIC_COLORS.text }}>
         {title}
       </Typography>
     </Box>
@@ -166,13 +175,12 @@ const HomePage = () => {
             link={routes.componentes()}
           />
         </Grid>
-
       </Grid>
 
       {/* Gráficos principales */}
       <Grid container spacing={4}>
         <Grid item xs={12} lg={8}>
-          <Card sx={{ p: 2 }}>
+          <Card sx={{ p: 2, background: AGETIC_COLORS.background }}>
             <Box
               display="flex"
               justifyContent="space-between"
@@ -180,10 +188,10 @@ const HomePage = () => {
             >
               <SectionHeader
                 title="Estado de Servidores"
-                icon={<Timeline color="primary" />}
+                icon={<Timeline />}
               />
               <IconButton>
-                <Refresh />
+                <Refresh sx={{ color: AGETIC_COLORS.primary }} />
               </IconButton>
             </Box>
             <Box height={300}>
@@ -196,7 +204,7 @@ const HomePage = () => {
                   <Line
                     type="monotone"
                     dataKey="cpu"
-                    stroke={theme.palette.primary.main}
+                    stroke={AGETIC_COLORS.primary}
                     strokeWidth={2}
                   />
                 </LineChart>
@@ -206,10 +214,10 @@ const HomePage = () => {
         </Grid>
 
         <Grid item xs={12} lg={4}>
-          <Card sx={{ p: 2 }}>
+          <Card sx={{ p: 2, background: AGETIC_COLORS.background }}>
             <SectionHeader
               title="Despliegues por Sistema"
-              icon={<BarChart color="primary" />}
+              icon={<BarChart />}
             />
             <Box height={300}>
               <ResponsiveContainer width="100%" height="100%">
@@ -220,7 +228,7 @@ const HomePage = () => {
                   <Tooltip />
                   <Bar
                     dataKey="deployments"
-                    fill={theme.palette.secondary.main}
+                    fill={AGETIC_COLORS.accent}
                   />
                 </RechartsBarChart>
               </ResponsiveContainer>
@@ -232,10 +240,10 @@ const HomePage = () => {
       {/* Alertas y Despliegues recientes */}
       <Grid container spacing={4} sx={{ mt: 2 }}>
         <Grid item xs={12} md={6}>
-          <Card sx={{ p: 2 }}>
+          <Card sx={{ p: 2, background: AGETIC_COLORS.background }}>
             <SectionHeader
               title="Alertas Activas"
-              icon={<Warning color="error" />}
+              icon={<Warning sx={{ color: AGETIC_COLORS.secondary }} />}
             />
             <Box>
               {activeAlerts.map((alert) => (
@@ -245,15 +253,18 @@ const HomePage = () => {
                     p: 2,
                     mb: 1,
                     borderRadius: 2,
-                    bgcolor: theme.palette.error.light,
+                    bgcolor: AGETIC_COLORS.background,
+                    border: `1px solid ${AGETIC_COLORS.secondary}`,
                     display: 'flex',
                     justifyContent: 'space-between',
                   }}
                 >
-                  <Typography>
+                  <Typography sx={{ color: AGETIC_COLORS.text }}>
                     <strong>{alert.server}</strong>
                   </Typography>
-                  <Typography>{alert.description}</Typography>
+                  <Typography sx={{ color: AGETIC_COLORS.text }}>
+                    {alert.description}
+                  </Typography>
                 </Box>
               ))}
             </Box>
@@ -261,10 +272,10 @@ const HomePage = () => {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Card sx={{ p: 2 }}>
+          <Card sx={{ p: 2, background: AGETIC_COLORS.background }}>
             <SectionHeader
               title="Despliegues Recientes"
-              icon={<Code color="primary" />}
+              icon={<Code />}
             />
             <Box>
               {recentDeployments.map((deploy) => (
@@ -274,22 +285,24 @@ const HomePage = () => {
                     p: 2,
                     mb: 1,
                     borderRadius: 2,
-                    bgcolor: theme.palette.grey[100],
+                    bgcolor: AGETIC_COLORS.background,
+                    border: `1px solid ${AGETIC_COLORS.primary}20`,
                     display: 'flex',
                     justifyContent: 'space-between',
                   }}
                 >
-                  <Typography>
+                  <Typography sx={{ color: AGETIC_COLORS.text }}>
                     <strong>{deploy.system}</strong> {deploy.version}
                   </Typography>
                   <Typography
-                    color={
-                      deploy.status === 'Exitoso'
-                        ? 'success.main'
-                        : deploy.status === 'Fallido'
-                          ? 'error.main'
-                          : 'warning.main'
-                    }
+                    sx={{
+                      color:
+                        deploy.status === 'Exitoso'
+                          ? AGETIC_COLORS.primary
+                          : deploy.status === 'Fallido'
+                            ? AGETIC_COLORS.secondary
+                            : AGETIC_COLORS.accent,
+                    }}
                   >
                     {deploy.status}
                   </Typography>
