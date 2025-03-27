@@ -37,7 +37,6 @@ model UserRol {
   rol    Role @relation(fields: [roleId], references: [id])
   user   User @relation(fields: [userId], references: [id])
 
-  @@unique([userId, roleId], map: "user_rol_unique")
   @@map("user_rol")
 }
 

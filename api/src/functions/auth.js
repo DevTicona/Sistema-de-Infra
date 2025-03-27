@@ -1,16 +1,70 @@
 import { DbAuthHandler } from '@redwoodjs/auth-dbauth-api'
 
-import { cookieName } from 'src/lib/auth'
+import { cookieName, verifyKeycloakToken } from 'src/lib/auth'
 import { db } from 'src/lib/db'
-
+console.log(db)
 export const handler = async (event, context) => {
+  // Si la solicitud es un POST y se envía un token de Keycloak, procesa ese flujo
+  if (event.httpMethod === 'POST') {
+    let bodyData = {}
+    try {
+      bodyData = JSON.parse(event.body)
+    } catch (error) {
+      // Si no se puede parsear, dejamos bodyData vacío
+    }
+
+    if (bodyData.keycloakToken) {
+      const keycloakToken = bodyData.keycloakToken
+      let decoded
+      try {
+        decoded = await verifyKeycloakToken(keycloakToken)
+      } catch (error) {
+        return {
+          statusCode: 401,
+          body: JSON.stringify({ error: 'Invalid Keycloak token' }),
+        }
+      }
+
+      const email = decoded.email
+      if (!email) {
+        return {
+          statusCode: 401,
+          body: JSON.stringify({ error: 'Token does not contain email' }),
+        }
+      }
+
+      // Buscar al usuario por email. Opcional: si no existe, se podría crear automáticamente.
+      let user = await db.user.findUnique({ where: { email } })
+      if (!user) {
+        // Aquí puedes decidir si crear el usuario automáticamente o retornar un error.
+        user = await db.user.create({
+          data: {
+            email,
+            nombre: decoded.name || '',
+          },
+        })
+      }
+
+      // Crea la sesión almacenando el token de Keycloak en la cookie
+      const sessionPayload = JSON.stringify({ token: keycloakToken })
+      return {
+        statusCode: 200,
+        headers: {
+          'Set-Cookie': `${cookieName}=${sessionPayload}; HttpOnly; Path=/; SameSite=Lax; Secure=${
+            process.env.NODE_ENV !== 'development'
+          }`,
+        },
+        body: JSON.stringify(user),
+      }
+    }
+  }
+
+  // --- Opciones para el flujo tradicional de dbAuth ---
   const forgotPasswordOptions = {
     handler: (user, _resetToken) => {
       return user
     },
-
     expires: 60 * 60 * 24,
-
     errors: {
       usernameNotFound: 'Username not found',
       usernameRequired: 'Username is required',
@@ -22,42 +76,33 @@ export const handler = async (event, context) => {
       // Obtener los roles del usuario
       const userWithRoles = await db.user.findUnique({
         where: { id: user.id },
-        include: { user_rol: { include: { rol: true } } }, // Cambiado a user_rol
+        include: { user_rol: { include: { rol: true } } },
       })
 
       // Devolver el usuario con sus roles
       return {
         ...user,
-        roles: userWithRoles.user_rol.map((userRole) => userRole.rol.name), // Cambiado a user_rol
+        roles: userWithRoles.user_rol.map((userRole) => userRole.rol.name),
       }
     },
-
     errors: {
       usernameOrPasswordMissing: 'Both username and password are required',
       usernameNotFound: 'Username ${username} not found',
       incorrectPassword: 'Incorrect password for ${username}',
     },
-
-    // How long a user will remain logged in, in seconds
-    expires: 60 * 60 * 24 * 365 * 10,
+    // Tiempo de expiración de la sesión (en segundos)
+    expires: 60 * 60 * 24 * 30, // 30 días en lugar de 10 años
   }
 
   const resetPasswordOptions = {
     handler: (_user) => {
       return true
     },
-
-    // If `false` then the new password MUST be different from the current one
     allowReusedPassword: true,
-
     errors: {
-      // the resetToken is valid, but expired
       resetTokenExpired: 'resetToken is expired',
-      // no user was found with the given resetToken
       resetTokenInvalid: 'resetToken is invalid',
-      // the resetToken was not present in the URL
       resetTokenRequired: 'resetToken is required',
-      // new password is the same as the old password (apparently they did not forget it)
       reusedPassword: 'Must choose a new password',
     },
   }
@@ -111,16 +156,11 @@ export const handler = async (event, context) => {
   }
 
   const authHandler = new DbAuthHandler(event, context, {
-    // Provide prisma db client
+    // Se provee el cliente Prisma
     db: db,
-
-    // The name of the property you'd call on `db` to access your user table.
-    // i.e. if your Prisma model is named `User` this value would be `user`, as in `db.user`
+    // Acceso al modelo de usuario en la base de datos
     authModelAccessor: 'user',
-
-    // A map of what dbAuth calls a field to what your database calls it.
-    // `id` is whatever column you use to uniquely identify a user (probably
-    // something like `id` or `userId` or even `email`)
+    // Mapeo de los campos que usa dbAuth a los nombres en la base de datos
     authFields: {
       id: 'id',
       username: 'email',
@@ -130,29 +170,16 @@ export const handler = async (event, context) => {
       resetTokenExpiresAt: 'resetTokenExpiresAt',
       nombre: 'nombre',
     },
-
-    // A list of fields on your user object that are safe to return to the
-    // client when invoking a handler that returns a user (like forgotPassword
-    // and signup). This list should be as small as possible to be sure not to
-    // leak any sensitive information to the client.
     allowedUserFields: ['id', 'email', 'nombre', 'roles'],
-
-    // Specifies attributes on the cookie that dbAuth sets in order to remember
-    // who is logged in. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#restrict_access_to_cookies
     cookie: {
       attributes: {
         HttpOnly: true,
         Path: '/',
         SameSite: 'Lax',
         Secure: process.env.NODE_ENV !== 'development',
-
-        // If you need to allow other domains (besides the api side) access to
-        // the dbAuth session cookie:
-        // Domain: 'example.com',
       },
       name: cookieName,
     },
-
     forgotPassword: forgotPasswordOptions,
     login: loginOptions,
     resetPassword: resetPasswordOptions,

@@ -21,7 +21,7 @@ module.exports = {
       interpreter: '/bin/bash',
       watch: false,
       autorestart: true,
-      time: true
+      time: true,
     },
     {
       name: `${projectName}-web`,
@@ -31,13 +31,13 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: webPort,
-        API_URL: `http://localhost:${apiPort}`
+        API_URL: `http://localhost:${apiPort}`,
       },
       interpreter: '/bin/bash',
       watch: false,
       autorestart: true,
-      time: true
-    }
+      time: true,
+    },
   ],
 
   deploy: {
@@ -57,8 +57,8 @@ module.exports = {
         pm2 save
       `,
       env: {
-        NODE_ENV: 'production'
-      }
-    }
-  }
+        NODE_ENV: 'production',
+      },
+    },
+  },
 }

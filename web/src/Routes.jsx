@@ -1,7 +1,6 @@
 import { Set, Router, Route } from '@redwoodjs/router'
 
 import AccesoriosLayout from 'src/layouts/AccesoriosLayout'
-import ScaffoldLayout from 'src/layouts/ScaffoldLayout'
 import ComponenteSelector from 'src/pages/Componente/ComponenteSelector/ComponenteSelector'
 import BladesPage from 'src/pages/Datacenter/BladesPage/BladesPage'
 import ChasisPage from 'src/pages/Datacenter/ChasisPage/ChasisPage'
@@ -9,10 +8,10 @@ import servidoresFisicos from 'src/pages/Datacenter/ServidoresFisicos/Servidores
 import ServidoresPage from 'src/pages/Datacenter/ServidoresPage/ServidoresPage'
 import DespliegueFiltro from 'src/pages/Despliegue/DespliegueFiltro/DespliegueFiltro'
 import DespliegueSelector from 'src/pages/Despliegue/DespliegueSelector/DespliegueSelector'
+import ReporteComponente from 'src/pages/ReportesPage/ReporteComponente'
+import ReportesPage from 'src/pages/ReportesPage/ReportesPage'
 import ServidorDetalle from 'src/pages/Servidor/ServidorDetalle/ServidorDetalle'
 import SistemaDetalle from 'src/pages/Sistema/SistemaDetalle/SistemaDetalle'
-import ReportesPage from 'src/pages/ReportesPage/ReportesPage'
-import ReporteComponente from 'src/pages/ReportesPage/ReporteComponente'
 
 import { useAuth } from './auth'
 import HomeLayout from './layouts/HomeLayout/HomeLayout'
@@ -100,11 +99,10 @@ const Routes = () => {
           <Route path="/usuariorols/{id:Int}" page={UsuariorolUsuariorolPage} name="usuariorol" />
           <Route path="/usuariorols" page={UsuariorolUsuariorolsPage} name="usuariorols" />
         </Set>
-       <Route path="/reportes" page={ReportesPage} name="reportes" />
-       <Route path="/reportecomponentes" page={ReporteComponente} name="reportecomponentes" />
+        <Route path="/reportes" page={ReportesPage} name="reportes" />
+        <Route path="/reportecomponentes" page={ReporteComponente} name="reportecomponentes" />
 
-       {/*</PrivateSet>*/}
-
+        {/*</PrivateSet>*/}
       </Set>
       <Route notfound page={NotFoundPage} />
     </Router>

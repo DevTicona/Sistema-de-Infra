@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
+
 import {
   Menu,
   Close,
@@ -17,7 +18,7 @@ import {
   GroupWork,
   ExpandMore,
   ExpandLess,
-} from '@mui/icons-material';
+} from '@mui/icons-material'
 import {
   AppBar,
   Toolbar,
@@ -35,16 +36,33 @@ import {
   Zoom,
   Grid,
   Collapse,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { Link, routes } from '@redwoodjs/router';
-import { useAuth } from 'src/auth';
+} from '@mui/material'
+import { styled } from '@mui/material/styles'
 
+import { Link, routes } from '@redwoodjs/router'
+
+import { useAuth } from 'src/auth'
+import { keycloak } from 'src/auth'
 const HomeLayout = ({ children }) => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [expandedSections, setExpandedSections] = useState({});
-  const trigger = useScrollTrigger({ threshold: 100 });
-  const { isAuthenticated, currentUser, logOut, hasRole } = useAuth();
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [expandedSections, setExpandedSections] = useState({})
+  const trigger = useScrollTrigger({ threshold: 100 })
+  const { isAuthenticated, currentUser, hasRole, logOut } = useAuth()
+  const cerrarSesion = async () => {
+    if (isAuthenticated) {
+      await logOut() // Cerrar sesión con dbAuth
+    } else if (keycloak?.token) {
+      await keycloak.logout()
+      // Actualizar el estado de la autenticación para reflejar que el usuario ha cerrado sesión
+      keycloak?.clearToken() // Esto limpia el token de Keycloak
+      setUserAuthenticated(false) // Actualiza el estado de autenticación
+    }
+  }
+
+  // Estado para controlar si el usuario está autenticado
+  const [isUserAuthenticated, setUserAuthenticated] = useState(
+    isAuthenticated || !!keycloak?.token
+  )
 
   const sections = [
     {
@@ -53,8 +71,16 @@ const HomeLayout = ({ children }) => {
       items: [
         { name: 'Data Center', route: routes.datacenters(), icon: <Cloud /> },
         { name: 'Servidores', route: routes.servidors(), icon: <Storage /> },
-        { name: 'Despliegues', route: routes.despliegues(), icon: <GroupWork /> },
-        { name: 'Componentes', route: routes.componentes(), icon: <AccountTree /> },
+        {
+          name: 'Despliegues',
+          route: routes.despliegues(),
+          icon: <GroupWork />,
+        },
+        {
+          name: 'Componentes',
+          route: routes.componentes(),
+          icon: <AccountTree />,
+        },
       ],
     },
     {
@@ -72,33 +98,46 @@ const HomeLayout = ({ children }) => {
         { name: 'Usuarios', route: routes.usuarios(), icon: <People /> },
         { name: 'Roles', route: routes.rols(), icon: <Security /> },
         ...(isAuthenticated && hasRole(['admin'])
-          ? [{ name: 'User Roles', route: routes.userRols(), icon: <Security /> }]
+          ? [
+              {
+                name: 'User Roles',
+                route: routes.userRols(),
+                icon: <Security />,
+              },
+            ]
           : []),
-        { name: 'Usuario y Roles', route: routes.usuariorols(), icon: <Security /> },
+        {
+          name: 'Usuario y Roles',
+          route: routes.usuariorols(),
+          icon: <Security />,
+        },
       ],
     },
     {
       title: 'Reportes',
       icon: <Assessment sx={{ color: '#1A337E', mr: 1 }} />,
       items: [
-        { name: 'Reportes Generales', route: routes.reportes(), icon: <Assessment /> },
+        {
+          name: 'Reportes Generales',
+          route: routes.reportes(),
+          icon: <Assessment />,
+        },
       ],
     },
-
-  ];
+  ]
 
   const toggleSection = (sectionTitle) => {
     setExpandedSections((prev) => ({
       ...prev,
       [sectionTitle]: !prev[sectionTitle],
-    }));
-  };
+    }))
+  }
 
   const ProfessionalAppBar = styled(AppBar)(({ theme }) => ({
     background: theme.palette.primary.main,
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
     transition: 'all 0.3s ease',
-  }));
+  }))
 
   const StyledFab = styled(Fab)({
     position: 'fixed',
@@ -109,14 +148,18 @@ const HomeLayout = ({ children }) => {
       transform: 'translateY(-5px)',
       boxShadow: '0 8px 15px rgba(26, 51, 126, 0.3)',
     },
-  });
+  })
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }}>
       <ProfessionalAppBar position="sticky">
         <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <IconButton color="inherit" edge="start" onClick={() => setDrawerOpen(true)}>
+            <IconButton
+              color="inherit"
+              edge="start"
+              onClick={() => setDrawerOpen(true)}
+            >
               <Menu sx={{ fontSize: 32 }} />
             </IconButton>
           </Box>
@@ -133,10 +176,17 @@ const HomeLayout = ({ children }) => {
           >
             Unidad de Infraestructura Tecnológica
           </Typography>
-          {isAuthenticated ? (
+          {console.log('Datos de Keycloak:', keycloak?.tokenParsed)}
+          {console.log('Esta aut:', isUserAuthenticated)}
+          {isUserAuthenticated ? (
             <div>
-              <span>{currentUser.email}</span>{' '}
-              <button type="button" onClick={logOut}>
+              <span>
+                {currentUser?.email ||
+                  keycloak?.tokenParsed?.email ||
+                  keycloak?.tokenParsed?.preferred_username ||
+                  'Correo no disponible'}
+              </span>{' '}
+              <button type="button" onClick={cerrarSesion}>
                 Cerrar Sesión
               </button>
             </div>
@@ -167,7 +217,10 @@ const HomeLayout = ({ children }) => {
                 alt="Icono AGETIC"
                 style={{ height: '200px' }}
               />
-              <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#1A337E' }}>
+              <Typography
+                variant="body1"
+                sx={{ fontWeight: 'bold', color: '#1A337E' }}
+              >
                 UIT
               </Typography>
             </Box>
@@ -191,12 +244,16 @@ const HomeLayout = ({ children }) => {
               }}
             >
               <Dashboard sx={{ color: '#1A337E', mr: 2 }} />
-              <Typography sx={{ fontWeight: 600, color: '#1A337E' }}>Inicio</Typography>
+              <Typography sx={{ fontWeight: 600, color: '#1A337E' }}>
+                Inicio
+              </Typography>
             </ListItem>
 
             {sections.map((section) => (
               <React.Fragment key={section.title}>
-                <Divider sx={{ my: 2, borderColor: 'rgba(26, 51, 126, 0.1)' }} />
+                <Divider
+                  sx={{ my: 2, borderColor: 'rgba(26, 51, 126, 0.1)' }}
+                />
                 <ListItem
                   button
                   onClick={() => toggleSection(section.title)}
@@ -210,7 +267,13 @@ const HomeLayout = ({ children }) => {
                     },
                   }}
                 >
-                  <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      width: '100%',
+                    }}
+                  >
                     {section.icon}
                     <Typography
                       sx={{
@@ -222,10 +285,18 @@ const HomeLayout = ({ children }) => {
                     >
                       {section.title}
                     </Typography>
-                    {expandedSections[section.title] ? <ExpandLess /> : <ExpandMore />}
+                    {expandedSections[section.title] ? (
+                      <ExpandLess />
+                    ) : (
+                      <ExpandMore />
+                    )}
                   </Box>
                 </ListItem>
-                <Collapse in={expandedSections[section.title]} timeout="auto" unmountOnExit>
+                <Collapse
+                  in={expandedSections[section.title]}
+                  timeout="auto"
+                  unmountOnExit
+                >
                   <List component="div" disablePadding>
                     {section.items.map((item) => (
                       <ListItem
@@ -310,11 +381,16 @@ const HomeLayout = ({ children }) => {
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
               <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                Agencia de Gobierno Electrónico y Tecnologías de Información y Comunicación
+                Agencia de Gobierno Electrónico y Tecnologías de Información y
+                Comunicación
               </Typography>
             </Grid>
             <Grid item xs={6} md={4}>
-              <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
+              <Typography
+                variant="subtitle1"
+                gutterBottom
+                sx={{ fontWeight: 'bold' }}
+              >
                 Contacto Institucional
               </Typography>
               <Typography variant="body2" sx={{ mb: 1, opacity: 0.9 }}>
@@ -328,7 +404,11 @@ const HomeLayout = ({ children }) => {
               </Typography>
             </Grid>
             <Grid item xs={6} md={4}>
-              <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
+              <Typography
+                variant="subtitle1"
+                gutterBottom
+                sx={{ fontWeight: 'bold' }}
+              >
                 Enlaces importantes
               </Typography>
               <Typography variant="body2" sx={{ mb: 1, opacity: 0.9 }}>
@@ -349,7 +429,7 @@ const HomeLayout = ({ children }) => {
         </Container>
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default HomeLayout;
+export default HomeLayout
