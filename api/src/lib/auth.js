@@ -28,6 +28,38 @@ export const verifyKeycloakToken = (token) =>
     })
   })
 
+// Verificar si el correo electrónico está registrado en la base de datos
+export const verifyUser = async (email) => {
+  const usuario = await db.usuarios.findFirst({
+    where: {
+      OR: [
+        {
+          correo_electronico: {
+            path: ['personal'],
+            equals: email,
+          },
+        },
+        {
+          correo_electronico: {
+            path: ['trabajo'],
+            equals: email,
+          },
+        },
+      ],
+    },
+    select: {
+      id: true,
+      email: true,
+      nombre_usuario: true,
+      usuario_roles: { select: { rol: { select: { name: true } } } },
+    },
+  })
+
+  if (!usuario) {
+    throw new AuthenticationError('Acceso denegado: Usuario no registrado.')
+  }
+  return usuario
+}
 
 /**
  * Obtener el usuario actual.
