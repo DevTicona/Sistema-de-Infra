@@ -7,46 +7,35 @@ import { db } from './db'
 
 export const cookieName = 'session_%port%'
 
-// Configuración del cliente JWKS de Keycloak
+// Configurar el cliente JWKS de Keycloak
 const keycloakJwksUri =
-  'https://tu-servidor-keycloak/auth/realms/tu-realm/protocol/openid-connect/certs'
-const keycloakClient = jwksClient({
-  jwksUri: keycloakJwksUri,
-})
+  'https://auth-uit.agetic.gob.bo/auth/realms/ciudadaniadigital/protocol/openid-connect/certs'
+const keycloakClient = jwksClient({ jwksUri: keycloakJwksUri })
 
-// Función auxiliar para obtener la llave de verificación a partir del header del token
-function getKey(header, callback) {
-  keycloakClient.getSigningKey(header.kid, function (err, key) {
-    if (err) {
-      callback(err)
-    } else {
-      const signingKey = key.getPublicKey()
-      callback(null, signingKey)
-    }
+// Obtener la llave de verificación a partir del header del token
+const getKey = (header, callback) => {
+  keycloakClient.getSigningKey(header.kid, (err, key) => {
+    if (err) return callback(err)
+    callback(null, key.getPublicKey())
   })
 }
 
-// Función para verificar el token emitido por Keycloak
-const verifyKeycloakToken = (token) => {
-  return new Promise((resolve, reject) => {
+// Verificar el token emitido por Keycloak
+export const verifyKeycloakToken = (token) =>
+  new Promise((resolve, reject) => {
     jwt.verify(token, getKey, { algorithms: ['RS256'] }, (err, decoded) => {
-      if (err) {
-        return reject(err)
-      }
-      resolve(decoded)
+      err ? reject(err) : resolve(decoded)
     })
   })
-}
+
 
 /**
- * getCurrentUser: Se encarga de obtener el usuario actual
- * - Si la sesión corresponde a dbAuth (session.id es numérico) se busca el usuario en la base de datos.
- * - Si la sesión proviene de Keycloak (session.token es un string), se valida el token y se busca el usuario por email.
+ * Obtener el usuario actual.
+ * - Caso dbAuth: se identifica por session.id.
+ * - Caso Keycloak: se valida el token y se verifica el email.
  */
 export const getCurrentUser = async (session) => {
-  if (!session) {
-    throw new Error('Invalid session')
-  }
+  if (!session) throw new Error('Invalid session')
 
   // Caso dbAuth
   if (typeof session.id === 'number') {
@@ -56,108 +45,51 @@ export const getCurrentUser = async (session) => {
         id: true,
         email: true,
         nombre: true,
-        user_rol: {
-          select: {
-            rol: {
-              select: { name: true },
-            },
-          },
-        },
+        user_rol: { select: { rol: { select: { name: true } } } },
       },
     })
-
-    if (!user) {
-      throw new AuthenticationError('User not found')
-    }
-
-    return {
-      ...user,
-      roles: user.user_rol.map((userRole) => userRole.rol.name),
-    }
+    if (!user) throw new AuthenticationError('User not found')
+    return { ...user, roles: user.user_rol.map((ur) => ur.rol.name) }
   }
 
-  // Caso Keycloak: se espera que la sesión tenga una propiedad "token"
+  // Caso Keycloak
   if (session.token && typeof session.token === 'string') {
-    let decoded
-    try {
-      decoded = await verifyKeycloakToken(session.token)
-    } catch (error) {
-      throw new AuthenticationError('Invalid Keycloak token')
-    }
-
-    // Se asume que el token contiene la dirección de email
+    const decoded = await verifyKeycloakToken(session.token)
     const email = decoded.email
-    if (!email) {
-      throw new AuthenticationError('Token does not contain email')
-    }
-
-    // Busca el usuario en la base de datos por email. Opcionalmente, podrías crear el usuario si no existe.
-    const user = await db.user.findUnique({
-      where: { email },
-      select: {
-        id: true,
-        email: true,
-        nombre: true,
-        user_rol: {
-          select: {
-            rol: {
-              select: { name: true },
-            },
-          },
-        },
-      },
-    })
-
-    if (!user) {
-      throw new AuthenticationError('User not found')
-    }
-
-    return {
-      ...user,
-      roles: user.user_rol.map((userRole) => userRole.rol.name),
-    }
+    if (!email) throw new AuthenticationError('Token does not contain email')
+    const user = await verifyUser(email)
+    return { ...user, roles: user.usuario_roles.map((ur) => ur.rol.name) }
   }
 
   throw new Error('Session format not recognized')
 }
 
 /**
- * isAuthenticated: Se asume que context.currentUser ya fue establecido en el contexto de GraphQL.
+ * Comprueba si el usuario está autenticado.
+ * Se requiere pasar el contexto, donde debe existir currentUser.
  */
-export const isAuthenticated = () => {
-  return !!context.currentUser
-}
+export const isAuthenticated = (context) => !!context.currentUser
 
 /**
- * hasRole: Comprueba si el usuario autenticado tiene alguno de los roles requeridos.
+ * Verifica si el usuario posee alguno de los roles indicados.
  */
-export const hasRole = (roles) => {
-  if (!isAuthenticated()) {
-    return false
-  }
-
+export const hasRole = (roles, context) => {
+  if (!isAuthenticated(context)) return false
   const currentUserRoles = context.currentUser?.roles || []
-
-  if (typeof roles === 'string') {
-    return currentUserRoles.includes(roles)
-  }
-
-  if (Array.isArray(roles)) {
+  if (typeof roles === 'string') return currentUserRoles.includes(roles)
+  if (Array.isArray(roles))
     return roles.some((role) => currentUserRoles.includes(role))
-  }
-
   return false
 }
 
 /**
- * requireAuth: Función para proteger resolvers que requieran autenticación y/o ciertos roles.
+ * Requiere autenticación y, opcionalmente, roles específicos.
  */
-export const requireAuth = ({ roles } = {}) => {
-  if (!isAuthenticated()) {
+export const requireAuth = ({ roles } = {}, context) => {
+  if (!isAuthenticated(context)) {
     throw new AuthenticationError("You don't have permission to do that.")
   }
-
-  if (roles && !hasRole(roles)) {
+  if (roles && !hasRole(roles, context)) {
     throw new ForbiddenError("You don't have access to do that.")
   }
 }

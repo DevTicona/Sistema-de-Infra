@@ -2,7 +2,7 @@ import { DbAuthHandler } from '@redwoodjs/auth-dbauth-api'
 
 import { cookieName, verifyKeycloakToken } from 'src/lib/auth'
 import { db } from 'src/lib/db'
-console.log(db)
+
 export const handler = async (event, context) => {
   // Si la solicitud es un POST y se envía un token de Keycloak, procesa ese flujo
   if (event.httpMethod === 'POST') {
@@ -24,7 +24,7 @@ export const handler = async (event, context) => {
           body: JSON.stringify({ error: 'Invalid Keycloak token' }),
         }
       }
-
+      console.log('TOkenn: ', keycloakToken)
       const email = decoded.email
       if (!email) {
         return {
@@ -40,7 +40,6 @@ export const handler = async (event, context) => {
         user = await db.user.create({
           data: {
             email,
-            nombre: decoded.name || '',
           },
         })
       }

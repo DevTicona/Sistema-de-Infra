@@ -6,7 +6,7 @@ import { createDbAuthClient, createAuth } from '@redwoodjs/auth-dbauth-web'
 const keycloak = new Keycloak({
   url: 'https://auth-uit.agetic.gob.bo/', // Cambia esta URL con tu servidor Keycloak
   realm: 'ciudadaniadigital', // Cambia esto por tu realm de Keycloak
-  clientId: 'redwood-app', // Cambia esto por el client ID que configuraste en Keycloak
+  clientId: 'sys-infra', // Cambia esto por el client ID que configuraste en Keycloak
 })
 
 // Crear el cliente de dbAuth
@@ -42,7 +42,7 @@ export const initKeycloak = (onAuthenticatedCallback) => {
 export const login = () => keycloak.login()
 export const logout = () => {
   // Asegúrate de que el redirectUri esté permitido en la configuración del cliente Keycloak
-  keycloak.logout({ redirectUri: 'http://localhost:8910/home' })
+  keycloak.logout({ redirectUri: 'http://localhost:8910/' })
 }
 export const getToken = () => keycloak.token
 
